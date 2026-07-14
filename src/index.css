@@ -14,13 +14,11 @@ body,
   justify-content: center;
 }
 
-/* 4:3 letterboxed viewport, like a CRT */
+/* 4:3 letterboxed viewport, like a CRT, capped at 80% of the screen */
 .viewport {
   position: relative;
   aspect-ratio: 4 / 3;
-  width: 100%;
-  max-width: calc(100vh * 4 / 3);
-  max-height: 100%;
+  width: min(80vw, calc(80vh * 4 / 3));
 }
 
 .viewport canvas {
