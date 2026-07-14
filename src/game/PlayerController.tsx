@@ -76,6 +76,17 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
       if (!locked.current) canvas.requestPointerLock()
     }
 
+    player.teleport = (x: number, z: number, newYaw?: number, newPitch?: number) => {
+      pos.current.x = x
+      pos.current.z = z
+      vel.current.x = 0
+      vel.current.z = 0
+      if (newYaw !== undefined) yaw.current = newYaw
+      if (newPitch !== undefined) pitch.current = newPitch
+      player.x = x
+      player.z = z
+    }
+
     if (import.meta.env.DEV) {
       // escape hatch for automated testing: pointer lock is unavailable in
       // embedded/headless browsers
@@ -84,12 +95,7 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
         z: +pos.current.z.toFixed(2),
         yaw: +yaw.current.toFixed(2),
       })
-      ;(window as unknown as Record<string, unknown>).__teleport = (x: number, z: number, newYaw?: number, newPitch?: number) => {
-        pos.current.x = x
-        pos.current.z = z
-        if (newYaw !== undefined) yaw.current = newYaw
-        if (newPitch !== undefined) pitch.current = newPitch
-      }
+      ;(window as unknown as Record<string, unknown>).__teleport = player.teleport
       ;(window as unknown as Record<string, unknown>).__devLock = (v: boolean) => {
         locked.current = v
         player.locked = v

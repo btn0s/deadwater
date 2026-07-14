@@ -10,6 +10,8 @@ const REGIONS = [
   { minX: -11.3, maxX: -8.7, minZ: -19.9, maxZ: -11.0 },
   // sewer room
   { minX: -21.8, maxX: 1.8, minZ: -33.8, maxZ: -20.1 },
+  // exterior dock yard
+  { minX: 20.5, maxX: 41.8, minZ: -15.8, maxZ: 15.8 },
 ]
 
 /** Clamp a point (shrunk by radius r) into the nearest interior region. */

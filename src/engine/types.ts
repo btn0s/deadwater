@@ -110,6 +110,20 @@ export interface WaterComponent {
   height: number
 }
 
+/** Usable door: near it, the player presses E and fades to the target spot.
+ * The door never swings — PS2-style area transition. */
+export interface DoorComponent {
+  type: 'door'
+  /** where the player lands: [x, z] */
+  target: [number, number]
+  /** facing after the transition (radians; 0 = -z) */
+  targetYaw?: number
+  /** HUD prompt, e.g. "EXIT TO DOCKS" */
+  label?: string
+  /** interaction radius (default 1.8) */
+  radius?: number
+}
+
 /** Scripted actors. */
 export interface BehaviorComponent {
   type: 'behavior'
@@ -141,5 +155,6 @@ export type Component =
   | InstanceComponent
   | EnvironmentComponent
   | WaterComponent
+  | DoorComponent
 
 export type ComponentType = Component['type']

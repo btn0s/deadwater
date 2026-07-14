@@ -73,6 +73,12 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
     { key: 'fog.near', label: 'fog near', kind: 'number', step: 0.5 },
     { key: 'fog.far', label: 'fog far', kind: 'number', step: 1 },
   ],
+  door: [
+    { key: 'target', kind: 'vec', dims: 2, step: 0.5 },
+    { key: 'targetYaw', label: 'yaw', kind: 'number', step: 0.1 },
+    { key: 'label', kind: 'text' },
+    { key: 'radius', kind: 'number', step: 0.1 },
+  ],
 }
 
 /** defaults used by the inspector's "add component" menu */
@@ -86,6 +92,7 @@ export const COMPONENT_DEFAULTS: Record<Exclude<ComponentType, 'environment'>, C
   behavior: { type: 'behavior', behavior: 'rat', seed: 1 },
   instance: { type: 'instance', of: '' },
   water: { type: 'water', width: 4, height: 2 },
+  door: { type: 'door', target: [0, 0], label: 'USE' },
 }
 
 // dot-path helpers for nested fields (environment.fog.near)

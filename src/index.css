@@ -188,6 +188,33 @@ body,
   border-radius: 50%;
 }
 
+/* door/use prompt above the crosshair */
+.use-prompt {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  transform: translateX(-50%);
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: rgba(220, 228, 214, 0.92);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+/* area-transition fade */
+.fade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+.fade.on {
+  opacity: 1;
+}
+
 .overlay {
   position: absolute;
   inset: 0;

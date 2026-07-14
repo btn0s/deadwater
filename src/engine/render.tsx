@@ -21,6 +21,8 @@ import { mulberry32 } from '../game/rand'
 import { Rat } from '../game/Rat'
 import { Rack } from '../game/Rack'
 import { SewerWater } from '../game/SewerWater'
+import { registerInteractable } from '../game/interactions'
+import { player } from '../game/playerState'
 import { useWorldTexture } from './textures'
 import { MODEL_REGISTRY } from './models'
 import { acquireLightSlot, releaseLightSlot } from './lights'
@@ -36,6 +38,7 @@ import type {
   InstanceComponent,
   EnvironmentComponent,
   WaterComponent,
+  DoorComponent,
 } from './types'
 
 /** 'game' runs physics/behaviors; 'editor' renders visuals + lights only. */
@@ -242,6 +245,26 @@ function RailingVisual({ length, spacing }: { length: number; spacing: number })
 
 function WaterVisual({ c }: { c: WaterComponent }) {
   return <SewerWater position={[0, 0, 0]} size={[c.width, c.height]} />
+}
+
+/** door = area transition: E near the node fades the player to the target */
+function DoorEffect({ c }: { c: DoorComponent }) {
+  const group = useContext(NodeGroupContext)
+  useEffect(() => {
+    const g = group?.current
+    if (!g) return
+    g.updateWorldMatrix(true, false)
+    const p = new THREE.Vector3()
+    g.getWorldPosition(p)
+    return registerInteractable({
+      x: p.x,
+      z: p.z,
+      radius: c.radius ?? 1.8,
+      label: c.label ?? 'USE',
+      action: () => player.teleport(c.target[0], c.target[1], c.targetYaw),
+    })
+  }, [group, c.target[0], c.target[1], c.targetYaw, c.label, c.radius]) // eslint-disable-line react-hooks/exhaustive-deps
+  return null
 }
 
 function PaperWadVisual({ seed, size }: { seed: number; size: number }) {
@@ -456,6 +479,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
   const light = componentOf(node, 'light')
   const environment = componentOf(node, 'environment')
   const water = componentOf(node, 'water')
+  const door = componentOf(node, 'door')
 
   const children = index.childrenOf.get(node.id) ?? []
 
@@ -497,6 +521,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
         {mode === 'game' && physics?.blockPlayer && <BlockPlayer size={physics.size} />}
         {light && <LightEffect c={light} nodeGroup={group} transform={node.transform} />}
         {environment && <EnvironmentEffect c={environment} />}
+        {mode === 'game' && door && <DoorEffect c={door} />}
         {instance && <InstanceView c={instance} index={index} prefix={`${instancePrefix}${node.id}::`} />}
         {children.map((child) => (
           <NodeView key={child.id} node={child} index={index} instancePrefix={instancePrefix} />
