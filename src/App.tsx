@@ -2,6 +2,7 @@ import { Suspense, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { PS2Pipeline } from './ps2/PS2Pipeline'
 import { Physics } from '@react-three/rapier'
+import { Leva } from 'leva'
 import { PlayerController } from './game/PlayerController'
 import { PlayerBody } from './game/PlayerBody'
 import { Telekinesis } from './game/Telekinesis'
@@ -12,6 +13,7 @@ export default function App() {
 
   return (
     <div className="frame">
+      <Leva hidden={locked} collapsed titleBar={{ title: 'WORLD TUNING' }} />
       <div className="viewport">
         <Canvas gl={{ antialias: false, powerPreference: 'high-performance' }} dpr={1}>
           <Suspense fallback={null}>

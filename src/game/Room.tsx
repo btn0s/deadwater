@@ -1,8 +1,18 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useTexture } from '@react-three/drei'
+import { useControls } from 'leva'
 import * as THREE from 'three'
-import { createPS2Material, prepTexture, rawColor, lightPositions, lightColors, lightRadii } from '../ps2/PS2Material'
+import {
+  createPS2Material,
+  prepTexture,
+  rawColorFromString,
+  ambientColor,
+  fogSettings,
+  lightPositions,
+  lightColors,
+  lightRadii,
+} from '../ps2/PS2Material'
 import { CuboidCollider } from '@react-three/rapier'
 import { addCollider } from './collision'
 import { Prop, SplitProp, MODELS } from './Prop'
@@ -13,6 +23,22 @@ const W = 40
 const D = 24
 const H = 6
 
+// every tileable texture available to the tweak panel
+const TEXTURE_URLS: Record<string, string> = {
+  Concrete016: '/textures/Concrete016.jpg',
+  Concrete030: '/textures/Concrete030.jpg',
+  Concrete031: '/textures/Concrete031.jpg',
+  Concrete034: '/textures/Concrete034.jpg',
+  Concrete036: '/textures/Concrete036.jpg',
+  Plaster001: '/textures/Plaster001.jpg',
+  PaintedPlaster005: '/textures/PaintedPlaster005.jpg',
+  Bricks084: '/textures/Bricks084.jpg',
+  CorrugatedSteel005: '/textures/CorrugatedSteel005.jpg',
+  MetalPlates006: '/textures/MetalPlates006.jpg',
+  DangerSign: '/textures/PaintedMetal017.jpg',
+}
+const TEXTURE_OPTIONS = Object.keys(TEXTURE_URLS)
+
 const LAMP_XZ: [number, number][] = [
   [-13, -5.5],
   [0, -5.5],
@@ -22,8 +48,6 @@ const LAMP_XZ: [number, number][] = [
   [13, 5.5],
 ]
 const FLICKER_INDEX = 4
-const LAMP_COLOR = 0xd8e6c8 // dying fluorescent green-white
-const LAMP_INTENSITY = 1.0
 
 const PILLARS: [number, number][] = [
   [-12, -6.8],
@@ -41,11 +65,16 @@ interface SurfaceProps {
   rotation?: [number, number, number]
   map: THREE.Texture
   repeat: [number, number]
-  color?: number
+  color?: number | string
 }
 
 function Surface({ size, segments, position, rotation = [0, 0, 0], map, repeat, color }: SurfaceProps) {
-  const material = useMemo(() => createPS2Material({ map, repeat, color }), [map, repeat, color])
+  const material = useMemo(
+    () => createPS2Material({ map, repeat, color }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [map, repeat[0], repeat[1], color],
+  )
+  useEffect(() => () => material.dispose(), [material])
   return (
     <mesh position={position} rotation={rotation} material={material}>
       <planeGeometry args={[size[0], size[1], segments[0], segments[1]]} />
@@ -53,26 +82,37 @@ function Surface({ size, segments, position, rotation = [0, 0, 0], map, repeat, 
   )
 }
 
-function Lights() {
+interface LightSettings {
+  lampColor: string
+  intensity: number
+  radius: number
+  flicker: boolean
+}
+
+function Lights({ lampColor, intensity, radius, flicker }: LightSettings) {
   const flickerState = useRef({ on: true, nextToggle: 0.5 })
+  const settings = useRef<LightSettings>({ lampColor, intensity, radius, flicker })
+  settings.current = { lampColor, intensity, radius, flicker }
 
   useEffect(() => {
     LAMP_XZ.forEach(([x, z], i) => {
       lightPositions[i].set(x, 4.6, z)
-      lightColors[i].copy(rawColor(LAMP_COLOR)).multiplyScalar(LAMP_INTENSITY)
-      lightRadii[i] = 18
+      lightColors[i].copy(rawColorFromString(lampColor)).multiplyScalar(intensity)
+      lightRadii[i] = radius
     })
-  }, [])
+  }, [lampColor, intensity, radius])
 
   useFrame(({ clock }) => {
-    const t = clock.elapsedTime
+    const s = settings.current
     const f = flickerState.current
+    if (!s.flicker) return
+    const t = clock.elapsedTime
     if (t > f.nextToggle) {
       f.on = !f.on
       // long stretches lit, short violent dropouts — HL2 fluorescent cadence
       f.nextToggle = t + (f.on ? 0.4 + Math.random() * 2.5 : 0.04 + Math.random() * 0.18)
-      const level = f.on ? LAMP_INTENSITY : 0.08
-      lightColors[FLICKER_INDEX].copy(rawColor(LAMP_COLOR)).multiplyScalar(level)
+      const level = f.on ? s.intensity : 0.08
+      lightColors[FLICKER_INDEX].copy(rawColorFromString(s.lampColor)).multiplyScalar(level)
     }
   })
 
@@ -80,20 +120,71 @@ function Lights() {
 }
 
 export function Room() {
-  const textures = useTexture(
-    {
-      floor: '/textures/Concrete034.jpg',
-      wall: '/textures/Concrete016.jpg',
-      steel: '/textures/CorrugatedSteel005.jpg',
-      danger: '/textures/PaintedMetal017.jpg',
-    },
-    (loaded) => Object.values(loaded).forEach(prepTexture),
-  )
+  const textures = useTexture(TEXTURE_URLS, (loaded) => Object.values(loaded).forEach(prepTexture))
 
-  const pillarMaterial = useMemo(
-    () => createPS2Material({ map: textures.wall, repeat: [1, 4] }),
-    [textures.wall],
-  )
+  const walls = useControls('Walls', {
+    texture: { value: 'Concrete031', options: TEXTURE_OPTIONS },
+    repeatX: { value: 16, min: 1, max: 40, step: 0.5 },
+    repeatY: { value: 2, min: 0.5, max: 10, step: 0.1 },
+    tint: '#ffffff',
+  })
+
+  const dado = useControls('Dado Band', {
+    enabled: true,
+    texture: { value: 'CorrugatedSteel005', options: TEXTURE_OPTIONS },
+    height: { value: 2.2, min: 0.4, max: 4, step: 0.1 },
+    repeatX: { value: 18, min: 1, max: 40, step: 0.5 },
+    tint: '#ffffff',
+  })
+
+  const floor = useControls('Floor', {
+    texture: { value: 'Concrete034', options: TEXTURE_OPTIONS },
+    repeatX: { value: 13, min: 1, max: 40, step: 0.5 },
+    repeatY: { value: 8, min: 1, max: 30, step: 0.5 },
+    tint: '#6e6e6e',
+  })
+
+  const ceiling = useControls('Ceiling', {
+    texture: { value: 'CorrugatedSteel005', options: TEXTURE_OPTIONS },
+    repeatX: { value: 20, min: 1, max: 40, step: 0.5 },
+    repeatY: { value: 12, min: 1, max: 30, step: 0.5 },
+    tint: '#b4b4b4',
+  })
+
+  const lighting = useControls('Lighting', {
+    ambient: '#24262c',
+    lampColor: '#d8e6c8',
+    intensity: { value: 1, min: 0, max: 2, step: 0.05 },
+    radius: { value: 18, min: 4, max: 40, step: 0.5 },
+    flicker: true,
+  })
+
+  const fog = useControls('Fog', {
+    color: '#07080a',
+    near: { value: 10, min: 0, max: 40, step: 0.5 },
+    far: { value: 48, min: 10, max: 120, step: 1 },
+  })
+
+  // push ambient + fog into the shared shader uniforms
+  useEffect(() => {
+    ambientColor.copy(rawColorFromString(lighting.ambient))
+  }, [lighting.ambient])
+  useEffect(() => {
+    fogSettings.color.copy(rawColorFromString(fog.color))
+    fogSettings.near.value = fog.near
+    fogSettings.far.value = fog.far
+  }, [fog.color, fog.near, fog.far])
+
+  const wallMap = textures[walls.texture]
+  const dadoMap = textures[dado.texture]
+  const floorMap = textures[floor.texture]
+  const ceilingMap = textures[ceiling.texture]
+
+  const pillarMaterial = useMemo(() => {
+    const m = createPS2Material({ map: wallMap, repeat: [1, 4], color: walls.tint })
+    return m
+  }, [wallMap, walls.tint])
+  useEffect(() => () => pillarMaterial.dispose(), [pillarMaterial])
 
   // static world colliders: four walls + pillars
   useEffect(() => {
@@ -109,31 +200,38 @@ export function Room() {
     return () => removers.forEach((r) => r())
   }, [])
 
+  const wallRepeat: [number, number] = [walls.repeatX, walls.repeatY]
+  const wallRepeatSide: [number, number] = [walls.repeatX * (D / W), walls.repeatY]
+
   return (
     <group>
-      <Lights />
+      <Lights lampColor={lighting.lampColor} intensity={lighting.intensity} radius={lighting.radius} flicker={lighting.flicker} />
 
       {/* floor / ceiling — floor tinted down so it sits darker than the walls */}
-      <Surface size={[W, D]} segments={[40, 24]} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} map={textures.floor} repeat={[13, 8]} color={0x6e6e6e} />
-      <Surface size={[W, D]} segments={[40, 24]} position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]} map={textures.steel} repeat={[20, 12]} color={0xb4b4b4} />
+      <Surface size={[W, D]} segments={[40, 24]} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} map={floorMap} repeat={[floor.repeatX, floor.repeatY]} color={floor.tint} />
+      <Surface size={[W, D]} segments={[40, 24]} position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]} map={ceilingMap} repeat={[ceiling.repeatX, ceiling.repeatY]} color={ceiling.tint} />
 
       {/* walls */}
-      <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, -D / 2]} map={textures.wall} repeat={[16, 2.4]} />
-      <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, D / 2]} rotation={[0, Math.PI, 0]} map={textures.wall} repeat={[16, 2.4]} />
-      <Surface size={[D, H]} segments={[24, 8]} position={[-W / 2, H / 2, 0]} rotation={[0, Math.PI / 2, 0]} map={textures.wall} repeat={[10, 2.4]} />
-      <Surface size={[D, H]} segments={[24, 8]} position={[W / 2, H / 2, 0]} rotation={[0, -Math.PI / 2, 0]} map={textures.wall} repeat={[10, 2.4]} />
+      <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, -D / 2]} map={wallMap} repeat={wallRepeat} color={walls.tint} />
+      <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, D / 2]} rotation={[0, Math.PI, 0]} map={wallMap} repeat={wallRepeat} color={walls.tint} />
+      <Surface size={[D, H]} segments={[24, 8]} position={[-W / 2, H / 2, 0]} rotation={[0, Math.PI / 2, 0]} map={wallMap} repeat={wallRepeatSide} color={walls.tint} />
+      <Surface size={[D, H]} segments={[24, 8]} position={[W / 2, H / 2, 0]} rotation={[0, -Math.PI / 2, 0]} map={wallMap} repeat={wallRepeatSide} color={walls.tint} />
 
-      {/* corrugated steel dado band around the walls */}
-      <Surface size={[W, 2.2]} segments={[40, 3]} position={[0, 1.1, -D / 2 + 0.02]} map={textures.steel} repeat={[18, 1]} />
-      <Surface size={[W, 2.2]} segments={[40, 3]} position={[0, 1.1, D / 2 - 0.02]} rotation={[0, Math.PI, 0]} map={textures.steel} repeat={[18, 1]} />
-      <Surface size={[D, 2.2]} segments={[24, 3]} position={[-W / 2 + 0.02, 1.1, 0]} rotation={[0, Math.PI / 2, 0]} map={textures.steel} repeat={[11, 1]} />
-      <Surface size={[D, 2.2]} segments={[24, 3]} position={[W / 2 - 0.02, 1.1, 0]} rotation={[0, -Math.PI / 2, 0]} map={textures.steel} repeat={[11, 1]} />
+      {/* dado band around the walls */}
+      {dado.enabled && (
+        <>
+          <Surface size={[W, dado.height]} segments={[40, 3]} position={[0, dado.height / 2, -D / 2 + 0.02]} map={dadoMap} repeat={[dado.repeatX, 1]} color={dado.tint} />
+          <Surface size={[W, dado.height]} segments={[40, 3]} position={[0, dado.height / 2, D / 2 - 0.02]} rotation={[0, Math.PI, 0]} map={dadoMap} repeat={[dado.repeatX, 1]} color={dado.tint} />
+          <Surface size={[D, dado.height]} segments={[24, 3]} position={[-W / 2 + 0.02, dado.height / 2, 0]} rotation={[0, Math.PI / 2, 0]} map={dadoMap} repeat={[dado.repeatX * (D / W), 1]} color={dado.tint} />
+          <Surface size={[D, dado.height]} segments={[24, 3]} position={[W / 2 - 0.02, dado.height / 2, 0]} rotation={[0, -Math.PI / 2, 0]} map={dadoMap} repeat={[dado.repeatX * (D / W), 1]} color={dado.tint} />
+        </>
+      )}
 
       {/* roller door on the north wall, with warning signage */}
-      <Surface size={[5, 4.6]} segments={[6, 6]} position={[-10, 2.3, -D / 2 + 0.04]} map={textures.steel} repeat={[4, 2.2]} />
-      <Surface size={[1.2, 1.2]} segments={[2, 2]} position={[-10, 2.6, -D / 2 + 0.06]} map={textures.danger} repeat={[1, 1]} />
-      <Surface size={[1.1, 1.1]} segments={[2, 2]} position={[-13.2, 1.9, -D / 2 + 0.06]} map={textures.danger} repeat={[1, 1]} />
-      <Surface size={[1.1, 1.1]} segments={[2, 2]} position={[W / 2 - 0.06, 1.8, 2.5]} rotation={[0, -Math.PI / 2, 0]} map={textures.danger} repeat={[1, 1]} />
+      <Surface size={[5, 4.6]} segments={[6, 6]} position={[-10, 2.3, -D / 2 + 0.04]} map={textures.CorrugatedSteel005} repeat={[4, 2.2]} />
+      <Surface size={[1.2, 1.2]} segments={[2, 2]} position={[-10, 2.6, -D / 2 + 0.06]} map={textures.DangerSign} repeat={[1, 1]} />
+      <Surface size={[1.1, 1.1]} segments={[2, 2]} position={[-13.2, 1.9, -D / 2 + 0.06]} map={textures.DangerSign} repeat={[1, 1]} />
+      <Surface size={[1.1, 1.1]} segments={[2, 2]} position={[W / 2 - 0.06, 1.8, 2.5]} rotation={[0, -Math.PI / 2, 0]} map={textures.DangerSign} repeat={[1, 1]} />
 
       {/* pillars */}
       {PILLARS.map(([x, z]) => (

@@ -18,6 +18,11 @@ export function rawColor(hex: number): THREE.Color {
   return new THREE.Color().setHex(hex, THREE.LinearSRGBColorSpace)
 }
 
+/** rawColor from a '#rrggbb' string (e.g. a Leva color control) */
+export function rawColorFromString(hex: string): THREE.Color {
+  return rawColor(parseInt(hex.replace('#', ''), 16))
+}
+
 export const lightPositions = Array.from({ length: MAX_LIGHTS }, () => new THREE.Vector3(0, -1000, 0))
 export const lightColors = Array.from({ length: MAX_LIGHTS }, () => new THREE.Color(0, 0, 0))
 export const lightRadii: number[] = new Array(MAX_LIGHTS).fill(1)
@@ -27,6 +32,8 @@ const fogColorUniform = { value: rawColor(0x07080a) }
 const fogNearUniform = { value: 10 }
 const fogFarUniform = { value: 48 }
 export const fogColor = fogColorUniform.value
+/** live fog settings — mutate to retune the whole scene */
+export const fogSettings = { color: fogColorUniform.value, near: fogNearUniform, far: fogFarUniform }
 
 const sharedLightUniforms = {
   uLightPos: { value: lightPositions },
@@ -117,8 +124,14 @@ const fragmentShader = /* glsl */ `
 export interface PS2MaterialOptions {
   map?: THREE.Texture | null
   repeat?: [number, number]
-  color?: THREE.ColorRepresentation
+  color?: number | string | THREE.Color
   fullbright?: boolean
+}
+
+function resolveColor(color: PS2MaterialOptions['color']): THREE.Color {
+  if (color instanceof THREE.Color) return color.clone()
+  if (typeof color === 'string') return rawColorFromString(color)
+  return rawColor(color ?? 0xffffff)
 }
 
 export function createPS2Material(opts: PS2MaterialOptions = {}): THREE.ShaderMaterial {
@@ -128,7 +141,7 @@ export function createPS2Material(opts: PS2MaterialOptions = {}): THREE.ShaderMa
     uniforms: {
       ...sharedLightUniforms,
       map: { value: opts.map ?? getWhiteTexture() },
-      uColor: { value: rawColor(typeof opts.color === 'number' ? opts.color : 0xffffff) },
+      uColor: { value: resolveColor(opts.color) },
       uUvRepeat: { value: new THREE.Vector2(...(opts.repeat ?? [1, 1])) },
       uFullbright: { value: opts.fullbright ? 1 : 0 },
     },
