@@ -186,6 +186,9 @@ export const MODELS = {
   militaryCrate: '/models/old_military_crate/old_military_crate_1k.gltf',
   trashCan: '/models/metal_trash_can/metal_trash_can_1k.gltf',
   trashbag: '/models/trashbag/trashbag_1k.gltf',
+  compressor: '/models/old_military_compressor/old_military_compressor_1k.gltf',
+  generator: '/models/portable_generator/portable_generator_1k.gltf',
+  propaneTank: '/models/propane_tank/propane_tank_1k.gltf',
 }
 
 Object.values(MODELS).forEach((url) => useGLTF.preload(url))

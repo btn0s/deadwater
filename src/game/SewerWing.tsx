@@ -49,13 +49,17 @@ const CZ = (Z0 + Z1) / 2
 const RD = Z1 - Z0 // 14
 const H = 5
 
-// channel
+// channel: railed walkway edges, 45-degree graded banks, narrow flat bottom
 const CH_Z0 = -29
 const CH_Z1 = -25
 const CH_CZ = (CH_Z0 + CH_Z1) / 2
 const CH_W = CH_Z1 - CH_Z0 // 4
 const CH_DEPTH = 1.5
+const BANK_RUN = 1.5 // horizontal run of each graded bank
+const BANK_LEN = Math.hypot(BANK_RUN, CH_DEPTH)
 const WATER_Y = -0.95
+// waterline width on the 45-degree banks, plus a little overlap
+const WATER_W = 2 * (CH_W / 2 + WATER_Y) + 0.15
 
 // grate bridge across the channel
 const BRIDGE_CX = 0
@@ -111,7 +115,7 @@ function SewerLights() {
 function Grate({ x, facing }: { x: number; facing: 1 | -1 }) {
   const barMaterial = useMemo(() => createPS2Material({ color: 0x33363a }), [])
   const bars = []
-  for (let z = CH_Z0 + 0.25; z < CH_Z1; z += 0.36) {
+  for (let z = CH_CZ - WATER_W / 2 + 0.15; z < CH_CZ + WATER_W / 2; z += 0.34) {
     bars.push(
       <mesh key={z} material={barMaterial} position={[x + facing * 0.1, -0.45, z]}>
         <boxGeometry args={[0.06, 2.3, 0.06]} />
@@ -119,6 +123,128 @@ function Grate({ x, facing }: { x: number; facing: 1 | -1 }) {
     )
   }
   return <group>{bars}</group>
+}
+
+/**
+ * Big station pump, PS2-style primitive assembly: concrete plinth, horizontal
+ * volute, motor box, flanges, valve wheel, suction line down the bank into the
+ * water, and an outlet riser up to the trunk line.
+ */
+function PumpUnit({ x, plates, steel, concrete }: {
+  x: number
+  plates: THREE.Texture
+  steel: THREE.Texture
+  concrete: THREE.Texture
+}) {
+  const bodyMaterial = useMemo(() => createPS2Material({ map: plates, repeat: [2, 1] }), [plates])
+  const motorMaterial = useMemo(() => createPS2Material({ map: steel, repeat: [1.5, 1], color: 0x9aa886 }), [steel])
+  const plinthMaterial = useMemo(() => createPS2Material({ map: concrete, repeat: [2, 1], color: 0x5c5c5c }), [concrete])
+  const darkMaterial = useMemo(() => createPS2Material({ color: 0x3c4045 }), [])
+
+  const Z = -32.2 // unit centerline
+  useEffect(
+    () => addCollider({ minX: x - 1.4, maxX: x + 1.4, minZ: Z - 0.95, maxZ: Z + 0.95 }),
+    [x],
+  )
+
+  return (
+    <group position={[x, 0, Z]}>
+      {/* plinth */}
+      <mesh material={plinthMaterial} position={[0, 0.15, 0]}>
+        <boxGeometry args={[2.7, 0.3, 1.7]} />
+      </mesh>
+      {/* volute (pump body) */}
+      <mesh material={bodyMaterial} position={[-0.45, 0.95, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.55, 0.55, 1.3, 10]} />
+      </mesh>
+      {/* flanges */}
+      <mesh material={darkMaterial} position={[-1.14, 0.95, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.63, 0.63, 0.1, 10]} />
+      </mesh>
+      <mesh material={darkMaterial} position={[0.24, 0.95, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.63, 0.63, 0.1, 10]} />
+      </mesh>
+      {/* coupling + motor */}
+      <mesh material={darkMaterial} position={[0.45, 0.95, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.18, 0.18, 0.35, 8]} />
+      </mesh>
+      <mesh material={motorMaterial} position={[1.05, 0.93, 0]}>
+        <boxGeometry args={[0.85, 0.85, 0.85]} />
+      </mesh>
+      {/* outlet riser to the trunk line, with valve wheel */}
+      <mesh material={bodyMaterial} position={[-0.45, 2.4, 0]}>
+        <cylinderGeometry args={[0.24, 0.24, 3, 8]} />
+      </mesh>
+      <mesh material={bodyMaterial} position={[-0.45, 3.9, (Z0 + 0.55 - Z) / 2]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.24, 0.24, Math.abs(Z0 + 0.55 - Z), 8]} />
+      </mesh>
+      <mesh material={darkMaterial} position={[-0.45, 1.9, 0.28]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.22, 0.035, 6, 10]} />
+      </mesh>
+      {/* suction line: down the bank into the water */}
+      <mesh material={bodyMaterial} position={[-0.45, -0.5, 3.72]} rotation={[2.38, 0, 0]}>
+        <cylinderGeometry args={[0.28, 0.28, 1.9, 8]} />
+      </mesh>
+      <mesh material={bodyMaterial} position={[-0.45, 0.2, 2.0]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.28, 0.28, 3.0, 8]} />
+      </mesh>
+    </group>
+  )
+}
+
+const RAIL_COLOR = 0x53575c
+const RAIL_H = 1.02
+
+/** guard railing running along the x axis at a fixed z */
+function RailingX({ x0, x1, z }: { x0: number; x1: number; z: number }) {
+  const material = useMemo(() => createPS2Material({ color: RAIL_COLOR }), [])
+  const len = x1 - x0
+  const cx = (x0 + x1) / 2
+  const posts = []
+  for (let x = x0 + 0.3; x < x1; x += 2) {
+    posts.push(
+      <mesh key={x} material={material} position={[x, RAIL_H / 2, z]}>
+        <boxGeometry args={[0.05, RAIL_H, 0.05]} />
+      </mesh>,
+    )
+  }
+  return (
+    <group>
+      {posts}
+      <mesh material={material} position={[cx, RAIL_H, z]}>
+        <boxGeometry args={[len, 0.07, 0.07]} />
+      </mesh>
+      <mesh material={material} position={[cx, RAIL_H * 0.55, z]}>
+        <boxGeometry args={[len, 0.05, 0.05]} />
+      </mesh>
+    </group>
+  )
+}
+
+/** guard railing running along the z axis at a fixed x */
+function RailingZ({ z0, z1, x }: { z0: number; z1: number; x: number }) {
+  const material = useMemo(() => createPS2Material({ color: RAIL_COLOR }), [])
+  const len = z1 - z0
+  const cz = (z0 + z1) / 2
+  const posts = []
+  for (let z = z0 + 0.3; z < z1; z += 1.9) {
+    posts.push(
+      <mesh key={z} material={material} position={[x, RAIL_H / 2, z]}>
+        <boxGeometry args={[0.05, RAIL_H, 0.05]} />
+      </mesh>,
+    )
+  }
+  return (
+    <group>
+      {posts}
+      <mesh material={material} position={[x, RAIL_H, cz]}>
+        <boxGeometry args={[0.07, 0.07, len]} />
+      </mesh>
+      <mesh material={material} position={[x, RAIL_H * 0.55, cz]}>
+        <boxGeometry args={[0.05, 0.05, len]} />
+      </mesh>
+    </group>
+  )
 }
 
 export function SewerWing() {
@@ -200,14 +326,25 @@ export function SewerWing() {
       <Surface size={[RD, H]} segments={[14, 6]} position={[X0, H / 2, CZ]} rotation={[0, Math.PI / 2, 0]} map={textures.wall} repeat={[6, 2]} bombing={1} />
       <Surface size={[RD, H]} segments={[14, 6]} position={[X1, H / 2, CZ]} rotation={[0, -Math.PI / 2, 0]} map={textures.wall} repeat={[6, 2]} bombing={1} />
 
-      {/* ---------- channel ---------- */}
-      <Surface size={[RW, CH_W]} segments={[24, 4]} position={[CX, -CH_DEPTH, CH_CZ]} rotation={[-Math.PI / 2, 0, 0]} map={textures.floor} repeat={[10, 1.5]} color={0x4a4a4a} />
-      <Surface size={[RW, CH_DEPTH]} segments={[24, 2]} position={[CX, -CH_DEPTH / 2, CH_Z1]} rotation={[0, Math.PI, 0]} map={textures.wall} repeat={[10, 0.6]} color={0x777777} />
-      <Surface size={[RW, CH_DEPTH]} segments={[24, 2]} position={[CX, -CH_DEPTH / 2, CH_Z0]} map={textures.wall} repeat={[10, 0.6]} color={0x777777} />
+      {/* ---------- channel: graded banks down to a narrow flat bottom ---------- */}
+      <Surface size={[RW, CH_W - 2 * BANK_RUN]} segments={[24, 2]} position={[CX, -CH_DEPTH, CH_CZ]} rotation={[-Math.PI / 2, 0, 0]} map={textures.floor} repeat={[10, 0.5]} color={0x4a4a4a} />
+      {/* south bank, descending northward */}
+      <Surface size={[RW, BANK_LEN]} segments={[24, 2]} position={[CX, -CH_DEPTH / 2, CH_Z1 - BANK_RUN / 2]} rotation={[-Math.PI / 2 - Math.PI / 4, 0, 0]} map={textures.wall} repeat={[10, 0.9]} color={0x8a8a8a} bombing={1} />
+      {/* north bank, descending southward */}
+      <Surface size={[RW, BANK_LEN]} segments={[24, 2]} position={[CX, -CH_DEPTH / 2, CH_Z0 + BANK_RUN / 2]} rotation={[-Math.PI / 4, 0, 0]} map={textures.wall} repeat={[10, 0.9]} color={0x8a8a8a} bombing={1} />
       {/* water */}
       <mesh material={waterMaterial} position={[CX, WATER_Y, CH_CZ]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[RW + 0.2, CH_W + 0.2, 24, 4]} />
+        <planeGeometry args={[RW + 0.2, WATER_W, 24, 4]} />
       </mesh>
+
+      {/* walkway guard railings, split around the bridge */}
+      <RailingX x0={X0} x1={BRIDGE_CX - BRIDGE_W / 2} z={CH_Z1} />
+      <RailingX x0={BRIDGE_CX + BRIDGE_W / 2} x1={X1} z={CH_Z1} />
+      <RailingX x0={X0} x1={BRIDGE_CX - BRIDGE_W / 2} z={CH_Z0} />
+      <RailingX x0={BRIDGE_CX + BRIDGE_W / 2} x1={X1} z={CH_Z0} />
+      {/* bridge edge railings */}
+      <RailingZ z0={CH_Z0} z1={CH_Z1} x={BRIDGE_CX - BRIDGE_W / 2} />
+      <RailingZ z0={CH_Z0} z1={CH_Z1} x={BRIDGE_CX + BRIDGE_W / 2} />
 
       {/* outfall voids + grates at both ends of the channel */}
       <mesh material={voidMaterial} position={[X0 + 0.02, -0.4, CH_CZ]} rotation={[0, Math.PI / 2, 0]}>
@@ -219,16 +356,19 @@ export function SewerWing() {
       <Grate x={X0} facing={1} />
       <Grate x={X1} facing={-1} />
 
-      {/* ---------- pipes along the north channel wall ---------- */}
-      <mesh material={pipeMaterial} position={[CX, 0.9, CH_Z0 - 0.35]} rotation={[0, 0, Math.PI / 2]}>
+      {/* ---------- pipes resting along the north bank, just above the waterline ---------- */}
+      <mesh material={pipeMaterial} position={[CX, -0.62, CH_Z0 + 0.55]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.22, 0.22, RW - 0.2, 8]} />
       </mesh>
-      <mesh material={pipeMaterial} position={[CX, 1.6, CH_Z0 - 0.35]} rotation={[0, 0, Math.PI / 2]}>
+      <mesh material={pipeMaterial} position={[CX, -0.32, CH_Z0 + 0.32]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.3, 0.3, RW - 0.2, 8]} />
       </mesh>
-      {/* big trunk line along the north wall */}
+      {/* big trunk line along the north wall, with a feeder dropping to the compressor */}
       <mesh material={pipeMaterial} position={[CX, 3.9, Z0 + 0.55]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.45, 0.45, RW - 0.2, 8]} />
+      </mesh>
+      <mesh material={pipeMaterial} position={[-16.5, 1.95, Z0 + 0.55]}>
+        <cylinderGeometry args={[0.16, 0.16, 3.9, 8]} />
       </mesh>
 
       {/* ---------- grate bridge over the channel ---------- */}
@@ -242,6 +382,16 @@ export function SewerWing() {
       {/* lamps over the platforms */}
       <Prop url={MODELS.hangingLamp} position={[CX, H, -22.5]} collide={false} physics="none" />
       <Prop url={MODELS.hangingLamp} position={[CX, H, -31.5]} collide={false} physics="none" />
+
+      {/* pump station on the north platform, kept clear of the walkway */}
+      <PumpUnit x={-16.5} plates={textures.plates} steel={textures.steel} concrete={textures.floor} />
+      <PumpUnit x={-6} plates={textures.plates} steel={textures.steel} concrete={textures.floor} />
+      <Prop url={MODELS.compressor} position={[-11.5, 0, -32.9]} rotationY={0.15} />
+      <Prop url={MODELS.generator} position={[0.2, 0, -32.6]} rotationY={2.6} />
+      <Prop url={MODELS.propaneTank} position={[-19.3, 0, -32.6]} rotationY={1.1} />
+      <Prop url={MODELS.propaneTank} position={[-20.1, 0, -31.8]} rotationY={3.8} />
+      <Prop url={MODELS.barrel} position={[-2.5, 0, -32.9]} rotationY={2.3} />
+      <Prop url={MODELS.barrel} position={[-1.3, 0, -32.5]} rotationY={4.4} />
 
       {/* junk in the wing */}
       <Prop url={MODELS.barrel} position={[-20.5, 0, -21.5]} rotationY={1.9} />
@@ -257,9 +407,10 @@ export function SewerWing() {
       {/* platforms + channel */}
       <CuboidCollider args={[RW / 2, 0.5, 2.5]} position={[CX, -0.5, -22.5]} />
       <CuboidCollider args={[RW / 2, 0.5, 2.5]} position={[CX, -0.5, -31.5]} />
-      <CuboidCollider args={[RW / 2, 0.5, CH_W / 2]} position={[CX, -CH_DEPTH - 0.5, CH_CZ]} />
-      <CuboidCollider args={[RW / 2, CH_DEPTH / 2, 0.25]} position={[CX, -CH_DEPTH / 2, CH_Z1 + 0.25]} />
-      <CuboidCollider args={[RW / 2, CH_DEPTH / 2, 0.25]} position={[CX, -CH_DEPTH / 2, CH_Z0 - 0.25]} />
+      <CuboidCollider args={[RW / 2, 0.5, CH_W / 2 - BANK_RUN]} position={[CX, -CH_DEPTH - 0.5, CH_CZ]} />
+      {/* graded banks: rotated slabs so junk slides down into the water */}
+      <CuboidCollider args={[RW / 2, 0.1, BANK_LEN / 2]} position={[CX, -CH_DEPTH / 2 - 0.07, CH_Z1 - BANK_RUN / 2]} rotation={[-Math.PI / 4, 0, 0]} />
+      <CuboidCollider args={[RW / 2, 0.1, BANK_LEN / 2]} position={[CX, -CH_DEPTH / 2 - 0.07, CH_Z0 + BANK_RUN / 2]} rotation={[Math.PI / 4, 0, 0]} />
       {/* bridge deck */}
       <CuboidCollider args={[BRIDGE_W / 2, 0.05, CH_W / 2 + 0.2]} position={[BRIDGE_CX, -0.02, CH_CZ]} />
       {/* room walls + ceiling */}
