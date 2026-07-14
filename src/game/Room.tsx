@@ -39,10 +39,11 @@ interface SurfaceProps {
   rotation?: [number, number, number]
   map: THREE.Texture
   repeat: [number, number]
+  color?: number
 }
 
-function Surface({ size, segments, position, rotation = [0, 0, 0], map, repeat }: SurfaceProps) {
-  const material = useMemo(() => createPS2Material({ map, repeat }), [map, repeat])
+function Surface({ size, segments, position, rotation = [0, 0, 0], map, repeat, color }: SurfaceProps) {
+  const material = useMemo(() => createPS2Material({ map, repeat, color }), [map, repeat, color])
   return (
     <mesh position={position} rotation={rotation} material={material}>
       <planeGeometry args={[size[0], size[1], segments[0], segments[1]]} />
@@ -82,7 +83,6 @@ export function Room() {
       floor: '/textures/Concrete034.jpg',
       wall: '/textures/Concrete016.jpg',
       steel: '/textures/CorrugatedSteel005.jpg',
-      plates: '/textures/MetalPlates006.jpg',
       danger: '/textures/PaintedMetal017.jpg',
     },
     (loaded) => Object.values(loaded).forEach(prepTexture),
@@ -111,9 +111,9 @@ export function Room() {
     <group>
       <Lights />
 
-      {/* floor / ceiling */}
-      <Surface size={[W, D]} segments={[40, 24]} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} map={textures.floor} repeat={[13, 8]} />
-      <Surface size={[W, D]} segments={[40, 24]} position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]} map={textures.plates} repeat={[13, 8]} />
+      {/* floor / ceiling — floor tinted down so it sits darker than the walls */}
+      <Surface size={[W, D]} segments={[40, 24]} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} map={textures.floor} repeat={[13, 8]} color={0x6e6e6e} />
+      <Surface size={[W, D]} segments={[40, 24]} position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]} map={textures.steel} repeat={[20, 12]} color={0xb4b4b4} />
 
       {/* walls */}
       <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, -D / 2]} map={textures.wall} repeat={[16, 2.4]} />
