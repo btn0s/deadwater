@@ -2,6 +2,7 @@ import { Suspense, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { PS2Pipeline } from './ps2/PS2Pipeline'
 import { PlayerController } from './game/PlayerController'
+import { Telekinesis } from './game/Telekinesis'
 import { Room } from './game/Room'
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
             <Room />
           </Suspense>
           <PlayerController onLockChange={setLocked} spawn={[15, 8.5]} initialYaw={Math.PI / 3} />
+          <Telekinesis />
           <PS2Pipeline />
         </Canvas>
 

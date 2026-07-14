@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import { createPS2Material, prepTexture, rawColor, lightPositions, lightColors, lightRadii } from '../ps2/PS2Material'
 import { addCollider } from './collision'
 import { Prop, MODELS } from './Prop'
+import { PaperWad } from './PaperWad'
 
 // warehouse: 40m x 24m footprint, 6m ceiling
 const W = 40
@@ -154,15 +155,39 @@ export function Room() {
       <Prop url={MODELS.barrel} position={[-18.5, 0, 3]} rotationY={0.4} />
       <Prop url={MODELS.barrel} position={[-18.2, 0, 4.3]} rotationY={4.1} />
 
-      <Prop url={MODELS.cardboardBox} position={[17.5, 0, -3]} />
-      <Prop url={MODELS.cardboardBox} position={[17.4, 0, -1.7]} rotationY={0.4} />
-      <Prop url={MODELS.cardboardBox} position={[17.45, 0.55, -2.4]} rotationY={0.9} collide={false} />
-      <Prop url={MODELS.cardboardBox} position={[8, 0, 10.6]} rotationY={1.9} />
-      <Prop url={MODELS.cardboardBox} position={[9.3, 0, 10.4]} rotationY={0.2} />
+      <Prop url={MODELS.cardboardBox} position={[17.5, 0, -3]} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[17.4, 0, -1.7]} rotationY={0.4} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[17.45, 0.55, -2.4]} rotationY={0.9} collide={false} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[8, 0, 10.6]} rotationY={1.9} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[9.3, 0, 10.4]} rotationY={0.2} grabbable />
 
-      <Prop url={MODELS.ammoBox} position={[4, 0, -2.5]} rotationY={0.3} />
-      <Prop url={MODELS.ammoBox} position={[4.7, 0, -1.9]} rotationY={1.8} />
-      <Prop url={MODELS.ammoBox} position={[4.3, 0.34, -2.2]} rotationY={0.9} collide={false} />
+      <Prop url={MODELS.ammoBox} position={[4, 0, -2.5]} rotationY={0.3} grabbable />
+      <Prop url={MODELS.ammoBox} position={[4.7, 0, -1.9]} rotationY={1.8} grabbable />
+      <Prop url={MODELS.ammoBox} position={[4.3, 0.34, -2.2]} rotationY={0.9} collide={false} grabbable />
+
+      {/* graspable junk — crates, cans, trash */}
+      <Prop url={MODELS.woodenCrate} position={[-6.5, 0, -10]} rotationY={0.3} grabbable />
+      <Prop url={MODELS.plasticCrate} position={[-5.4, 0, -10.3]} rotationY={1.1} grabbable />
+      <Prop url={MODELS.plasticCrate} position={[-5.9, 0, -9.2]} rotationY={2.4} grabbable />
+      <Prop url={MODELS.militaryCrate} position={[12.8, 0, 9.8]} rotationY={2.9} grabbable />
+      <Prop url={MODELS.trashCan} position={[18.6, 0, 7.5]} rotationY={0.6} />
+      <Prop url={MODELS.trashbag} position={[17.7, 0, 6.4]} rotationY={1.7} collide={false} grabbable />
+      <Prop url={MODELS.trashbag} position={[18.3, 0, 5.6]} rotationY={4.2} collide={false} grabbable />
+      <Prop url={MODELS.jerrycan} position={[-17.9, 0, 2.1]} rotationY={2.2} collide={false} grabbable />
+      <Prop url={MODELS.oilTin} position={[-15.9, 0, -7.4]} rotationY={0.8} collide={false} grabbable />
+      <Prop url={MODELS.canRusted} position={[6.2, 0, 3.4]} rotationY={1.2} collide={false} grabbable />
+      <Prop url={MODELS.canRusted} position={[-3.8, 0, 1.6]} rotationY={3.9} collide={false} grabbable />
+      <Prop url={MODELS.foodCans} position={[3.9, 0.68, -2.1]} rotationY={0.5} collide={false} grabbable />
+      <Prop url={MODELS.foodCans} position={[13.4, 0, 9.1]} rotationY={2.8} collide={false} grabbable />
+
+      {/* crumpled paper scattered on the floor */}
+      <PaperWad position={[2.2, 0, 4.8]} seed={11} />
+      <PaperWad position={[-1.4, 0, -3.2]} seed={23} size={0.075} />
+      <PaperWad position={[7.6, 0, -6.1]} seed={37} size={0.1} />
+      <PaperWad position={[-8.9, 0, 5.4]} seed={41} size={0.08} />
+      <PaperWad position={[16.2, 0, 1.2]} seed={53} />
+      <PaperWad position={[-13.6, 0, -2.7]} seed={67} size={0.11} />
+      <PaperWad position={[10.4, 0, 4.9]} seed={71} size={0.07} />
     </group>
   )
 }

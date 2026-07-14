@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { moveWithCollision } from './collision'
+import { player } from './playerState'
 
 const EYE_HEIGHT = 1.65
 const WALK_SPEED = 4.0
@@ -66,6 +67,7 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
 
     const onLock = () => {
       locked.current = document.pointerLockElement === canvas
+      player.locked = locked.current
       onLockChange?.(locked.current)
       if (!locked.current) keys.current = {}
     }
@@ -79,6 +81,7 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
       // embedded/headless browsers
       ;(window as unknown as Record<string, unknown>).__devLock = (v: boolean) => {
         locked.current = v
+        player.locked = v
         onLockChange?.(v)
       }
     }

@@ -33,9 +33,30 @@ body,
   top: 50%;
   width: 4px;
   height: 4px;
-  margin: -2px 0 0 -2px;
   background: rgba(255, 255, 255, 0.55);
   pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.1s,
+    height 0.1s,
+    background 0.1s,
+    box-shadow 0.1s;
+}
+
+/* aiming at something grabbable */
+.crosshair.on-grabbable {
+  width: 7px;
+  height: 7px;
+  background: rgba(160, 230, 160, 0.9);
+}
+
+/* carrying an object */
+.crosshair.holding {
+  width: 5px;
+  height: 5px;
+  background: rgba(160, 230, 160, 0.35);
+  box-shadow: 0 0 0 3px rgba(160, 230, 160, 0.45);
+  border-radius: 50%;
 }
 
 .overlay {
