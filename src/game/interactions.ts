@@ -14,7 +14,8 @@ export interface Interactable {
   z: number
   radius: number
   label: string
-  action: () => void
+  /** absent = inert (a locked door): the prompt shows but E does nothing */
+  action?: () => void
 }
 
 const items = new Set<Interactable>()
@@ -98,7 +99,7 @@ export function InteractionSystem() {
       const it = nearest()
       if (it) {
         e.stopImmediatePropagation()
-        fadeThrough(it.action)
+        if (it.action) fadeThrough(it.action)
       }
     }
     // capture phase so the door wins over the E-opens-editor shortcut

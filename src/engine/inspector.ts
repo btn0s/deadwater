@@ -78,6 +78,7 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
     { key: 'targetYaw', label: 'yaw', kind: 'number', step: 0.1 },
     { key: 'label', kind: 'text' },
     { key: 'radius', kind: 'number', step: 0.1 },
+    { key: 'locked', kind: 'check' },
   ],
 }
 

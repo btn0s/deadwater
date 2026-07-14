@@ -13,8 +13,8 @@ import { MAX_LIGHTS, sharedLightUniforms } from '../ps2/PS2Material'
 function makeMurkTexture(): THREE.DataTexture {
   const size = 64
   const data = new Uint8Array(size * size * 4)
-  const base = [22, 42, 38]
-  const crest = [92, 132, 112]
+  const base = [12, 22, 20]
+  const crest = [50, 72, 62]
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const s =
@@ -33,7 +33,9 @@ function makeMurkTexture(): THREE.DataTexture {
   tex.wrapS = THREE.RepeatWrapping
   tex.wrapT = THREE.RepeatWrapping
   tex.magFilter = THREE.LinearFilter
-  tex.minFilter = THREE.LinearMipmapNearestFilter
+  // trilinear here, unlike everything else: on a big open plane the hard mip
+  // transitions read as banded "edges" across the surface
+  tex.minFilter = THREE.LinearMipmapLinearFilter
   tex.generateMipmaps = true
   tex.needsUpdate = true
   return tex
@@ -114,7 +116,8 @@ const fragmentShader = /* glsl */ `
     vec3 color = mix(layer1, layer2, 0.5);
 
     // crests catch the light: cheap sparkle band, no fresnel on the GS
-    color += vec3(0.10, 0.13, 0.11) * smoothstep(0.72, 1.0, vCrest);
+    // (wide + faint — a tight band reads as hard contour lines)
+    color += vec3(0.045, 0.06, 0.05) * smoothstep(0.5, 1.15, vCrest);
 
     color *= vLight;
 
@@ -168,9 +171,13 @@ export function SewerWater({ position, size, flow = [0.045, 0] }: SewerWaterProp
     ;(material.uniforms.uScroll2.value as THREE.Vector2).set(t * -fx * 0.6 + 0.37, t * (fy * 0.6 + 0.021))
   })
 
+  // tessellate by area, not a fixed grid — big planes otherwise show the
+  // vertex-lighting facets as hard edges
+  const segX = Math.min(64, Math.max(8, Math.round(size[0] * 2)))
+  const segY = Math.min(64, Math.max(8, Math.round(size[1] * 2)))
   return (
     <mesh material={material} position={position} rotation={[-Math.PI / 2, 0, 0]} renderOrder={2}>
-      <planeGeometry args={[size[0], size[1], 48, 10]} />
+      <planeGeometry args={[size[0], size[1], segX, segY]} />
     </mesh>
   )
 }

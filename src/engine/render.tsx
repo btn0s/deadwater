@@ -261,9 +261,9 @@ function DoorEffect({ c }: { c: DoorComponent }) {
       z: p.z,
       radius: c.radius ?? 1.8,
       label: c.label ?? 'USE',
-      action: () => player.teleport(c.target[0], c.target[1], c.targetYaw),
+      action: c.locked ? undefined : () => player.teleport(c.target[0], c.target[1], c.targetYaw),
     })
-  }, [group, c.target[0], c.target[1], c.targetYaw, c.label, c.radius]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [group, c.target[0], c.target[1], c.targetYaw, c.label, c.radius, c.locked]) // eslint-disable-line react-hooks/exhaustive-deps
   return null
 }
 

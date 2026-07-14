@@ -122,6 +122,8 @@ export interface DoorComponent {
   label?: string
   /** interaction radius (default 1.8) */
   radius?: number
+  /** locked doors show the prompt but E does nothing — world dressing */
+  locked?: boolean
 }
 
 /** Scripted actors. */
