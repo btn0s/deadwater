@@ -2,30 +2,68 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { MAX_LIGHTS, sharedLightUniforms } from '../ps2/PS2Material'
+import { mulberry32 } from './rand'
 
 /**
- * PS2-style sewer water, the classic recipe: two copies of one murk texture
- * scrolling in different directions blended 50/50, sine vertex waves on a
- * tessellated grid, per-vertex lighting, constant alpha, and the same
- * GS-style dither/quantize as everything else.
+ * PS2-style water, the era recipe (Silent Hill 2 / MGS2 school): two copies
+ * of ONE soft, low-contrast noise texture UV-scrolled in different
+ * directions and blended, gentle vertex bob for silhouette life, per-vertex
+ * lighting on a flat surface, constant alpha, GS dither into a 16-bit
+ * (R5G6B5) framebuffer.
+ *
+ * What it deliberately is NOT: a cell/interference pattern (blob boundaries
+ * survive layering and read as hard edges), a tight crest highlight band
+ * (draws contour lines), or coherently tipped normals (a plane-wide sinusoid
+ * turns light pools into stripes). All three were tried and removed.
  */
 
-function makeMurkTexture(): THREE.DataTexture {
-  const size = 64
+/** tileable multi-octave value noise — soft photographic grain, no cells */
+function makeWaterTexture(): THREE.DataTexture {
+  const size = 128
+  const rand = mulberry32(0x5eaf00d)
+
+  // wrap-around random lattices, one per octave
+  const octaves = [4, 8, 16, 32].map((n) => ({
+    n,
+    grid: Float32Array.from({ length: n * n }, () => rand()),
+  }))
+  const smooth = (t: number) => t * t * (3 - 2 * t)
+  const sample = (o: { n: number; grid: Float32Array }, u: number, v: number) => {
+    const x = u * o.n
+    const y = v * o.n
+    const x0 = Math.floor(x) % o.n
+    const y0 = Math.floor(y) % o.n
+    const x1 = (x0 + 1) % o.n
+    const y1 = (y0 + 1) % o.n
+    const fx = smooth(x - Math.floor(x))
+    const fy = smooth(y - Math.floor(y))
+    const g = o.grid
+    const a = g[y0 * o.n + x0] + (g[y0 * o.n + x1] - g[y0 * o.n + x0]) * fx
+    const b = g[y1 * o.n + x0] + (g[y1 * o.n + x1] - g[y1 * o.n + x0]) * fx
+    return a + (b - a) * fy
+  }
+
+  const base = [13, 24, 22]
+  const amp = [9, 13, 11] // low contrast on purpose — motion sells it, not contrast
   const data = new Uint8Array(size * size * 4)
-  const base = [12, 22, 20]
-  const crest = [50, 72, 62]
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
-      const s =
-        Math.sin(x * 0.35 + Math.sin(y * 0.45) * 2.2) +
-        Math.sin((x + y * 2.3) * 0.16) +
-        Math.sin(y * 0.55 + Math.sin(x * 0.22) * 1.7)
-      const t = Math.pow(THREE.MathUtils.clamp(s / 3 + 0.5, 0, 1), 1.5)
+      const u = x / size
+      const v = y / size
+      // fBm: halving weights, normalized back to [0,1]
+      let t = 0
+      let w = 0.5
+      let norm = 0
+      for (const o of octaves) {
+        t += sample(o, u, v) * w
+        norm += w
+        w *= 0.5
+      }
+      t = t / norm - 0.5 // centered, roughly [-0.5, 0.5]
       const i = (y * size + x) * 4
-      data[i] = base[0] + (crest[0] - base[0]) * t
-      data[i + 1] = base[1] + (crest[1] - base[1]) * t
-      data[i + 2] = base[2] + (crest[2] - base[2]) * t
+      data[i] = Math.max(0, base[0] + amp[0] * 2 * t)
+      data[i + 1] = Math.max(0, base[1] + amp[1] * 2 * t)
+      data[i + 2] = Math.max(0, base[2] + amp[2] * 2 * t)
       data[i + 3] = 255
     }
   }
@@ -33,8 +71,8 @@ function makeMurkTexture(): THREE.DataTexture {
   tex.wrapS = THREE.RepeatWrapping
   tex.wrapT = THREE.RepeatWrapping
   tex.magFilter = THREE.LinearFilter
-  // trilinear here, unlike everything else: on a big open plane the hard mip
-  // transitions read as banded "edges" across the surface
+  // trilinear, unlike the wall/floor materials: on a big open plane the hard
+  // mip transitions read as bands sweeping across the surface
   tex.minFilter = THREE.LinearMipmapLinearFilter
   tex.generateMipmaps = true
   tex.needsUpdate = true
@@ -52,32 +90,31 @@ const vertexShader = /* glsl */ `
   varying vec2 vUv;
   varying vec3 vLight;
   varying float vFogDepth;
-  varying float vCrest;
 
   void main() {
     vUv = uv;
 
     vec4 worldPos = modelMatrix * vec4(position, 1.0);
-    // crossed sine waves, evaluated in world space so seams never show
+    // gentle bob for the silhouette at banks and pilings; non-harmonic
+    // frequencies so no plane-wide pattern emerges
     float wave =
-      sin(worldPos.x * 1.7 + uTime * 1.9) * 0.5 +
-      sin(worldPos.z * 2.3 - uTime * 1.3) * 0.35 +
-      sin((worldPos.x + worldPos.z) * 0.9 + uTime * 0.7) * 0.15;
-    worldPos.y += wave * 0.045;
-    vCrest = wave * 0.5 + 0.5;
+      sin(worldPos.x * 1.31 + uTime * 1.7) * 0.5 +
+      sin(worldPos.z * 2.17 - uTime * 1.1) * 0.35 +
+      sin((worldPos.x + worldPos.z) * 0.73 + uTime * 0.6) * 0.15;
+    worldPos.y += wave * 0.03;
 
-    // waves tip the normal a little for the vertex lighting
-    vec3 worldNormal = normalize(vec3(
-      -cos(worldPos.x * 1.7 + uTime * 1.9) * 0.18,
-      1.0,
-      -cos(worldPos.z * 2.3 - uTime * 1.3) * 0.14
-    ));
+    // the surface lights as flat water — tipped normals turn light pools
+    // into coherent stripes at this tessellation
+    vec3 worldNormal = vec3(0.0, 1.0, 0.0);
 
     vec3 light = uAmbient * 1.1;
     for (int i = 0; i < ${MAX_LIGHTS}; i++) {
       vec3 toLight = uLightPos[i] - worldPos.xyz;
       float dist = length(toLight);
       float atten = clamp(1.0 - dist / uLightRadius[i], 0.0, 1.0);
+      // smooth the attenuation shoulder: linear falloff has a visible C1
+      // break where it hits zero
+      atten *= atten;
       float ndl = max(dot(worldNormal, toLight / max(dist, 1e-4)), 0.0);
       float cosDown = toLight.y / max(dist, 1e-4);
       float spot = mix(1.0, mix(0.06, 1.0, smoothstep(-0.12, 0.45, cosDown)), uLightSpot[i]);
@@ -104,7 +141,6 @@ const fragmentShader = /* glsl */ `
   varying vec2 vUv;
   varying vec3 vLight;
   varying float vFogDepth;
-  varying float vCrest;
 
   float bayer2(vec2 a) { a = floor(a); return fract(a.x * 0.5 + a.y * a.y * 0.75); }
   float bayer4(vec2 a) { return bayer2(0.5 * a) * 0.25 + bayer2(a); }
@@ -112,21 +148,20 @@ const fragmentShader = /* glsl */ `
   void main() {
     // layer 1: broad drift with the flow; layer 2: finer chop against it
     vec3 layer1 = texture2D(map, vUv * uRepeat + uScroll1).rgb;
-    vec3 layer2 = texture2D(map, vUv * uRepeat * 1.9 + uScroll2).rgb;
+    vec3 layer2 = texture2D(map, vUv * uRepeat * 2.3 + uScroll2).rgb;
     vec3 color = mix(layer1, layer2, 0.5);
-
-    // crests catch the light: cheap sparkle band, no fresnel on the GS
-    // (wide + faint — a tight band reads as hard contour lines)
-    color += vec3(0.045, 0.06, 0.05) * smoothstep(0.5, 1.15, vCrest);
 
     color *= vLight;
 
     float fogFactor = clamp((vFogDepth - fogNear) / (fogFar - fogNear), 0.0, 1.0);
     color = mix(color, fogColor, fogFactor);
 
-    float dither = (bayer4(gl_FragCoord.xy) - 0.5) / 31.0;
-    color = clamp(color + dither, 0.0, 1.0);
-    color = floor(color * 31.0 + 0.5) / 31.0;
+    // 16-bit framebuffer the way the GS actually kept one: R5 G6 B5 —
+    // green gets double the steps, exactly where this palette lives
+    vec3 steps = vec3(31.0, 63.0, 31.0);
+    float dither = (bayer4(gl_FragCoord.xy) - 0.5);
+    color = clamp(color + dither / steps, 0.0, 1.0);
+    color = floor(color * steps + 0.5) / steps;
 
     gl_FragColor = vec4(color, uOpacity);
   }
@@ -147,12 +182,12 @@ export function SewerWater({ position, size, flow = [0.045, 0] }: SewerWaterProp
         fragmentShader,
         uniforms: {
           ...sharedLightUniforms,
-          map: { value: makeMurkTexture() },
+          map: { value: makeWaterTexture() },
           uTime: { value: 0 },
           uScroll1: { value: new THREE.Vector2(0, 0) },
           uScroll2: { value: new THREE.Vector2(0, 0) },
-          uRepeat: { value: new THREE.Vector2(size[0] / 4, size[1] / 4) },
-          uOpacity: { value: 0.82 },
+          uRepeat: { value: new THREE.Vector2(size[0] / 5, size[1] / 5) },
+          uOpacity: { value: 0.85 },
         },
         transparent: true,
         depthWrite: false,
