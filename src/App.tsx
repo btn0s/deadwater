@@ -10,12 +10,7 @@ export default function App() {
   return (
     <div className="frame">
       <div className="viewport">
-        <Canvas
-          gl={{ antialias: false, powerPreference: 'high-performance' }}
-          dpr={1}
-          camera={{ fov: 60, near: 0.1, far: 120, aspect: 4 / 3, manual: true } as never}
-        >
-          <color attach="background" args={['#07080a']} />
+        <Canvas gl={{ antialias: false, powerPreference: 'high-performance' }} dpr={1}>
           <Suspense fallback={null}>
             <Room />
           </Suspense>

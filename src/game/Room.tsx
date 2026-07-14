@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useTexture } from '@react-three/drei'
 import * as THREE from 'three'
-import { createPS2Material, prepTexture, lightPositions, lightColors, lightRadii } from '../ps2/PS2Material'
+import { createPS2Material, prepTexture, rawColor, lightPositions, lightColors, lightRadii } from '../ps2/PS2Material'
 import { addCollider } from './collision'
 import { Prop, MODELS } from './Prop'
 
@@ -21,15 +21,15 @@ const LAMP_XZ: [number, number][] = [
 ]
 const FLICKER_INDEX = 4
 const LAMP_COLOR = 0xd8e6c8 // dying fluorescent green-white
-const LAMP_INTENSITY = 0.85
+const LAMP_INTENSITY = 1.0
 
 const PILLARS: [number, number][] = [
-  [-12, -6],
-  [0, -6],
-  [12, -6],
-  [-12, 6],
-  [0, 6],
-  [12, 6],
+  [-12, -6.8],
+  [0, -6.8],
+  [12, -6.8],
+  [-12, 6.8],
+  [0, 6.8],
+  [12, 6.8],
 ]
 
 interface SurfaceProps {
@@ -56,8 +56,8 @@ function Lights() {
   useEffect(() => {
     LAMP_XZ.forEach(([x, z], i) => {
       lightPositions[i].set(x, 4.6, z)
-      lightColors[i].setHex(LAMP_COLOR).multiplyScalar(LAMP_INTENSITY)
-      lightRadii[i] = 16
+      lightColors[i].copy(rawColor(LAMP_COLOR)).multiplyScalar(LAMP_INTENSITY)
+      lightRadii[i] = 18
     })
   }, [])
 
@@ -69,7 +69,7 @@ function Lights() {
       // long stretches lit, short violent dropouts — HL2 fluorescent cadence
       f.nextToggle = t + (f.on ? 0.4 + Math.random() * 2.5 : 0.04 + Math.random() * 0.18)
       const level = f.on ? LAMP_INTENSITY : 0.08
-      lightColors[FLICKER_INDEX].setHex(LAMP_COLOR).multiplyScalar(level)
+      lightColors[FLICKER_INDEX].copy(rawColor(LAMP_COLOR)).multiplyScalar(level)
     }
   })
 
@@ -83,13 +83,13 @@ export function Room() {
       wall: '/textures/Concrete016.jpg',
       steel: '/textures/CorrugatedSteel005.jpg',
       plates: '/textures/MetalPlates006.jpg',
-      paint: '/textures/PaintedMetal017.jpg',
+      danger: '/textures/PaintedMetal017.jpg',
     },
     (loaded) => Object.values(loaded).forEach(prepTexture),
   )
 
   const pillarMaterial = useMemo(
-    () => createPS2Material({ map: textures.wall, repeat: [1, 4], color: 0xb8b8b8 }),
+    () => createPS2Material({ map: textures.wall, repeat: [1, 4] }),
     [textures.wall],
   )
 
@@ -113,7 +113,7 @@ export function Room() {
 
       {/* floor / ceiling */}
       <Surface size={[W, D]} segments={[40, 24]} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} map={textures.floor} repeat={[13, 8]} />
-      <Surface size={[W, D]} segments={[40, 24]} position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]} map={textures.paint} repeat={[13, 8]} />
+      <Surface size={[W, D]} segments={[40, 24]} position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]} map={textures.plates} repeat={[13, 8]} />
 
       {/* walls */}
       <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, -D / 2]} map={textures.wall} repeat={[16, 2.4]} />
@@ -127,8 +127,11 @@ export function Room() {
       <Surface size={[D, 2.2]} segments={[24, 3]} position={[-W / 2 + 0.02, 1.1, 0]} rotation={[0, Math.PI / 2, 0]} map={textures.steel} repeat={[11, 1]} />
       <Surface size={[D, 2.2]} segments={[24, 3]} position={[W / 2 - 0.02, 1.1, 0]} rotation={[0, -Math.PI / 2, 0]} map={textures.steel} repeat={[11, 1]} />
 
-      {/* blast door on the north wall */}
-      <Surface size={[5, 4.6]} segments={[6, 6]} position={[-10, 2.3, -D / 2 + 0.04]} map={textures.plates} repeat={[2, 2]} />
+      {/* roller door on the north wall, with warning signage */}
+      <Surface size={[5, 4.6]} segments={[6, 6]} position={[-10, 2.3, -D / 2 + 0.04]} map={textures.steel} repeat={[4, 2.2]} />
+      <Surface size={[1.2, 1.2]} segments={[2, 2]} position={[-10, 2.6, -D / 2 + 0.06]} map={textures.danger} repeat={[1, 1]} />
+      <Surface size={[1.1, 1.1]} segments={[2, 2]} position={[-13.2, 1.9, -D / 2 + 0.06]} map={textures.danger} repeat={[1, 1]} />
+      <Surface size={[1.1, 1.1]} segments={[2, 2]} position={[W / 2 - 0.06, 1.8, 2.5]} rotation={[0, -Math.PI / 2, 0]} map={textures.danger} repeat={[1, 1]} />
 
       {/* pillars */}
       {PILLARS.map(([x, z]) => (
@@ -147,7 +150,7 @@ export function Room() {
       <Prop url={MODELS.barrel} position={[-15.4, 0, -9.3]} rotationY={1.2} />
       <Prop url={MODELS.barrel} position={[-16, 0, -8.1]} rotationY={2.6} />
       <Prop url={MODELS.barrelExplosive} position={[-14.6, 0, -8.4]} rotationY={0.7} />
-      <Prop url={MODELS.barrelExplosive} position={[0.95, 0, 6.95]} rotationY={2.1} />
+      <Prop url={MODELS.barrelExplosive} position={[0.95, 0, 7.7]} rotationY={2.1} />
       <Prop url={MODELS.barrel} position={[-18.5, 0, 3]} rotationY={0.4} />
       <Prop url={MODELS.barrel} position={[-18.2, 0, 4.3]} rotationY={4.1} />
 

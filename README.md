@@ -1,32 +1,31 @@
-# React + TypeScript + Vite
+# STORAGE — SUBLEVEL 2
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A true-to-era **PS2-style first-person walking scene** built with React Three Fiber + Vite. One large gritty warehouse room in the spirit of Half-Life 2's industrial spaces, rendered the way the PlayStation 2 actually rendered.
 
-Currently, two official plugins are available:
+## Run it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Click the viewport to grab the mouse. **WASD** move · **Shift** run · **Space** jump · **Esc** release.
+
+## Era-authentic rendering choices
+
+| PS2 hardware behavior | Implementation |
+| --- | --- |
+| 512×448 NTSC framebuffer, stretched to 4:3 | Fixed-size internal render target, bilinear upscale, letterboxed 4:3 viewport |
+| Gouraud (per-vertex) lighting on the VU/GS | Custom `ShaderMaterial` computes point lights per vertex; walls/floor tessellated ~1m so light pools bleed across triangles |
+| Dithering into a 16-bit framebuffer | 4×4 ordered Bayer dither + 5-bit-per-channel quantization applied on framebuffer write, exactly where the GS did it |
+| No linear color pipeline | Whole pipeline runs in gamma space: textures sampled raw, lights specified as display values, no sRGB conversion anywhere |
+| Diffuse-only materials | No normal/roughness/AO maps; 256px textures, bilinear mag filter, hard mip transitions (`LinearMipmapNearest`), no anisotropy |
+| Perspective-correct texturing | Deliberately **no** PS1 affine wobble or vertex snapping — the PS2 didn't have those artifacts |
+| Interlaced CRT output | Faint line darkening at internal resolution + mild corner falloff in the upscale pass |
+| Sparse dynamic lights | 8-light budget, one flickering fluorescent with telegraph-noise cadence |
+
+No shadow maps, no postprocessing stack, no tone mapping — vertex lights, fog, and dither.
+
+## Assets
+
+All CC0: textures from [ambientCG](https://ambientcg.com), models from [Poly Haven](https://polyhaven.com) (barrels, ammo box, cardboard boxes, hanging industrial lamp). See [CREDITS.md](public/models/CREDITS.md).

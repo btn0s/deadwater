@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
+import * as THREE from 'three'
 import { moveWithCollision } from './collision'
 
 const EYE_HEIGHT = 1.65
@@ -34,6 +35,18 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
   const grounded = useRef(true)
   const bobTime = useRef(0)
 
+  // fixed PS2 projection: 60° vertical FOV at 4:3, and `manual` so R3F's
+  // resize handler never rewrites the aspect (the internal buffer is fixed-size)
+  useEffect(() => {
+    const cam = camera as THREE.PerspectiveCamera & { manual?: boolean }
+    cam.fov = 60
+    cam.aspect = 4 / 3
+    cam.near = 0.1
+    cam.far = 120
+    cam.manual = true
+    cam.updateProjectionMatrix()
+  }, [camera])
+
   useEffect(() => {
     const canvas = gl.domElement
 
@@ -59,6 +72,15 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
 
     const onClick = () => {
       if (!locked.current) canvas.requestPointerLock()
+    }
+
+    if (import.meta.env.DEV) {
+      // escape hatch for automated testing: pointer lock is unavailable in
+      // embedded/headless browsers
+      ;(window as unknown as Record<string, unknown>).__devLock = (v: boolean) => {
+        locked.current = v
+        onLockChange?.(v)
+      }
     }
 
     window.addEventListener('keydown', keyDown)

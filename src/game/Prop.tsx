@@ -23,7 +23,7 @@ export function Prop({ url, position, rotationY = 0, scale = 1, collide = true }
         const src = obj.material as THREE.MeshStandardMaterial
         const map = src.map ? prepTexture(src.map) : null
         // emissive parts (lamp bulbs/glass) render fullbright, era-style
-        const fullbright = !!src.emissiveMap || src.emissiveIntensity > 0.5
+        const fullbright = !!src.emissiveMap
         obj.material = createPS2Material({ map, fullbright })
         obj.castShadow = false
         obj.receiveShadow = false

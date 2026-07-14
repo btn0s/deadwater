@@ -11,14 +11,21 @@ export const MAX_LIGHTS = 8
 
 // Shared light state. The same object references are installed into every
 // material's uniforms, so mutating these lights the whole scene at once.
+// Everything runs in gamma space, exactly like the GS did: textures are
+// sampled raw, lights and colors are specified as raw display values, and no
+// linear<->sRGB conversion happens anywhere in the pipeline.
+export function rawColor(hex: number): THREE.Color {
+  return new THREE.Color().setHex(hex, THREE.LinearSRGBColorSpace)
+}
+
 export const lightPositions = Array.from({ length: MAX_LIGHTS }, () => new THREE.Vector3(0, -1000, 0))
 export const lightColors = Array.from({ length: MAX_LIGHTS }, () => new THREE.Color(0, 0, 0))
 export const lightRadii: number[] = new Array(MAX_LIGHTS).fill(1)
-export const ambientColor = new THREE.Color(0x1a1c22)
+export const ambientColor = rawColor(0x35383f)
 
-const fogColorUniform = { value: new THREE.Color(0x07080a) }
-const fogNearUniform = { value: 8 }
-const fogFarUniform = { value: 42 }
+const fogColorUniform = { value: rawColor(0x07080a) }
+const fogNearUniform = { value: 10 }
+const fogFarUniform = { value: 48 }
 export const fogColor = fogColorUniform.value
 
 const sharedLightUniforms = {
@@ -59,7 +66,8 @@ const vertexShader = /* glsl */ `
     vec4 worldPos = modelMatrix * vec4(position, 1.0);
     vec3 worldNormal = normalize(mat3(modelMatrix) * normal);
 
-    vec3 light = uAmbient;
+    // ambient with a faint hemisphere tilt so unlit side/down faces keep shape
+    vec3 light = uAmbient * (0.95 + 0.3 * worldNormal.y);
     for (int i = 0; i < ${MAX_LIGHTS}; i++) {
       vec3 toLight = uLightPos[i] - worldPos.xyz;
       float dist = length(toLight);
@@ -120,21 +128,22 @@ export function createPS2Material(opts: PS2MaterialOptions = {}): THREE.ShaderMa
     uniforms: {
       ...sharedLightUniforms,
       map: { value: opts.map ?? getWhiteTexture() },
-      uColor: { value: new THREE.Color(opts.color ?? 0xffffff) },
+      uColor: { value: rawColor(typeof opts.color === 'number' ? opts.color : 0xffffff) },
       uUvRepeat: { value: new THREE.Vector2(...(opts.repeat ?? [1, 1])) },
       uFullbright: { value: opts.fullbright ? 1 : 0 },
     },
   })
 }
 
-/** Era-appropriate texture sampling: bilinear mag, hard mip transitions, no aniso. */
+/** Era-appropriate texture sampling: bilinear mag, hard mip transitions, no
+ * aniso, and NO sRGB decode — texels are used raw, as the GS did. */
 export function prepTexture(tex: THREE.Texture): THREE.Texture {
   tex.wrapS = THREE.RepeatWrapping
   tex.wrapT = THREE.RepeatWrapping
   tex.magFilter = THREE.LinearFilter
   tex.minFilter = THREE.LinearMipmapNearestFilter
   tex.anisotropy = 1
-  tex.colorSpace = THREE.SRGBColorSpace
+  tex.colorSpace = THREE.NoColorSpace
   tex.needsUpdate = true
   return tex
 }

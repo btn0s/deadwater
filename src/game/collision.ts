@@ -18,6 +18,14 @@ export function addCollider(box: AABB): () => void {
   }
 }
 
+if (import.meta.env.DEV) {
+  ;(window as unknown as Record<string, unknown>).__testCollision = (x: number, z: number, dx: number, dz: number, r: number) => {
+    const p = { x, z }
+    moveWithCollision(p, dx, dz, r)
+    return { ...p, colliders: colliders.length }
+  }
+}
+
 export function moveWithCollision(pos: { x: number; z: number }, dx: number, dz: number, r: number) {
   if (dx !== 0) {
     pos.x += dx
