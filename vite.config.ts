@@ -15,12 +15,19 @@ function sheetWriter(): Plugin {
           res.end('POST only')
           return
         }
+        const name = new URL(req.url ?? '/', 'http://x').searchParams.get('name') ?? ''
+        if (!/^[a-z0-9-]{0,24}$/.test(name)) {
+          res.statusCode = 400
+          res.end('bad name')
+          return
+        }
+        const file = name ? `contact-sheet-${name}.png` : 'contact-sheet.png'
         const chunks: Buffer[] = []
         req.on('data', (c) => chunks.push(c))
         req.on('end', () => {
           const dataUrl = Buffer.concat(chunks).toString('utf8')
           const base64 = dataUrl.replace(/^data:image\/png;base64,/, '')
-          fs.writeFileSync(path.resolve(__dirname, 'contact-sheet.png'), Buffer.from(base64, 'base64'))
+          fs.writeFileSync(path.resolve(__dirname, file), Buffer.from(base64, 'base64'))
           res.end('ok')
         })
       })
