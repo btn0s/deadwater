@@ -9,7 +9,6 @@ import { SewerWing } from './game/SewerWing'
 import { LoadingDock } from './game/LoadingDock'
 import { Office } from './game/Office'
 import { DevViews } from './game/DevViews'
-import { editorStore } from './game/editorStore'
 import { SceneRoot } from './engine/render'
 import { sceneNodes } from './engine/scene'
 
@@ -18,7 +17,6 @@ export default function App() {
 
   useEffect(() => {
     // this entry is always game mode; the editor lives at /editor.html
-    editorStore.setActive(false)
     const onKey = (e: KeyboardEvent) => {
       if (e.code === 'KeyE' && !document.pointerLockElement && (e.target as HTMLElement)?.tagName !== 'INPUT') {
         window.location.href = '/editor.html'

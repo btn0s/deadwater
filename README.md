@@ -23,14 +23,16 @@ Everything is built so both a human and an agent can drive it:
 |---|---|---|
 | See the level | play it / open the editor | `window.__sheet()` renders labeled contact sheets to `contact-sheet*.png` |
 | Move around | WASD / editor fly-cam | `window.__teleport(x, z, yaw, pitch)`, `__playerPos()` |
-| Edit the world | editor gizmos + panels, SAVE | read/patch `src/game/layout.json` directly |
-| Tune the look | editor World tab | same file, `world` block |
-| Verify | look at it | screenshots, `__testCollision`, contact sheets |
+| Edit the world | editor gizmos + inspector, SAVE | read/patch `src/engine/scene.json` directly, or drive `window.__sceneStore` |
+| Tune the look | select the `environment` node | same file, `environment` component |
+| Verify | look at it | screenshots, `__testCollision`, `__lightSlots()`, contact sheets |
 
-The critical design decision: **the level is data** (`src/game/layout.json` —
-every prop, lamp, and world setting). The editor's SAVE button and an agent's
-file edit write the same source of truth, so visual editing and agentic
-editing never fork.
+The critical design decision: **the level is a scene graph in data**
+(`src/engine/scene.json`) — a flat table of nodes forming a tree via parent
+refs, each with a transform and components (model, light, physics, surface,
+primitive, generator, behavior, instance, environment). The editor's SAVE
+button and an agent's file edit write the same source of truth, so visual
+editing and agentic editing never fork.
 
 ## What's in the kit
 
@@ -41,28 +43,34 @@ dither to 5-bit color, stochastic texture bombing, UV scroll), `PS2Pipeline`
 (fixed 512×448 target, bilinear upscale, interlace + CRT falloff, 4:3
 letterbox), `SewerWater` (dual opposed scrolling layers + sine vertex waves).
 
+**Engine** (`src/engine/`) — the node/component scene model (`types.ts`),
+the tree renderer (`render.tsx`: one renderer per component type, recursive
+`NodeView`, `SceneRoot` with game/editor modes), runtime light-slot
+allocation, texture + model registries, and the editor store (node CRUD,
+reparenting, undo, prefabs, save).
+
 **Game systems** (`src/game/`) — pointer-lock FPS controller with AABB
 sliding collision; Rapier physics (grabbable hulls with ccd, trimesh
 containers, kinematic player capsule that shoves debris); telekinesis
-grab/carry/toss; `Lamp` light entities that own a light slot, run their own
-flicker, and sync bulb glow to the light; composed props (`LoadedPallet`,
-`Rack`, `TrashPile`, `PaperWad`); `Rat` AI that hugs walls and avoids the
-player; GLTF/FBX prop loading with PS2 material swap, cm-scale
-normalization, and per-piece grab splitting.
+grab/carry/toss; `Rat` AI that hugs walls and avoids the player; GLTF/FBX
+loading with PS2 material swap, cm-scale normalization, and per-piece grab
+splitting (all driven by components).
 
 **Editor** (`src/editor/`, its own vite entry — never ships with the game) —
-Unity-style chrome: toolbar, hierarchy, tabbed Details/World panels,
-thumbnail asset palette (thumbs auto-rendered from the model registry),
-orbit + fly cameras, translate/rotate gizmos (**W/E**), grid + view-cube,
-click-to-place (shift = stamp), duplicate/delete, undo/redo (**⌘Z**).
-Per-entity details (lamp color/intensity/radius/flicker, prop physics flags,
-pallet variants) and world settings (surfaces, ambient, fog). SAVE writes
-`src/game/layout.json` through a dev middleware.
+Unity-style chrome: toolbar, scene-graph hierarchy (expand/collapse,
+drag-to-reparent), a generic component inspector generated from the schema
+in `src/engine/inspector.ts` (plus add/remove component), thumbnail asset
+palette, orbit + fly cameras, translate/rotate gizmos (**W/E**), grid +
+view-cube, click-to-place (shift = stamp), duplicate / delete / → prefab,
+undo/redo (**⌘Z**), and an assets tab for composing library prefabs that
+place as instances. SAVE writes `src/engine/scene.json` through a dev
+middleware.
 
 **Agent tooling** — `docs/ASSETS.md` (vetted CC0/CC-BY sources + scripted
 download recipes), `.claude/skills/asset-search` (the search → license →
 download → integrate pipeline as a skill), contact-sheet cameras per area,
-dev middlewares in `vite.config.ts` (`/__sheet`, `/__layout`).
+dev middlewares in `vite.config.ts` (`/__sheet`, `/__scene`), console hooks
+(`__sceneStore`, `__lightSlots`, `__teleport`, …).
 
 ## Era-authentic rendering choices
 
@@ -82,14 +90,14 @@ fog, and dither.
 
 ## Starting a new game from this
 
-1. Keep `src/ps2/`, `src/editor/`, `Prop`/`PlacedItems`/`editorStore`, the
-   vite middlewares, and the skills — that's the engine.
-2. Replace the structural shells (`Room`, `SewerWing`, `Office`,
-   `LoadingDock` — walls/colliders/lights-in-code) with your spaces.
-3. Empty `layout.json`'s `items`, keep the `world` block, and lay the level
-   out in the editor.
-4. Register new models in `MODELS` / `FBX_MODELS`; the palette, thumbnails,
+1. Keep `src/ps2/`, `src/engine/`, `src/editor/`, the vite middlewares, and
+   the skills — that's the engine.
+2. Replace `src/engine/scene.json` with your own nodes (keep an
+   `environment` node), and swap the remaining code-built structure
+   (`SewerWing`, `Office`, `LoadingDock`) for your spaces.
+3. Register new models in `src/engine/models.ts`; the palette, thumbnails,
    and editor pick them up automatically.
+4. Lay the level out in the editor (or have an agent patch `scene.json`).
 
 ## Credits
 

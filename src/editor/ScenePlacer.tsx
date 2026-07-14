@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { editorStore } from '../game/editorStore'
+import { sceneStore as editorStore } from '../engine/sceneStore'
 
 /**
  * Placement raycasting for click-to-place and palette drag-and-drop.

@@ -1,31 +1,32 @@
-import { Suspense, useEffect, useState } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
+import { Suspense, useEffect, useMemo, useState } from 'react'
+import { Canvas, useThree } from '@react-three/fiber'
+import { OrbitControls, PerspectiveCamera, TransformControls } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
-import { Room, TEXTURE_OPTIONS } from '../game/Room'
+import * as THREE from 'three'
+import { SewerWing } from '../game/SewerWing'
+import { LoadingDock } from '../game/LoadingDock'
+import { Office } from '../game/Office'
 import { DevViews } from '../game/DevViews'
-import { EditorChrome, ThumbnailFactory } from '../game/EditorExtras'
-import { useEditor, editorStore, type LayoutItem, type WorldSettings } from '../game/editorStore'
-import { MODELS, FBX_MODELS } from '../game/Prop'
+import { EditorChrome } from '../game/EditorExtras'
+import { SceneRoot } from '../engine/render'
+import type { Component, SceneNode } from '../engine/types'
+import { sceneStore, useSceneEditor, type PlacingSpec } from '../engine/sceneStore'
+import { COMPONENT_FIELDS, COMPONENT_DEFAULTS, getPath, withPath, type FieldDef } from '../engine/inspector'
+import { MODEL_NAMES } from '../engine/models'
 import { EditorFlyControls } from './EditorFlyControls'
 import { ScenePlacer } from './ScenePlacer'
 import { AssetsView } from './AssetsView'
+import { ThumbnailFactory } from './Thumbnails'
 
 const SPECIAL_KINDS = [
   { kind: 'lamp', label: '💡 lamp' },
   { kind: 'paperWad', label: '📄 wad' },
   { kind: 'trashPile', label: '🗑 pile' },
-  { kind: 'loadedPallet', label: '📦 pallet+' },
   { kind: 'rack', label: '🗄 rack' },
 ] as const
 
-const PALETTE: { kind: 'prop' | 'fbx'; model: string }[] = [
-  ...Object.keys(MODELS).map((model) => ({ kind: 'prop' as const, model })),
-  ...Object.keys(FBX_MODELS).map((model) => ({ kind: 'fbx' as const, model })),
-]
-
 function EditorCamera() {
-  const { camMode } = useEditor()
+  const { camMode } = useSceneEditor()
   return (
     <>
       <PerspectiveCamera makeDefault fov={55} near={0.1} far={300} position={[14, 18, 20]} />
@@ -34,65 +35,167 @@ function EditorCamera() {
   )
 }
 
+/** gizmo bound to the selected node's live group; commits on release */
+function NodeGizmo() {
+  const { selectedId, gizmoMode, nodes } = useSceneEditor()
+  const scene = useThree((s) => s.scene)
+  const node = nodes.find((n) => n.id === selectedId)
+  const [obj, setObj] = useState<THREE.Object3D | null>(null)
+
+  useEffect(() => {
+    setObj(node ? (scene.getObjectByName(node.id) ?? null) : null)
+  }, [node, nodes, scene])
+
+  if (!obj || !node) return null
+  return (
+    <TransformControls
+      object={obj}
+      mode={gizmoMode}
+      onMouseUp={() => {
+        const prevRot = node.transform.rot
+        const rot = Array.isArray(prevRot)
+          ? ([+obj.rotation.x.toFixed(3), +obj.rotation.y.toFixed(3), +obj.rotation.z.toFixed(3)] as [number, number, number])
+          : +obj.rotation.y.toFixed(3)
+        sceneStore.updateTransform(node.id, {
+          ...node.transform,
+          pos: [+obj.position.x.toFixed(3), +obj.position.y.toFixed(3), +obj.position.z.toFixed(3)],
+          rot,
+        })
+      }}
+    />
+  )
+}
+
+/** resolve a raycast hit to its owning scene node (nearest named ancestor) */
+function useNodeIds() {
+  const { nodes } = useSceneEditor()
+  return useMemo(() => new Set(nodes.map((n) => n.id)), [nodes])
+}
+
 function Toolbar() {
-  const { saving, gizmoMode, camMode, placing, canUndo, canRedo, viewMode } = useEditor()
+  const { saving, gizmoMode, camMode, placing, canUndo, canRedo, viewMode } = useSceneEditor()
   return (
     <div className="ed-toolbar">
       <strong className="ed-logo">DEADWATER</strong>
       <span className="ed-sep" />
-      <button className={viewMode === 'scene' ? 'on' : ''} onClick={() => editorStore.setViewMode('scene')}>scene</button>
-      <button className={viewMode === 'assets' ? 'on' : ''} onClick={() => editorStore.setViewMode('assets')}>assets</button>
+      <button className={viewMode === 'scene' ? 'on' : ''} onClick={() => sceneStore.setViewMode('scene')}>scene</button>
+      <button className={viewMode === 'assets' ? 'on' : ''} onClick={() => sceneStore.setViewMode('assets')}>assets</button>
       <span className="ed-sep" />
-      <button className={gizmoMode === 'translate' ? 'on' : ''} onClick={() => editorStore.setGizmoMode('translate')} title="W">
+      <button className={gizmoMode === 'translate' ? 'on' : ''} onClick={() => sceneStore.setGizmoMode('translate')} title="W">
         move
       </button>
-      <button className={gizmoMode === 'rotate' ? 'on' : ''} onClick={() => editorStore.setGizmoMode('rotate')} title="E">
+      <button className={gizmoMode === 'rotate' ? 'on' : ''} onClick={() => sceneStore.setGizmoMode('rotate')} title="E">
         rotate
       </button>
       <span className="ed-sep" />
-      <button disabled={!canUndo} onClick={() => editorStore.undo()} title="⌘Z">↩</button>
-      <button disabled={!canRedo} onClick={() => editorStore.redo()} title="⇧⌘Z">↪</button>
+      <button disabled={!canUndo} onClick={() => sceneStore.undo()} title="⌘Z">↩</button>
+      <button disabled={!canRedo} onClick={() => sceneStore.redo()} title="⇧⌘Z">↪</button>
       <span className="ed-sep" />
-      <button className={camMode === 'fly' ? 'on' : ''} onClick={() => editorStore.setCamMode('fly')}>fly</button>
-      <button className={camMode === 'orbit' ? 'on' : ''} onClick={() => editorStore.setCamMode('orbit')}>orbit</button>
+      <button className={camMode === 'fly' ? 'on' : ''} onClick={() => sceneStore.setCamMode('fly')}>fly</button>
+      <button className={camMode === 'orbit' ? 'on' : ''} onClick={() => sceneStore.setCamMode('orbit')}>orbit</button>
       <span className="ed-hint">{camMode === 'fly' ? 'hold RMB: look + WASD/QE fly, shift turbo' : 'drag orbit · wheel zoom'}</span>
       {placing && (
-        <span className="ed-placing">placing {placing.model ?? placing.kind} — click/drop on any surface · shift multi · esc cancel</span>
+        <span className="ed-placing">placing {placing.model ?? placing.prefab ?? placing.kind} — click/drop on any surface · shift multi · esc cancel</span>
       )}
       <span className="ed-spacer" />
-      <button className="save" onClick={() => editorStore.save()}>{saving ?? 'SAVE'}</button>
+      <button className="save" onClick={() => sceneStore.save()}>{saving ?? 'SAVE'}</button>
       <button onClick={() => window.open('/', '_blank')}>▶ play</button>
     </div>
   )
 }
 
-const WORLD_SURFACES = ['walls', 'floor', 'ceiling'] as const
+function componentBadge(n: SceneNode): string {
+  return (n.components ?? []).map((c) => c.type).join(' ') || 'group'
+}
+
+function TreeRow({ node, depth, childrenOf, filter }: {
+  node: SceneNode
+  depth: number
+  childrenOf: Map<string | null, SceneNode[]>
+  filter: string
+}) {
+  const { selectedId, expanded } = useSceneEditor()
+  const kids = childrenOf.get(node.id) ?? []
+  const isOpen = expanded[node.id] ?? false
+  // when filtering, show every match with its ancestry flattened
+  const matches = (n: SceneNode): boolean =>
+    n.id.toLowerCase().includes(filter) ||
+    componentBadge(n).includes(filter) ||
+    (childrenOf.get(n.id) ?? []).some(matches)
+  if (filter && !matches(node)) return null
+
+  return (
+    <>
+      <div
+        className={`ed-item${node.id === selectedId ? ' sel' : ''}`}
+        style={{ paddingLeft: 6 + depth * 12 }}
+        draggable
+        onDragStart={(e) => {
+          e.dataTransfer.setData('text/node-id', node.id)
+          e.dataTransfer.effectAllowed = 'move'
+        }}
+        onDragOver={(e) => {
+          if (e.dataTransfer.types.includes('text/node-id')) e.preventDefault()
+        }}
+        onDrop={(e) => {
+          const id = e.dataTransfer.getData('text/node-id')
+          if (id && id !== node.id) {
+            e.stopPropagation()
+            sceneStore.reparent(id, node.id)
+            sceneStore.toggleExpanded(node.id)
+          }
+        }}
+        onClick={() => sceneStore.select(node.id)}
+      >
+        <span
+          className="ed-caret"
+          onClick={(e) => {
+            e.stopPropagation()
+            if (kids.length) sceneStore.toggleExpanded(node.id)
+          }}
+        >
+          {kids.length ? (isOpen || filter ? '▾' : '▸') : '·'}
+        </span>
+        {node.name ?? node.id} <span>{componentBadge(node)}</span>
+      </div>
+      {(isOpen || filter) &&
+        kids.map((k) => <TreeRow key={k.id} node={k} depth={depth + 1} childrenOf={childrenOf} filter={filter} />)}
+    </>
+  )
+}
 
 function Hierarchy() {
-  const { items, selectedId } = useEditor()
+  const { nodes } = useSceneEditor()
   const [filter, setFilter] = useState('')
+  const q = filter.toLowerCase()
+  const byParent = useMemo(() => {
+    const m = new Map<string | null, SceneNode[]>()
+    for (const n of nodes) {
+      const list = m.get(n.parent) ?? []
+      list.push(n)
+      m.set(n.parent, list)
+    }
+    return m
+  }, [nodes])
+  const roots = byParent.get(null) ?? []
+
   return (
     <div className="ed-left">
       <input className="ed-filter" placeholder="filter…" value={filter} onChange={(e) => setFilter(e.target.value)} />
-      <div className="ed-list">
-        <div className="ed-subhead ed-listhead">world</div>
-        {WORLD_SURFACES.filter((s) => s.includes(filter)).map((s) => (
-          <div
-            key={s}
-            className={`ed-item${selectedId === `world:${s}` ? ' sel' : ''}`}
-            onClick={() => editorStore.select(`world:${s}`)}
-          >
-            {s} <span>surface</span>
-          </div>
+      <div
+        className="ed-list"
+        onDragOver={(e) => {
+          if (e.dataTransfer.types.includes('text/node-id')) e.preventDefault()
+        }}
+        onDrop={(e) => {
+          // drop on empty list space = move to scene root
+          const id = e.dataTransfer.getData('text/node-id')
+          if (id) sceneStore.reparent(id, null)
+        }}
+      >
+        {roots.map((n) => (
+          <TreeRow key={n.id} node={n} depth={0} childrenOf={byParent} filter={q} />
         ))}
-        <div className="ed-subhead ed-listhead">entities</div>
-        {items
-          .filter((i) => i.id.includes(filter) || (i.model ?? '').includes(filter) || i.kind.includes(filter))
-          .map((i) => (
-            <div key={i.id} className={`ed-item${i.id === selectedId ? ' sel' : ''}`} onClick={() => editorStore.select(i.id)}>
-              {i.id} <span>{i.kind}{i.model ? `:${i.model}` : ''}</span>
-            </div>
-          ))}
       </div>
     </div>
   )
@@ -110,211 +213,230 @@ function Num({ label, value, step = 0.1, onChange }: { label: string; value: num
   )
 }
 
-function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  return (
-    <label className="ed-field">
-      {label}
-      <input type="color" value={value} onChange={(e) => onChange(e.target.value)} />
-    </label>
-  )
-}
+function Field({ def, component, onChange }: { def: FieldDef; component: Component; onChange: (patch: Partial<Component>) => void }) {
+  const value = getPath(component, def.key)
+  const label = def.label ?? def.key
+  const set = (v: unknown) => onChange(withPath(component, def.key, v) as Partial<Component>)
 
-function Check({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <label className="ed-check">
-      <input type="checkbox" checked={value} onChange={(e) => onChange(e.target.checked)} />
-      {label}
-    </label>
-  )
-}
-
-function Details({ item }: { item: LayoutItem }) {
-  const set = (patch: Partial<LayoutItem>) => editorStore.update(item.id, patch)
-  const setPos = (axis: 0 | 1 | 2, v: number) => {
-    const pos = [...item.pos] as [number, number, number]
-    pos[axis] = v
-    set({ pos })
+  switch (def.kind) {
+    case 'number':
+      return <Num label={label} step={def.step} value={(value as number) ?? 0} onChange={set} />
+    case 'color':
+      return (
+        <label className="ed-field">
+          {label}
+          <input type="color" value={(value as string) ?? '#ffffff'} onChange={(e) => set(e.target.value)} />
+        </label>
+      )
+    case 'check':
+      return (
+        <label className="ed-check">
+          <input type="checkbox" checked={!!value} onChange={(e) => set(e.target.checked)} />
+          {label}
+        </label>
+      )
+    case 'select':
+      return (
+        <label className="ed-field wide">
+          {label}
+          <select value={(value as string) ?? ''} onChange={(e) => set(e.target.value || undefined)}>
+            {def.allowEmpty && <option value="">—</option>}
+            {def.options.map((o) => <option key={o}>{o}</option>)}
+          </select>
+        </label>
+      )
+    case 'text':
+      return (
+        <label className="ed-field wide">
+          {label}
+          <input type="text" value={(value as string) ?? ''} onChange={(e) => set(e.target.value || undefined)} />
+        </label>
+      )
+    case 'vec': {
+      const arr = (value as number[] | undefined) ?? new Array(def.dims).fill(0)
+      return (
+        <>
+          {arr.slice(0, def.dims).map((v, i) => (
+            <Num
+              key={i}
+              label={`${label}[${i}]`}
+              step={def.step}
+              value={v}
+              onChange={(nv) => {
+                const next = [...arr]
+                next[i] = nv
+                set(next)
+              }}
+            />
+          ))}
+        </>
+      )
+    }
+    case 'numbers': {
+      const arr = (value as number[] | undefined) ?? []
+      return (
+        <>
+          {arr.map((v, i) => (
+            <Num
+              key={i}
+              label={`${label}[${i}]`}
+              step={def.step}
+              value={v}
+              onChange={(nv) => {
+                const next = [...arr]
+                next[i] = nv
+                set(next)
+              }}
+            />
+          ))}
+        </>
+      )
+    }
   }
-  return (
-    <div className="ed-details">
-      <div className="ed-id">{item.id} <span>({item.kind}{item.model ? `:${item.model}` : ''})</span></div>
-      <div className="ed-row">
-        <Num label="x" value={item.pos[0]} onChange={(v) => setPos(0, v)} />
-        <Num label="y" value={item.pos[1]} onChange={(v) => setPos(1, v)} />
-        <Num label="z" value={item.pos[2]} onChange={(v) => setPos(2, v)} />
-        <Num label="rot°" step={5} value={Math.round(((item.rot ?? 0) * 180) / Math.PI)} onChange={(v) => set({ rot: (v * Math.PI) / 180 })} />
-      </div>
-
-      {item.kind === 'lamp' && (
-        <div className="ed-section">
-          <div className="ed-subhead">light</div>
-          <div className="ed-row">
-            <ColorField label="color" value={item.color ?? '#d8e6c8'} onChange={(v) => set({ color: v })} />
-            <Num label="intensity" step={0.05} value={item.intensity ?? 1.2} onChange={(v) => set({ intensity: v })} />
-            <Num label="radius" step={0.5} value={item.radius ?? 18} onChange={(v) => set({ radius: v })} />
-            <Num label="light y" step={0.1} value={item.lightY ?? item.pos[1] - 1.4} onChange={(v) => set({ lightY: v })} />
-          </div>
-          <Check label="flicker" value={item.flicker ?? false} onChange={(v) => set({ flicker: v })} />
-        </div>
-      )}
-
-      {(item.kind === 'prop' || item.kind === 'fbx') && (
-        <div className="ed-section">
-          <div className="ed-row">
-            <Check label="grabbable" value={item.grabbable ?? false} onChange={(v) => set({ grabbable: v })} />
-            <Check label="collide" value={item.collide ?? true} onChange={(v) => set({ collide: v })} />
-          </div>
-          <Num label="scale" step={0.05} value={item.scale ?? 1} onChange={(v) => set({ scale: v })} />
-        </div>
-      )}
-
-      {item.kind === 'loadedPallet' && (
-        <div className="ed-section">
-          <label className="ed-field">
-            variant
-            <select value={item.variant ?? 0} onChange={(e) => set({ variant: parseInt(e.target.value) })}>
-              <option value={0}>boxes</option>
-              <option value={1}>crate + box</option>
-              <option value={2}>plastic crates</option>
-            </select>
-          </label>
-        </div>
-      )}
-
-      {item.kind === 'trashPile' && (
-        <div className="ed-row">
-          <Num label="radius" value={item.radius ?? 1.2} onChange={(v) => set({ radius: v })} />
-          <Num label="height" value={item.height ?? 0.35} onChange={(v) => set({ height: v })} />
-          <Num label="junk" step={1} value={item.items ?? 5} onChange={(v) => set({ items: Math.round(v) })} />
-          <Num label="seed" step={1} value={item.seed ?? 1} onChange={(v) => set({ seed: Math.round(v) })} />
-        </div>
-      )}
-
-      {item.kind === 'paperWad' && (
-        <div className="ed-row">
-          <Num label="size" step={0.01} value={item.size ?? 0.09} onChange={(v) => set({ size: v })} />
-          <Num label="seed" step={1} value={item.seed ?? 1} onChange={(v) => set({ seed: Math.round(v) })} />
-        </div>
-      )}
-
-      <div className="ed-row">
-        <button onClick={() => editorStore.duplicate(item.id)}>duplicate</button>
-        <button className="danger" onClick={() => editorStore.remove(item.id)}>delete</button>
-      </div>
-    </div>
-  )
 }
 
-function SurfaceSection({ name, section }: { name: 'walls' | 'floor' | 'ceiling'; section: WorldSettings['walls'] }) {
-  const set = (patch: Partial<WorldSettings['walls']>) => editorStore.updateWorld(name, patch)
+function ComponentSection({ nodeId, component, index }: { nodeId: string; component: Component; index: number }) {
   return (
     <div className="ed-section">
-      <div className="ed-subhead">{name}</div>
-      <label className="ed-field wide">
-        texture
-        <select value={section.texture} onChange={(e) => set({ texture: e.target.value })}>
-          {TEXTURE_OPTIONS.map((t) => <option key={t}>{t}</option>)}
-        </select>
-      </label>
-      <div className="ed-row">
-        <Num label="rep x" step={0.5} value={section.repeatX} onChange={(v) => set({ repeatX: v })} />
-        <Num label="rep y" step={0.5} value={section.repeatY} onChange={(v) => set({ repeatY: v })} />
-        <ColorField label="tint" value={section.tint} onChange={(v) => set({ tint: v })} />
-        <Num label="bomb" step={0.25} value={section.bombing} onChange={(v) => set({ bombing: v })} />
+      <div className="ed-subhead">
+        {component.type}
+        <button className="danger ed-x" onClick={() => sceneStore.removeComponent(nodeId, index)} title="remove component">×</button>
+      </div>
+      <div className="ed-row" style={{ flexWrap: 'wrap' }}>
+        {COMPONENT_FIELDS[component.type].map((def) => (
+          <Field key={def.key} def={def} component={component} onChange={(patch) => sceneStore.updateComponent(nodeId, index, patch)} />
+        ))}
       </div>
     </div>
   )
 }
 
-function WorldTab() {
-  const { world } = useEditor()
+function Details({ node }: { node: SceneNode }) {
+  const t = node.transform
+  const setT = (patch: Partial<SceneNode['transform']>) => sceneStore.updateTransform(node.id, { ...t, ...patch })
+  const setPos = (axis: 0 | 1 | 2, v: number) => {
+    const pos = [...t.pos] as [number, number, number]
+    pos[axis] = v
+    setT({ pos })
+  }
+  const rotIsEuler = Array.isArray(t.rot)
+  const [addType, setAddType] = useState('')
+
   return (
     <div className="ed-details">
-      <div className="ed-hint">surfaces are in the hierarchy under “world” — select one to edit it</div>
-      <div className="ed-section">
-        <div className="ed-subhead">lighting & fog</div>
+      <div className="ed-id">{node.id} <span>({componentBadge(node)}{node.parent ? ` · in ${node.parent}` : ''})</span></div>
+      <div className="ed-row">
+        <Num label="x" value={t.pos[0]} onChange={(v) => setPos(0, v)} />
+        <Num label="y" value={t.pos[1]} onChange={(v) => setPos(1, v)} />
+        <Num label="z" value={t.pos[2]} onChange={(v) => setPos(2, v)} />
+        {!rotIsEuler && (
+          <Num label="rot°" step={5} value={Math.round((((t.rot as number) ?? 0) * 180) / Math.PI)} onChange={(v) => setT({ rot: (v * Math.PI) / 180 })} />
+        )}
+        <Num label="scale" step={0.05} value={t.scale ?? 1} onChange={(v) => setT({ scale: v })} />
+      </div>
+      {rotIsEuler && (
         <div className="ed-row">
-          <ColorField label="ambient" value={world.ambient} onChange={(v) => editorStore.updateWorld('ambient', v)} />
-          <ColorField label="fog" value={world.fog.color} onChange={(v) => editorStore.updateWorld('fog', { color: v })} />
-          <Num label="near" step={0.5} value={world.fog.near} onChange={(v) => editorStore.updateWorld('fog', { near: v })} />
-          <Num label="far" step={1} value={world.fog.far} onChange={(v) => editorStore.updateWorld('fog', { far: v })} />
+          {(t.rot as [number, number, number]).map((r, i) => (
+            <Num key={i} label={`r${'xyz'[i]}°`} step={5} value={Math.round((r * 180) / Math.PI)} onChange={(v) => {
+              const rot = [...(t.rot as [number, number, number])] as [number, number, number]
+              rot[i] = (v * Math.PI) / 180
+              setT({ rot })
+            }} />
+          ))}
         </div>
+      )}
+
+      {(node.components ?? []).map((c, i) => (
+        <ComponentSection key={`${c.type}-${i}`} nodeId={node.id} component={c} index={i} />
+      ))}
+
+      <div className="ed-row">
+        <select value={addType} onChange={(e) => setAddType(e.target.value)}>
+          <option value="">add component…</option>
+          {Object.keys(COMPONENT_DEFAULTS).map((t) => <option key={t}>{t}</option>)}
+        </select>
+        <button
+          disabled={!addType}
+          onClick={() => {
+            sceneStore.addComponent(node.id, structuredClone(COMPONENT_DEFAULTS[addType as keyof typeof COMPONENT_DEFAULTS]))
+            setAddType('')
+          }}
+        >
+          +
+        </button>
+      </div>
+
+      <div className="ed-row">
+        <button onClick={() => sceneStore.duplicate(node.id)}>duplicate</button>
+        <button onClick={() => sceneStore.makePrefab(node.id)} title="move subtree to the library, leave an instance here">→ prefab</button>
+        <button className="danger" onClick={() => sceneStore.remove(node.id)}>delete</button>
       </div>
     </div>
   )
 }
 
 function RightPanel() {
-  const { items, selectedId, rightTab, world } = useEditor()
-  const selected = items.find((i) => i.id === selectedId)
-  const surface = selectedId?.startsWith('world:') ? (selectedId.slice(6) as 'walls' | 'floor' | 'ceiling') : null
+  const { nodes, selectedId } = useSceneEditor()
+  const selected = nodes.find((n) => n.id === selectedId)
   return (
     <div className="ed-right">
-      <div className="ed-tabs">
-        <button className={rightTab === 'details' ? 'on' : ''} onClick={() => editorStore.setRightTab('details')}>details</button>
-        <button className={rightTab === 'world' ? 'on' : ''} onClick={() => editorStore.setRightTab('world')}>world</button>
-      </div>
-      {rightTab === 'details' ? (
-        surface ? (
-          <div className="ed-details">
-            <SurfaceSection name={surface} section={world[surface]} />
-          </div>
-        ) : selected ? (
-          <Details item={selected} />
-        ) : (
-          <div className="ed-empty">select something</div>
-        )
-      ) : (
-        <WorldTab />
-      )}
+      {selected ? <Details node={selected} /> : <div className="ed-empty">select something</div>}
     </div>
   )
 }
 
 function PaletteStrip() {
-  const { placing, thumbs, prefabs } = useEditor()
+  const { placing, thumbs, nodes } = useSceneEditor()
   const [search, setSearch] = useState('')
   const q = search.toLowerCase()
+  const prefabs = nodes.filter((n) => n.parent === 'library')
+  const arm = (spec: PlacingSpec, armed: boolean) => sceneStore.setPlacing(armed ? null : spec)
+
   return (
     <div className="ed-bottom">
       <input className="ed-palette-search" placeholder="search…" value={search} onChange={(e) => setSearch(e.target.value)} />
-      {SPECIAL_KINDS.filter((s) => s.kind.toLowerCase().includes(q)).map((s) => (
-        <div
-          key={s.kind}
-          className={`editor-tile text${placing?.kind === s.kind ? ' on' : ''}`}
-          draggable
-          onDragStart={() => editorStore.setPlacing({ kind: s.kind })}
-          onClick={() => editorStore.setPlacing(placing?.kind === s.kind && !placing.model ? null : { kind: s.kind })}
-          title={s.kind}
-        >
-          {s.label}
-        </div>
-      ))}
-      {prefabs.filter((p) => p.name.toLowerCase().includes(q)).map((p) => (
-        <div
-          key={`prefab:${p.name}`}
-          className={`editor-tile text${placing?.kind === 'prefab' && placing.model === p.name ? ' on' : ''}`}
-          draggable
-          onDragStart={() => editorStore.setPlacing({ kind: 'prefab', model: p.name })}
-          onClick={() => editorStore.setPlacing(placing?.model === p.name ? null : { kind: 'prefab', model: p.name })}
-          title={`prefab: ${p.name}`}
-        >
-          ⧉ {p.name}
-        </div>
-      ))}
-      {PALETTE.filter((p) => p.model.toLowerCase().includes(q)).map((p) => {
-        const key = `${p.kind}:${p.model}`
-        const armed = placing?.kind === p.kind && placing?.model === p.model
+      {SPECIAL_KINDS.filter((s) => s.kind.toLowerCase().includes(q)).map((s) => {
+        const armed = placing?.kind === s.kind
         return (
           <div
-            key={key}
+            key={s.kind}
+            className={`editor-tile text${armed ? ' on' : ''}`}
+            draggable
+            onDragStart={() => sceneStore.setPlacing({ kind: s.kind })}
+            onClick={() => arm({ kind: s.kind }, armed)}
+            title={s.kind}
+          >
+            {s.label}
+          </div>
+        )
+      })}
+      {prefabs.filter((p) => p.id.toLowerCase().includes(q)).map((p) => {
+        const armed = placing?.prefab === p.id
+        return (
+          <div
+            key={`prefab:${p.id}`}
+            className={`editor-tile text${armed ? ' on' : ''}`}
+            draggable
+            onDragStart={() => sceneStore.setPlacing({ prefab: p.id })}
+            onClick={() => arm({ prefab: p.id }, armed)}
+            title={`prefab: ${p.id}`}
+          >
+            ⧉ {p.id}
+          </div>
+        )
+      })}
+      {MODEL_NAMES.filter((m) => m.toLowerCase().includes(q)).map((m) => {
+        const armed = placing?.model === m
+        return (
+          <div
+            key={m}
             className={`editor-tile${armed ? ' on' : ''}`}
             draggable
-            onDragStart={() => editorStore.setPlacing({ kind: p.kind, model: p.model })}
-            onClick={() => editorStore.setPlacing(armed ? null : { kind: p.kind, model: p.model })}
-            title={p.model}
+            onDragStart={() => sceneStore.setPlacing({ model: m })}
+            onClick={() => arm({ model: m }, armed)}
+            title={m}
           >
-            {thumbs[key] ? <img src={thumbs[key]} alt={p.model} /> : <span>{p.model}</span>}
+            {thumbs[m] ? <img src={thumbs[m]} alt={m} /> : <span>{m}</span>}
           </div>
         )
       })}
@@ -322,36 +444,60 @@ function PaletteStrip() {
   )
 }
 
-export function EditorApp() {
-  useEffect(() => {
-    editorStore.setActive(true)
-  }, [])
+function EditableScene() {
+  const { nodes } = useSceneEditor()
+  const nodeIds = useNodeIds()
+  return (
+    <group name="level">
+      <group
+        onClick={(e) => {
+          e.stopPropagation()
+          let o: THREE.Object3D | null = e.object
+          while (o) {
+            if (o.name && nodeIds.has(o.name)) {
+              sceneStore.select(o.name)
+              return
+            }
+            o = o.parent
+          }
+        }}
+      >
+        <SceneRoot nodes={nodes} mode="editor" />
+      </group>
+      {/* structure not yet migrated to nodes (#88) — backdrop only */}
+      <SewerWing />
+      <LoadingDock />
+      <Office />
+    </group>
+  )
+}
 
-  // keyboard: W/E gizmo (orbit cam only — fly cam owns WASD/QE), undo/redo, delete, escape
+export function EditorApp() {
+  // keyboard: W/E gizmo (fly cam owns WASD/QE while flying), undo/redo, delete, escape
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (['INPUT', 'SELECT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return
-      const s = editorStore.get()
+      const s = sceneStore.get()
       if ((e.metaKey || e.ctrlKey) && e.code === 'KeyZ') {
         e.preventDefault()
-        if (e.shiftKey) editorStore.redo()
-        else editorStore.undo()
+        if (e.shiftKey) sceneStore.redo()
+        else sceneStore.undo()
       } else if (!s.flying && e.code === 'KeyW') {
-        editorStore.setGizmoMode('translate')
+        sceneStore.setGizmoMode('translate')
       } else if (!s.flying && e.code === 'KeyE') {
-        editorStore.setGizmoMode('rotate')
+        sceneStore.setGizmoMode('rotate')
       } else if ((e.code === 'Delete' || e.code === 'Backspace') && s.selectedId) {
-        editorStore.remove(s.selectedId)
+        sceneStore.remove(s.selectedId)
       } else if (e.code === 'Escape') {
-        if (s.placing) editorStore.setPlacing(null)
-        else editorStore.select(null)
+        if (s.placing) sceneStore.setPlacing(null)
+        else sceneStore.select(null)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const { viewMode } = useEditor()
+  const { viewMode } = useSceneEditor()
 
   return (
     <div className="ed-frame">
@@ -365,13 +511,12 @@ export function EditorApp() {
             <Canvas gl={{ antialias: true }} dpr={window.devicePixelRatio}>
               <Suspense fallback={null}>
                 <Physics gravity={[0, -12, 0]} paused>
-                  <group name="level">
-                    <Room />
-                  </group>
+                  <EditableScene />
                 </Physics>
               </Suspense>
               <EditorCamera />
               <EditorChrome />
+              <NodeGizmo />
               <ScenePlacer />
               <ThumbnailFactory />
               {import.meta.env.DEV && <DevViews />}

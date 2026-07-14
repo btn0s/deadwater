@@ -1,4371 +1,4371 @@
 {
-  "nodes": [
-    {
-      "id": "environment",
-      "parent": null,
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "environment",
-          "ambient": "#1a1c20",
-          "fog": {
-            "color": "#07080a",
-            "near": 10,
-            "far": 48
-          }
-        }
-      ]
-    },
-    {
-      "id": "warehouse",
-      "parent": null,
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      }
-    },
-    {
-      "id": "sewer-zone",
-      "parent": null,
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      }
-    },
-    {
-      "id": "office-zone",
-      "parent": null,
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      }
-    },
-    {
-      "id": "library",
-      "parent": null,
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      },
-      "library": true
-    },
-    {
-      "id": "shell",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      }
-    },
-    {
-      "id": "floor",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ],
-        "rot": [
-          -1.5707963267948966,
-          0,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "surface",
-          "width": 40,
-          "height": 24,
-          "segments": [
-            40,
-            24
-          ],
-          "texture": "Concrete034",
-          "repeat": [
-            13,
-            8
-          ],
-          "tint": "#6e6e6e",
-          "bombing": 0
-        }
-      ]
-    },
-    {
-      "id": "floor-body",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          0,
-          -0.5,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            21,
-            0.5,
-            13
-          ],
-          "blockPlayer": false
-        }
-      ]
-    },
-    {
-      "id": "ceiling",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          0,
-          6,
-          0
-        ],
-        "rot": [
-          1.5707963267948966,
-          0,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "surface",
-          "width": 40,
-          "height": 24,
-          "segments": [
-            40,
-            24
-          ],
-          "texture": "CorrugatedSteel005",
-          "repeat": [
-            20,
-            12
-          ],
-          "tint": "#b4b4b4",
-          "bombing": 1
-        }
-      ]
-    },
-    {
-      "id": "ceiling-body",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          0,
-          6.5,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            21,
-            0.5,
-            13
-          ],
-          "blockPlayer": false
-        }
-      ]
-    },
-    {
-      "id": "wall-n-left",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          -15.75,
-          3,
-          -12
-        ]
-      },
-      "components": [
-        {
-          "type": "surface",
-          "width": 8.5,
-          "height": 6,
-          "segments": [
-            9,
-            8
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            3.4,
-            2
-          ],
-          "tint": "#ffffff",
-          "bombing": 1
-        }
-      ]
-    },
-    {
-      "id": "wall-n-left-body",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          -16.25,
-          3,
-          -12.5
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            4.75,
-            3,
-            0.5
-          ],
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "wall-n-right",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          5.75,
-          3,
-          -12
-        ]
-      },
-      "components": [
-        {
-          "type": "surface",
-          "width": 28.5,
-          "height": 6,
-          "segments": [
-            29,
-            8
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            11.4,
-            2
-          ],
-          "tint": "#ffffff",
-          "bombing": 1
-        }
-      ]
-    },
-    {
-      "id": "wall-n-right-body",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          6.25,
-          3,
-          -12.5
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            14.75,
-            3,
-            0.5
-          ],
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "lintel-front",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          -10,
-          4.5,
-          -12
-        ]
-      },
-      "components": [
-        {
-          "type": "surface",
-          "width": 3,
-          "height": 3,
-          "segments": [
-            3,
-            4
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            1.2,
-            1
-          ],
-          "tint": "#ffffff",
-          "bombing": 1
-        }
-      ]
-    },
-    {
-      "id": "lintel-back",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          -10,
-          4.5,
-          -12.01
-        ],
-        "rot": [
-          0,
-          3.141592653589793,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "surface",
-          "width": 3,
-          "height": 3,
-          "segments": [
-            3,
-            4
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            1.2,
-            1
-          ],
-          "tint": "#ffffff",
-          "bombing": 1
-        }
-      ]
-    },
-    {
-      "id": "lintel-body",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          -10,
-          4.5,
-          -12.5
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            1.5,
-            1.5,
-            0.5
-          ],
-          "blockPlayer": false
-        }
-      ]
-    },
-    {
-      "id": "wall-s",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          0,
-          3,
-          12
-        ],
-        "rot": [
-          0,
-          3.141592653589793,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "surface",
-          "width": 40,
-          "height": 6,
-          "segments": [
-            40,
-            8
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            16,
-            2
-          ],
-          "tint": "#ffffff",
-          "bombing": 1
-        }
-      ]
-    },
-    {
-      "id": "wall-s-body",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          0,
-          3,
-          12.5
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            21,
-            3,
-            0.5
-          ],
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "wall-w",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          -20,
-          3,
-          0
-        ],
-        "rot": [
-          0,
-          1.5707963267948966,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "surface",
-          "width": 24,
-          "height": 6,
-          "segments": [
-            24,
-            8
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            9.6,
-            2
-          ],
-          "tint": "#ffffff",
-          "bombing": 1
-        }
-      ]
-    },
-    {
-      "id": "wall-w-body",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          -20.5,
-          3,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            0.5,
-            3,
-            13
-          ],
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "wall-e",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          20,
-          3,
-          0
-        ],
-        "rot": [
-          0,
-          -1.5707963267948966,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "surface",
-          "width": 24,
-          "height": 6,
-          "segments": [
-            24,
-            8
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            9.6,
-            2
-          ],
-          "tint": "#ffffff",
-          "bombing": 1
-        }
-      ]
-    },
-    {
-      "id": "wall-e-body",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          20.5,
-          3,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            0.5,
-            3,
-            13
-          ],
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sign-hallway",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          -13.2,
-          1.9,
-          -11.94
-        ]
-      },
-      "components": [
-        {
-          "type": "surface",
-          "width": 1.1,
-          "height": 1.1,
-          "segments": [
-            2,
-            2
-          ],
-          "texture": "DangerSign",
-          "repeat": [
-            1,
-            1
-          ]
-        }
-      ]
-    },
-    {
-      "id": "sign-dock",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          19.94,
-          1.8,
-          2.5
-        ],
-        "rot": [
-          0,
-          -1.5707963267948966,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "surface",
-          "width": 1.1,
-          "height": 1.1,
-          "segments": [
-            2,
-            2
-          ],
-          "texture": "DangerSign",
-          "repeat": [
-            1,
-            1
-          ]
-        }
-      ]
-    },
-    {
-      "id": "pillar-1",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          -12,
-          3,
-          -6.8
-        ]
-      },
-      "components": [
-        {
-          "type": "primitive",
-          "shape": "box",
-          "dims": [
-            0.7,
-            6,
-            0.7
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            1,
-            4
-          ],
-          "tint": "#ffffff"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            0.35,
-            3,
-            0.35
-          ],
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "pillar-2",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          0,
-          3,
-          -6.8
-        ]
-      },
-      "components": [
-        {
-          "type": "primitive",
-          "shape": "box",
-          "dims": [
-            0.7,
-            6,
-            0.7
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            1,
-            4
-          ],
-          "tint": "#ffffff"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            0.35,
-            3,
-            0.35
-          ],
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "pillar-3",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          12,
-          3,
-          -6.8
-        ]
-      },
-      "components": [
-        {
-          "type": "primitive",
-          "shape": "box",
-          "dims": [
-            0.7,
-            6,
-            0.7
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            1,
-            4
-          ],
-          "tint": "#ffffff"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            0.35,
-            3,
-            0.35
-          ],
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "pillar-4",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          -12,
-          3,
-          6.8
-        ]
-      },
-      "components": [
-        {
-          "type": "primitive",
-          "shape": "box",
-          "dims": [
-            0.7,
-            6,
-            0.7
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            1,
-            4
-          ],
-          "tint": "#ffffff"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            0.35,
-            3,
-            0.35
-          ],
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "pillar-5",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          0,
-          3,
-          6.8
-        ]
-      },
-      "components": [
-        {
-          "type": "primitive",
-          "shape": "box",
-          "dims": [
-            0.7,
-            6,
-            0.7
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            1,
-            4
-          ],
-          "tint": "#ffffff"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            0.35,
-            3,
-            0.35
-          ],
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "pillar-6",
-      "parent": "shell",
-      "transform": {
-        "pos": [
-          12,
-          3,
-          6.8
-        ]
-      },
-      "components": [
-        {
-          "type": "primitive",
-          "shape": "box",
-          "dims": [
-            0.7,
-            6,
-            0.7
-          ],
-          "texture": "Concrete031",
-          "repeat": [
-            1,
-            4
-          ],
-          "tint": "#ffffff"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            0.35,
-            3,
-            0.35
-          ],
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "rat-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          10,
-          0,
-          -10.5
-        ]
-      },
-      "components": [
-        {
-          "type": "behavior",
-          "behavior": "rat",
-          "seed": 101
-        }
-      ]
-    },
-    {
-      "id": "rat-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -15,
-          0,
-          9
-        ]
-      },
-      "components": [
-        {
-          "type": "behavior",
-          "behavior": "rat",
-          "seed": 211
-        }
-      ]
-    },
-    {
-      "id": "rat-3",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          18,
-          0,
-          -2
-        ]
-      },
-      "components": [
-        {
-          "type": "behavior",
-          "behavior": "rat",
-          "seed": 307
-        }
-      ]
-    },
-    {
-      "id": "rat-4",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -4,
-          0,
-          11
-        ]
-      },
-      "components": [
-        {
-          "type": "behavior",
-          "behavior": "rat",
-          "seed": 401
-        }
-      ]
-    },
-    {
-      "id": "rat-5",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          2,
-          0,
-          -10.5
-        ]
-      },
-      "components": [
-        {
-          "type": "behavior",
-          "behavior": "rat",
-          "seed": 503
-        }
-      ]
-    },
-    {
-      "id": "pallet-boxes",
-      "parent": "library",
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      },
-      "library": true
-    },
-    {
-      "id": "pallet-boxes/base",
-      "parent": "pallet-boxes",
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
-          "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pallet-boxes/load-1",
-      "parent": "pallet-boxes",
-      "transform": {
-        "pos": [
-          -0.25,
-          0.17,
-          0.2
-        ],
-        "rot": 0.05
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pallet-boxes/load-2",
-      "parent": "pallet-boxes",
-      "transform": {
-        "pos": [
-          0.3,
-          0.17,
-          -0.15
-        ],
-        "rot": 1.62
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pallet-boxes/load-3",
-      "parent": "pallet-boxes",
-      "transform": {
-        "pos": [
-          0,
-          0.73,
-          0
-        ],
-        "rot": 0.9
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pallet-crate",
-      "parent": "library",
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      },
-      "library": true
-    },
-    {
-      "id": "pallet-crate/base",
-      "parent": "pallet-crate",
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
-          "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pallet-crate/load-1",
-      "parent": "pallet-crate",
-      "transform": {
-        "pos": [
-          0,
-          0.17,
-          0
-        ],
-        "rot": 0.03
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/wooden_crate_01/wooden_crate_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pallet-crate/load-2",
-      "parent": "pallet-crate",
-      "transform": {
-        "pos": [
-          -0.15,
-          0.8,
-          0.1
-        ],
-        "rot": 0.5
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pallet-plastic",
-      "parent": "library",
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      },
-      "library": true
-    },
-    {
-      "id": "pallet-plastic/base",
-      "parent": "pallet-plastic",
-      "transform": {
-        "pos": [
-          0,
-          0,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
-          "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pallet-plastic/load-1",
-      "parent": "pallet-plastic",
-      "transform": {
-        "pos": [
-          -0.3,
-          0.17,
-          -0.2
-        ],
-        "rot": 0.08
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pallet-plastic/load-2",
-      "parent": "pallet-plastic",
-      "transform": {
-        "pos": [
-          0.35,
-          0.17,
-          0.15
-        ],
-        "rot": 1.55
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pallet-plastic/load-3",
-      "parent": "pallet-plastic",
-      "transform": {
-        "pos": [
-          0,
-          0.78,
-          0
-        ],
-        "rot": 0.4
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/ammo_box/ammo_box_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -13,
-          6,
-          -5.5
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-1/light",
-      "parent": "lamp-w-1",
-      "transform": {
-        "pos": [
-          0,
-          -1.4000000000000004,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "light",
-          "color": "#d8e6c8",
-          "intensity": 1.2,
-          "radius": 18,
-          "spot": 1
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          0,
-          6,
-          -5.5
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-2/light",
-      "parent": "lamp-w-2",
-      "transform": {
-        "pos": [
-          0,
-          -1.4000000000000004,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "light",
-          "color": "#d8e6c8",
-          "intensity": 1.2,
-          "radius": 18,
-          "spot": 1
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-3",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          13,
-          6,
-          -5.5
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-3/light",
-      "parent": "lamp-w-3",
-      "transform": {
-        "pos": [
-          0,
-          -1.4000000000000004,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "light",
-          "color": "#d8e6c8",
-          "intensity": 1.2,
-          "radius": 18,
-          "spot": 1
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-4",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -13,
-          6,
-          5.5
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-4/light",
-      "parent": "lamp-w-4",
-      "transform": {
-        "pos": [
-          0,
-          -1.4000000000000004,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "light",
-          "color": "#d8e6c8",
-          "intensity": 1.2,
-          "radius": 18,
-          "spot": 1
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-5",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          0,
-          6,
-          5.5
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-5/light",
-      "parent": "lamp-w-5",
-      "transform": {
-        "pos": [
-          0,
-          -1.4000000000000004,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "light",
-          "color": "#d8e6c8",
-          "intensity": 1.2,
-          "radius": 18,
-          "spot": 1,
-          "flicker": true
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-6",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          13,
-          6,
-          5.5
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
-        }
-      ]
-    },
-    {
-      "id": "lamp-w-6/light",
-      "parent": "lamp-w-6",
-      "transform": {
-        "pos": [
-          0,
-          -1.4000000000000004,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "light",
-          "color": "#d8e6c8",
-          "intensity": 1.2,
-          "radius": 18,
-          "spot": 1
-        }
-      ]
-    },
-    {
-      "id": "lamp-hall",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -10,
-          3,
-          -16
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
-        }
-      ]
-    },
-    {
-      "id": "lamp-hall/light",
-      "parent": "lamp-hall",
-      "transform": {
-        "pos": [
-          0,
-          -0.6000000000000001,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "light",
-          "color": "#d8e6c8",
-          "intensity": 0.9,
-          "radius": 9,
-          "spot": 1
-        }
-      ]
-    },
-    {
-      "id": "lamp-sewer-s",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -10,
-          5,
-          -22.5
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
-        }
-      ]
-    },
-    {
-      "id": "lamp-sewer-s/light",
-      "parent": "lamp-sewer-s",
-      "transform": {
-        "pos": [
-          0,
-          -0.7999999999999998,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "light",
-          "color": "#d8e6c8",
-          "intensity": 1.1,
-          "radius": 14,
-          "spot": 1
-        }
-      ]
-    },
-    {
-      "id": "lamp-sewer-n",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -10,
-          5,
-          -31.5
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
-        }
-      ]
-    },
-    {
-      "id": "lamp-sewer-n/light",
-      "parent": "lamp-sewer-n",
-      "transform": {
-        "pos": [
-          0,
-          -0.7999999999999998,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "light",
-          "color": "#cfe0c0",
-          "intensity": 1,
-          "radius": 14,
-          "spot": 1
-        }
-      ]
-    },
-    {
-      "id": "depot-barrel-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -16.5,
-          0,
-          -9
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/barrel_03/barrel_03_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "depot-barrel-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -15.4,
-          0,
-          -9.3
-        ],
-        "rot": 1.2
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/barrel_03/barrel_03_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "depot-barrel-3",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -16,
-          0,
-          -8.1
-        ],
-        "rot": 2.6
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/barrel_03/barrel_03_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "depot-boom-barrel",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -14.6,
-          0,
-          -8.4
-        ],
-        "rot": 0.7
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/Barrel_01/Barrel_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "depot-jerrycan",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -14.8,
-          0,
-          -7.1
-        ],
-        "rot": 2.2
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/metal_jerrycan/metal_jerrycan_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "depot-oiltin",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -15.7,
-          0,
-          -7
-        ],
-        "rot": 0.8
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/oil_tin/oil_tin_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "depot-wad",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -13.9,
-          0,
-          -7.6
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "paperWad",
-          "seed": 67,
-          "params": [
-            0.11
-          ]
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "depot-waterbarrel",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -17.3,
-          0,
-          -7.4
-        ],
-        "rot": 2.8
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack/Water_Barrel/Water_Barrel.fbx",
-          "texture": "/models/industrial-pack/Water_Barrel/Water_Barrel_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "nwall-milcrate",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -15.4,
-          0,
-          -10.5
-        ],
-        "rot": 0.35
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/old_military_crate/old_military_crate_1k.gltf",
-          "split": "suffix-ab"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "nwall-woodcrate",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -17.6,
-          0,
-          -10.3
-        ],
-        "rot": 0.2
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/wooden_crate_01/wooden_crate_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "nwall-plasticcrate",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -13.9,
-          0,
-          -9.8
-        ],
-        "rot": 1.9
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "hall-sign",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -12.3,
-          0,
-          -11
-        ],
-        "rot": 0.8
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/CautionSign_WetFloor/Caution_Sign.fbx",
-          "texture": "/models/industrial-pack2/CautionSign_WetFloor/Caution_Sign_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "hall-ebox-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -5.6,
-          1.25,
-          -11.85
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack/ElectricalBox/ElectricalBox.fbx",
-          "texture": "/models/industrial-pack/ElectricalBox/ElectricalBox_Base_Color.png"
-        }
-      ]
-    },
-    {
-      "id": "hall-ebox-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -4.2,
-          1.4,
-          -11.85
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack/ElectricalBox02/ElectricalBox02.fbx",
-          "texture": "/models/industrial-pack/ElectricalBox02/ElectricalBox02_Base_Color.png"
-        }
-      ]
-    },
-    {
-      "id": "hall-box-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -5.6,
-          0,
-          -10.7
-        ],
-        "rot": 0.5
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "hall-box-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -5.7,
-          0.56,
-          -10.8
-        ],
-        "rot": 1.1
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "hall-box-3",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -4.7,
-          0,
-          -11
-        ],
-        "rot": 2.8
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "hall-wad",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -6.8,
-          0,
-          -8.9
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "paperWad",
-          "seed": 37,
-          "params": [
-            0.1
-          ]
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "rack-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          3,
-          0,
-          11.35
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "rack"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "rack-1/shelf-1",
-      "parent": "rack-1",
-      "transform": {
-        "pos": [
-          0,
-          0.12,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            2,
-            0.035,
-            0.55
-          ]
-        }
-      ]
-    },
-    {
-      "id": "rack-1/shelf-2",
-      "parent": "rack-1",
-      "transform": {
-        "pos": [
-          0,
-          1,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            2,
-            0.035,
-            0.55
-          ]
-        }
-      ]
-    },
-    {
-      "id": "rack-1/shelf-3",
-      "parent": "rack-1",
-      "transform": {
-        "pos": [
-          0,
-          1.85,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            2,
-            0.035,
-            0.55
-          ]
-        }
-      ]
-    },
-    {
-      "id": "rack-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          7,
-          0,
-          11.35
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "rack"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "rack-2/shelf-1",
-      "parent": "rack-2",
-      "transform": {
-        "pos": [
-          0,
-          0.12,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            2,
-            0.035,
-            0.55
-          ]
-        }
-      ]
-    },
-    {
-      "id": "rack-2/shelf-2",
-      "parent": "rack-2",
-      "transform": {
-        "pos": [
-          0,
-          1,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            2,
-            0.035,
-            0.55
-          ]
-        }
-      ]
-    },
-    {
-      "id": "rack-2/shelf-3",
-      "parent": "rack-2",
-      "transform": {
-        "pos": [
-          0,
-          1.85,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            2,
-            0.035,
-            0.55
-          ]
-        }
-      ]
-    },
-    {
-      "id": "rack-3",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          11,
-          0,
-          11.35
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "rack"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "rack-3/shelf-1",
-      "parent": "rack-3",
-      "transform": {
-        "pos": [
-          0,
-          0.12,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            2,
-            0.035,
-            0.55
-          ]
-        }
-      ]
-    },
-    {
-      "id": "rack-3/shelf-2",
-      "parent": "rack-3",
-      "transform": {
-        "pos": [
-          0,
-          1,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            2,
-            0.035,
-            0.55
-          ]
-        }
-      ]
-    },
-    {
-      "id": "rack-3/shelf-3",
-      "parent": "rack-3",
-      "transform": {
-        "pos": [
-          0,
-          1.85,
-          0
-        ]
-      },
-      "components": [
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "cuboid",
-          "size": [
-            2,
-            0.035,
-            0.55
-          ]
-        }
-      ]
-    },
-    {
-      "id": "shelf-box-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          2,
-          1.1,
-          11.35
-        ],
-        "rot": 0.1
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "shelf-box-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          3.8,
-          1.1,
-          11.3
-        ],
-        "rot": 1.6
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "shelf-box-3",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          3.6,
-          0.2,
-          11.4
-        ],
-        "rot": 0.4
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "shelf-ammo-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          6.5,
-          1.1,
-          11.4
-        ],
-        "rot": 0.2
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/ammo_box/ammo_box_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "shelf-ammo-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          7.1,
-          1.1,
-          11.3
-        ],
-        "rot": 1.7
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/ammo_box/ammo_box_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "shelf-oiltin",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          7.9,
-          1.1,
-          11.3
-        ],
-        "rot": 2.2
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/oil_tin/oil_tin_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "shelf-jerrycan",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          7.5,
-          0.2,
-          11.5
-        ],
-        "rot": 1.2
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/metal_jerrycan/metal_jerrycan_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "shelf-box-4",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          2.5,
-          1.95,
-          11.35
-        ],
-        "rot": 0.3
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "shelf-box-5",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          10.4,
-          0.2,
-          11.4
-        ],
-        "rot": 2.9
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "shelf-cans",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          11.1,
-          1.12,
-          11.35
-        ],
-        "rot": 0.5
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/russian_food_cans_01/russian_food_cans_01_1k.gltf",
-          "split": "mesh"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "shelf-crate",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          11.8,
-          1.12,
-          11.4
-        ],
-        "rot": 0.15
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "rackend-barrel-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          0.2,
-          0,
-          11.1
-        ],
-        "rot": 1.9
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/barrel_03/barrel_03_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "rackend-barrel-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          0.5,
-          0,
-          10
-        ],
-        "rot": 4.2
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/barrel_03/barrel_03_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "rackend-woodcrate",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          13.8,
-          0,
-          11.2
-        ],
-        "rot": 0.05
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/wooden_crate_01/wooden_crate_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "rackend-plasticcrate",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          13.75,
-          0.62,
-          11.15
-        ],
-        "rot": 0.12
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "rackend-wad-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          13,
-          0,
-          10.2
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "paperWad",
-          "seed": 13,
-          "params": [
-            0.08
-          ]
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "rackend-wad-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          1.3,
-          0,
-          9.4
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "paperWad",
-          "seed": 17,
-          "params": [
-            0.07
-          ]
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "lane-pallet-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          15.3,
-          0,
-          1.3
-        ],
-        "rot": 0.06
-      },
-      "components": [
-        {
-          "type": "instance",
-          "of": "pallet-boxes"
-        }
-      ]
-    },
-    {
-      "id": "lane-pallet-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          15.5,
-          0,
-          -1.5
-        ],
-        "rot": -0.09
-      },
-      "components": [
-        {
-          "type": "instance",
-          "of": "pallet-crate"
-        }
-      ]
-    },
-    {
-      "id": "lane-pallet-3",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          12.6,
-          0,
-          0.1
-        ],
-        "rot": 0.14
-      },
-      "components": [
-        {
-          "type": "instance",
-          "of": "pallet-plastic"
-        }
-      ]
-    },
-    {
-      "id": "rack-staged-pallet",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          5,
-          0,
-          9.5
-        ],
-        "rot": 1.55
-      },
-      "components": [
-        {
-          "type": "instance",
-          "of": "pallet-crate"
-        }
-      ]
-    },
-    {
-      "id": "stage-pallet-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -1.6,
-          0,
-          -0.9
-        ],
-        "rot": 0.04
-      },
-      "components": [
-        {
-          "type": "instance",
-          "of": "pallet-crate"
-        }
-      ]
-    },
-    {
-      "id": "stage-pallet-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          0.3,
-          0,
-          -0.9
-        ],
-        "rot": -0.07
-      },
-      "components": [
-        {
-          "type": "instance",
-          "of": "pallet-boxes"
-        }
-      ]
-    },
-    {
-      "id": "stage-pallet-3",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          2.2,
-          0,
-          -0.9
-        ],
-        "rot": 0.11
-      },
-      "components": [
-        {
-          "type": "instance",
-          "of": "pallet-plastic"
-        }
-      ]
-    },
-    {
-      "id": "stage-pallet-4",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -1.6,
-          0,
-          1.1
-        ],
-        "rot": -0.05
-      },
-      "components": [
-        {
-          "type": "instance",
-          "of": "pallet-plastic"
-        }
-      ]
-    },
-    {
-      "id": "stage-pallet-5",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          0.3,
-          0,
-          1.1
-        ],
-        "rot": 0.09
-      },
-      "components": [
-        {
-          "type": "instance",
-          "of": "pallet-crate"
-        }
-      ]
-    },
-    {
-      "id": "stage-pallet-empty",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          2.2,
-          0,
-          1.1
-        ],
-        "rot": 0.18
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
-          "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "dock-truck",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          13.9,
-          0,
-          1.9
-        ],
-        "rot": 3.05
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack/PalletTruck/PalletTruck.fbx",
-          "texture": "/models/industrial-pack/PalletTruck/PalletTruck_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "dock-trolley",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          15.8,
-          0,
-          -5.6
-        ],
-        "rot": 1.15,
-        "scale": 0.7
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack/Platform_Trolley/Platform_Trolley.fbx",
-          "texture": "/models/industrial-pack/Platform_Trolley/Platform_Trolley_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "dock-pallet-stack-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          18.4,
-          0,
-          -3.8
-        ],
-        "rot": 0.05
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
-          "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "dock-pallet-stack-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          18.35,
-          0.16,
-          -3.85
-        ],
-        "rot": 0.16
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
-          "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "dock-pallet-stack-3",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          18.42,
-          0.32,
-          -3.75
-        ],
-        "rot": -0.06
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
-          "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "dock-extinguisher",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          19.5,
-          0,
-          -4.4
-        ],
-        "rot": 3.6,
-        "scale": 0.25
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Fire_Extinguisher/Fire_extinguisher.fbx",
-          "texture": "/models/industrial-pack2/Fire_Extinguisher/Fire_extinguisher_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "dock-boom-barrel",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          18.6,
-          0,
-          -9.7
-        ],
-        "rot": 1.9
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack/ExplosiveBarrel/ExplosiveBarrel.fbx",
-          "texture": "/models/industrial-pack/ExplosiveBarrel/ExplosiveBarrel_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "stock-box-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          17.5,
-          0,
-          -3
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "stock-box-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          17.4,
-          0,
-          -1.7
-        ],
-        "rot": 0.4
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "stock-box-3",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          17.45,
-          0.55,
-          -2.4
-        ],
-        "rot": 0.9
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "stock-jerrycan",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          18.3,
-          0,
-          -4.1
-        ],
-        "rot": 0.9
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/metal_jerrycan/metal_jerrycan_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "stock-wad",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          16.3,
-          0,
-          -1
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "paperWad",
-          "seed": 29,
-          "params": [
-            0.09
-          ]
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "trash-can",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          18.6,
-          0,
-          7.5
-        ],
-        "rot": 0.6
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/metal_trash_can/metal_trash_can_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "trimesh",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "trash-bag",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          17.8,
-          2.15,
-          9.4
-        ],
-        "rot": 1.7
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/trashbag/trashbag_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "trash-pile",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          16.8,
-          0,
-          9
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "trashPile",
-          "seed": 900,
-          "params": [
-            1.5,
-            0.42
-          ]
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "trimesh",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "trash-pile-junk-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          16.605356778183776,
-          1.4170723734237254,
-          8.647091660257425
-        ],
-        "rot": 3.0997904424170506
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/trashbag/trashbag_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "trash-pile-junk-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          16.724740300789247,
-          0.975634165275842,
-          8.933560345355135
-        ],
-        "rot": 1.0038787230982915
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/trashbag/trashbag_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "trash-pile-junk-3",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          17.07414833523238,
-          1.1228202023822815,
-          8.904546058509
-        ],
-        "rot": 5.800731195212155
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/can_rusted/can_rusted_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "trash-pile-junk-4",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          16.691676985787005,
-          1.0609848914016038,
-          8.247668270803967
-        ],
-        "rot": 0.21537435744648
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/can_rusted/can_rusted_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "trash-pile-junk-5",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          17.55313784218625,
-          1.2647127419756725,
-          8.727961762403568
-        ],
-        "rot": 1.6202111350171482
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/oil_tin/oil_tin_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "trash-pile-junk-6",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          17.119280783675897,
-          1.3542085890239104,
-          9.010855577994537
-        ],
-        "rot": 5.37360680573261
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "paperWad",
-          "seed": 27905,
-          "params": [
-            0.07
-          ]
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "trash-pile-junk-7",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          16.804484202759138,
-          1.291201762650162,
-          8.962619852914619
-        ],
-        "rot": 0.01657930764613981
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/trashbag/trashbag_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "trash-pile-junk-8",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          16.36076740607416,
-          0.893050064756535,
-          9.293974245370187
-        ],
-        "rot": 1.912841217537532
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/can_rusted/can_rusted_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pillar-box",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          12.8,
-          0,
-          -6.3
-        ],
-        "rot": 0.7
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "pillar-wad",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          11.4,
-          0,
-          -7.4
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "paperWad",
-          "seed": 43,
-          "params": [
-            0.08
-          ]
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "wwall-barrel-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -18.5,
-          0,
-          3.7
-        ],
-        "rot": 0.4
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/barrel_03/barrel_03_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "wwall-barrel-2",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -18.2,
-          0,
-          5
-        ],
-        "rot": 4.1
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/barrel_03/barrel_03_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "wwall-crate",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -18.4,
-          0,
-          6.4
-        ],
-        "rot": 2.4
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "hall-boom-barrel",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          -13.6,
-          0,
-          -10.8
-        ],
-        "rot": 2.1
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/Barrel_01/Barrel_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-worklight",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -13.8,
-          0,
-          -22.6
-        ],
-        "rot": 3.5
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack/Worklight02/WorkLight02.fbx",
-          "texture": "/models/industrial-pack/Worklight02/WorkLight02_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": false
-        }
-      ]
-    },
-    {
-      "id": "sewer-gas-1",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -10.7,
-          0,
-          -32.6
-        ],
-        "rot": 0.4
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack/Gas_Cylinder/Gas_Cylinder.fbx",
-          "texture": "/models/industrial-pack/Gas_Cylinder/Gas_Cylinder_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-gas-2",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -10.1,
-          0,
-          -32.15
-        ],
-        "rot": 2.3
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack/Gas_Cylinder/Gas_Cylinder.fbx",
-          "texture": "/models/industrial-pack/Gas_Cylinder/Gas_Cylinder_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-generator",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -17.5,
-          0,
-          -21.4
-        ],
-        "rot": 1.2
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Generator/Generator.fbx",
-          "texture": "/models/industrial-pack2/Generator/Generator_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-compressor",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -11.5,
-          0,
-          -32.9
-        ],
-        "rot": 0.15
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/old_military_compressor/old_military_compressor_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-generator-ph",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          0.2,
-          0,
-          -32.6
-        ],
-        "rot": 2.6
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/portable_generator/portable_generator_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-propane-1",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -19.3,
-          0,
-          -32.6
-        ],
-        "rot": 1.1
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/propane_tank/propane_tank_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-propane-2",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -20.1,
-          0,
-          -31.8
-        ],
-        "rot": 3.8
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/propane_tank/propane_tank_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-barrel-1",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -2.5,
-          0,
-          -32.9
-        ],
-        "rot": 2.3
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/barrel_03/barrel_03_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-barrel-2",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -1.3,
-          0,
-          -32.5
-        ],
-        "rot": 4.4
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/barrel_03/barrel_03_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-barrel-3",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -20.5,
-          0,
-          -21.5
-        ],
-        "rot": 1.9
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/barrel_03/barrel_03_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-barrel-4",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -19.4,
-          0,
-          -20.9
-        ],
-        "rot": 4
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/barrel_03/barrel_03_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-woodcrate",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -20.2,
-          0,
-          -23.2
-        ],
-        "rot": 0.8
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/wooden_crate_01/wooden_crate_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-can",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -13,
-          0,
-          -23.5
-        ],
-        "rot": 2.4
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/can_rusted/can_rusted_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-bag",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          0.6,
-          0,
-          -21
-        ],
-        "rot": 3.4
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/trashbag/trashbag_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "sewer-wad",
-      "parent": "sewer-zone",
-      "transform": {
-        "pos": [
-          -18.6,
-          0,
-          -22.4
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "paperWad",
-          "seed": 83,
-          "params": [
-            0.09
-          ]
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "office-locker-1",
-      "parent": "office-zone",
-      "transform": {
-        "pos": [
-          -19.55,
-          0,
-          -1.9
-        ],
-        "rot": -1.5708
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Locker/Locker.fbx",
-          "texture": "/models/industrial-pack2/Locker/Locker_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "office-locker-2",
-      "parent": "office-zone",
-      "transform": {
-        "pos": [
-          -19.55,
-          0,
-          -1.05
-        ],
-        "rot": -1.5708
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Locker/Locker.fbx",
-          "texture": "/models/industrial-pack2/Locker/Locker_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "office-locker-3",
-      "parent": "office-zone",
-      "transform": {
-        "pos": [
-          -19.55,
-          0,
-          -0.2
-        ],
-        "rot": -1.5708
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack2/Locker/Locker.fbx",
-          "texture": "/models/industrial-pack2/Locker/Locker_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "fixed",
-          "collider": "hull",
-          "blockPlayer": true
-        }
-      ]
-    },
-    {
-      "id": "office-toolbox",
-      "parent": "office-zone",
-      "transform": {
-        "pos": [
-          -18.1,
-          0.82,
-          2.5
-        ],
-        "rot": 2.9
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/metal_toolbox/metal_toolbox_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "office-gascan",
-      "parent": "office-zone",
-      "transform": {
-        "pos": [
-          -19.1,
-          0,
-          -2.5
-        ],
-        "rot": 1.1
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "fbx",
-          "url": "/models/industrial-pack/Gas_can/Gas_Canister.fbx",
-          "texture": "/models/industrial-pack/Gas_can/GasCan_Base_Color.png"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "office-chair",
-      "parent": "office-zone",
-      "transform": {
-        "pos": [
-          -16.95,
-          0,
-          1.15
-        ],
-        "rot": -0.8
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/painted_wooden_chair_01/painted_wooden_chair_01_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "office-binder",
-      "parent": "office-zone",
-      "transform": {
-        "pos": [
-          -16.25,
-          0.82,
-          1.15
-        ],
-        "rot": 0.35
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/binder_notebook/binder_notebook_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "office-can",
-      "parent": "office-zone",
-      "transform": {
-        "pos": [
-          -17.5,
-          0.82,
-          2.45
-        ],
-        "rot": 2.2
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/can_rusted/can_rusted_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "office-wad-1",
-      "parent": "office-zone",
-      "transform": {
-        "pos": [
-          -17.1,
-          0,
-          -1.4
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "paperWad",
-          "seed": 91,
-          "params": [
-            0.08
-          ]
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "office-wad-2",
-      "parent": "office-zone",
-      "transform": {
-        "pos": [
-          -18.9,
-          0,
-          2.2
-        ]
-      },
-      "components": [
-        {
-          "type": "generator",
-          "generator": "paperWad",
-          "seed": 97,
-          "params": [
-            0.09
-          ]
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
-    },
-    {
-      "id": "canRusted-1",
-      "parent": "warehouse",
-      "transform": {
-        "pos": [
-          8.7,
-          0,
-          1.3
-        ]
-      },
-      "components": [
-        {
-          "type": "model",
-          "source": "gltf",
-          "url": "/models/can_rusted/can_rusted_1k.gltf"
-        },
-        {
-          "type": "physics",
-          "body": "dynamic",
-          "collider": "hull",
-          "grabbable": true
-        }
-      ]
+ "nodes": [
+  {
+   "id": "environment",
+   "parent": null,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "environment",
+     "ambient": "#1a1c20",
+     "fog": {
+      "color": "#07080a",
+      "near": 10,
+      "far": 48
+     }
     }
-  ]
+   ]
+  },
+  {
+   "id": "warehouse",
+   "parent": null,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "sewer-zone",
+   "parent": null,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "office-zone",
+   "parent": null,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "library",
+   "parent": null,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "library": true
+  },
+  {
+   "id": "shell",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "floor",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ],
+    "rot": [
+     -1.5707963267948966,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 40,
+     "height": 24,
+     "segments": [
+      40,
+      24
+     ],
+     "texture": "Concrete034",
+     "repeat": [
+      13,
+      8
+     ],
+     "tint": "#6e6e6e",
+     "bombing": 0
+    }
+   ]
+  },
+  {
+   "id": "floor-body",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     0,
+     -0.5,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      21,
+      0.5,
+      13
+     ],
+     "blockPlayer": false
+    }
+   ]
+  },
+  {
+   "id": "ceiling",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     0,
+     6,
+     0
+    ],
+    "rot": [
+     1.5707963267948966,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 40,
+     "height": 24,
+     "segments": [
+      40,
+      24
+     ],
+     "texture": "CorrugatedSteel005",
+     "repeat": [
+      20,
+      12
+     ],
+     "tint": "#b4b4b4",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "ceiling-body",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     0,
+     6.5,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      21,
+      0.5,
+      13
+     ],
+     "blockPlayer": false
+    }
+   ]
+  },
+  {
+   "id": "wall-n-left",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     -15.75,
+     3,
+     -12
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 8.5,
+     "height": 6,
+     "segments": [
+      9,
+      8
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      3.4,
+      2
+     ],
+     "tint": "#ffffff",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "wall-n-left-body",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     -16.25,
+     3,
+     -12.5
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      4.75,
+      3,
+      0.5
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "wall-n-right",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     5.75,
+     3,
+     -12
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 28.5,
+     "height": 6,
+     "segments": [
+      29,
+      8
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      11.4,
+      2
+     ],
+     "tint": "#ffffff",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "wall-n-right-body",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     6.25,
+     3,
+     -12.5
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      14.75,
+      3,
+      0.5
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "lintel-front",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     -10,
+     4.5,
+     -12
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 3,
+     "height": 3,
+     "segments": [
+      3,
+      4
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      1.2,
+      1
+     ],
+     "tint": "#ffffff",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "lintel-back",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     -10,
+     4.5,
+     -12.01
+    ],
+    "rot": [
+     0,
+     3.141592653589793,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 3,
+     "height": 3,
+     "segments": [
+      3,
+      4
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      1.2,
+      1
+     ],
+     "tint": "#ffffff",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "lintel-body",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     -10,
+     4.5,
+     -12.5
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      1.5,
+      1.5,
+      0.5
+     ],
+     "blockPlayer": false
+    }
+   ]
+  },
+  {
+   "id": "wall-s",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     0,
+     3,
+     12
+    ],
+    "rot": [
+     0,
+     3.141592653589793,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 40,
+     "height": 6,
+     "segments": [
+      40,
+      8
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      16,
+      2
+     ],
+     "tint": "#ffffff",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "wall-s-body",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     0,
+     3,
+     12.5
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      21,
+      3,
+      0.5
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "wall-w",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     -20,
+     3,
+     0
+    ],
+    "rot": [
+     0,
+     1.5707963267948966,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 24,
+     "height": 6,
+     "segments": [
+      24,
+      8
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      9.6,
+      2
+     ],
+     "tint": "#ffffff",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "wall-w-body",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     -20.5,
+     3,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.5,
+      3,
+      13
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "wall-e",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     20,
+     3,
+     0
+    ],
+    "rot": [
+     0,
+     -1.5707963267948966,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 24,
+     "height": 6,
+     "segments": [
+      24,
+      8
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      9.6,
+      2
+     ],
+     "tint": "#ffffff",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "wall-e-body",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     20.5,
+     3,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.5,
+      3,
+      13
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sign-hallway",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     -13.2,
+     1.9,
+     -11.94
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 1.1,
+     "height": 1.1,
+     "segments": [
+      2,
+      2
+     ],
+     "texture": "DangerSign",
+     "repeat": [
+      1,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sign-dock",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     19.94,
+     1.8,
+     2.5
+    ],
+    "rot": [
+     0,
+     -1.5707963267948966,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 1.1,
+     "height": 1.1,
+     "segments": [
+      2,
+      2
+     ],
+     "texture": "DangerSign",
+     "repeat": [
+      1,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pillar-1",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     -12,
+     3,
+     -6.8
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.7,
+      6,
+      0.7
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      1,
+      4
+     ],
+     "tint": "#ffffff"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.35,
+      3,
+      0.35
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "pillar-2",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     0,
+     3,
+     -6.8
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.7,
+      6,
+      0.7
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      1,
+      4
+     ],
+     "tint": "#ffffff"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.35,
+      3,
+      0.35
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "pillar-3",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     12,
+     3,
+     -6.8
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.7,
+      6,
+      0.7
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      1,
+      4
+     ],
+     "tint": "#ffffff"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.35,
+      3,
+      0.35
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "pillar-4",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     -12,
+     3,
+     6.8
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.7,
+      6,
+      0.7
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      1,
+      4
+     ],
+     "tint": "#ffffff"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.35,
+      3,
+      0.35
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "pillar-5",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     0,
+     3,
+     6.8
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.7,
+      6,
+      0.7
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      1,
+      4
+     ],
+     "tint": "#ffffff"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.35,
+      3,
+      0.35
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "pillar-6",
+   "parent": "shell",
+   "transform": {
+    "pos": [
+     12,
+     3,
+     6.8
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.7,
+      6,
+      0.7
+     ],
+     "texture": "Concrete031",
+     "repeat": [
+      1,
+      4
+     ],
+     "tint": "#ffffff"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.35,
+      3,
+      0.35
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "rat-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     10,
+     0,
+     -10.5
+    ]
+   },
+   "components": [
+    {
+     "type": "behavior",
+     "behavior": "rat",
+     "seed": 101
+    }
+   ]
+  },
+  {
+   "id": "rat-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -15,
+     0,
+     9
+    ]
+   },
+   "components": [
+    {
+     "type": "behavior",
+     "behavior": "rat",
+     "seed": 211
+    }
+   ]
+  },
+  {
+   "id": "rat-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     18,
+     0,
+     -2
+    ]
+   },
+   "components": [
+    {
+     "type": "behavior",
+     "behavior": "rat",
+     "seed": 307
+    }
+   ]
+  },
+  {
+   "id": "rat-4",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -4,
+     0,
+     11
+    ]
+   },
+   "components": [
+    {
+     "type": "behavior",
+     "behavior": "rat",
+     "seed": 401
+    }
+   ]
+  },
+  {
+   "id": "rat-5",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     2,
+     0,
+     -10.5
+    ]
+   },
+   "components": [
+    {
+     "type": "behavior",
+     "behavior": "rat",
+     "seed": 503
+    }
+   ]
+  },
+  {
+   "id": "pallet-boxes",
+   "parent": "library",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "library": true
+  },
+  {
+   "id": "pallet-boxes/base",
+   "parent": "pallet-boxes",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
+     "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pallet-boxes/load-1",
+   "parent": "pallet-boxes",
+   "transform": {
+    "pos": [
+     -0.25,
+     0.17,
+     0.2
+    ],
+    "rot": 0.05
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pallet-boxes/load-2",
+   "parent": "pallet-boxes",
+   "transform": {
+    "pos": [
+     0.3,
+     0.17,
+     -0.15
+    ],
+    "rot": 1.62
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pallet-boxes/load-3",
+   "parent": "pallet-boxes",
+   "transform": {
+    "pos": [
+     0,
+     0.73,
+     0
+    ],
+    "rot": 0.9
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pallet-crate",
+   "parent": "library",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "library": true
+  },
+  {
+   "id": "pallet-crate/base",
+   "parent": "pallet-crate",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
+     "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pallet-crate/load-1",
+   "parent": "pallet-crate",
+   "transform": {
+    "pos": [
+     0,
+     0.17,
+     0
+    ],
+    "rot": 0.03
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/wooden_crate_01/wooden_crate_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pallet-crate/load-2",
+   "parent": "pallet-crate",
+   "transform": {
+    "pos": [
+     -0.15,
+     0.8,
+     0.1
+    ],
+    "rot": 0.5
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pallet-plastic",
+   "parent": "library",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "library": true
+  },
+  {
+   "id": "pallet-plastic/base",
+   "parent": "pallet-plastic",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
+     "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pallet-plastic/load-1",
+   "parent": "pallet-plastic",
+   "transform": {
+    "pos": [
+     -0.3,
+     0.17,
+     -0.2
+    ],
+    "rot": 0.08
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pallet-plastic/load-2",
+   "parent": "pallet-plastic",
+   "transform": {
+    "pos": [
+     0.35,
+     0.17,
+     0.15
+    ],
+    "rot": 1.55
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pallet-plastic/load-3",
+   "parent": "pallet-plastic",
+   "transform": {
+    "pos": [
+     0,
+     0.78,
+     0
+    ],
+    "rot": 0.4
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/ammo_box/ammo_box_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -13,
+     6,
+     -5.5
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-1/light",
+   "parent": "lamp-w-1",
+   "transform": {
+    "pos": [
+     0,
+     -1.4000000000000004,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#d8e6c8",
+     "intensity": 1.2,
+     "radius": 18,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     0,
+     6,
+     -5.5
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-2/light",
+   "parent": "lamp-w-2",
+   "transform": {
+    "pos": [
+     0,
+     -1.4000000000000004,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#d8e6c8",
+     "intensity": 1.2,
+     "radius": 18,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     13,
+     6,
+     -5.5
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-3/light",
+   "parent": "lamp-w-3",
+   "transform": {
+    "pos": [
+     0,
+     -1.4000000000000004,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#d8e6c8",
+     "intensity": 1.2,
+     "radius": 18,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-4",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -13,
+     6,
+     5.5
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-4/light",
+   "parent": "lamp-w-4",
+   "transform": {
+    "pos": [
+     0,
+     -1.4000000000000004,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#d8e6c8",
+     "intensity": 1.2,
+     "radius": 18,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-5",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     0,
+     6,
+     5.5
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-5/light",
+   "parent": "lamp-w-5",
+   "transform": {
+    "pos": [
+     0,
+     -1.4000000000000004,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#d8e6c8",
+     "intensity": 1.2,
+     "radius": 18,
+     "spot": 1,
+     "flicker": true
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-6",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     13,
+     6,
+     5.5
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+    }
+   ]
+  },
+  {
+   "id": "lamp-w-6/light",
+   "parent": "lamp-w-6",
+   "transform": {
+    "pos": [
+     0,
+     -1.4000000000000004,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#d8e6c8",
+     "intensity": 1.2,
+     "radius": 18,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "lamp-hall",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -10,
+     3,
+     -16
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+    }
+   ]
+  },
+  {
+   "id": "lamp-hall/light",
+   "parent": "lamp-hall",
+   "transform": {
+    "pos": [
+     0,
+     -0.6000000000000001,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#d8e6c8",
+     "intensity": 0.9,
+     "radius": 9,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "lamp-sewer-s",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -10,
+     5,
+     -22.5
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+    }
+   ]
+  },
+  {
+   "id": "lamp-sewer-s/light",
+   "parent": "lamp-sewer-s",
+   "transform": {
+    "pos": [
+     0,
+     -0.7999999999999998,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#d8e6c8",
+     "intensity": 1.1,
+     "radius": 14,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "lamp-sewer-n",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -10,
+     5,
+     -31.5
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+    }
+   ]
+  },
+  {
+   "id": "lamp-sewer-n/light",
+   "parent": "lamp-sewer-n",
+   "transform": {
+    "pos": [
+     0,
+     -0.7999999999999998,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#cfe0c0",
+     "intensity": 1,
+     "radius": 14,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "depot-barrel-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -16.5,
+     0,
+     -9
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/barrel_03/barrel_03_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "depot-barrel-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -15.4,
+     0,
+     -9.3
+    ],
+    "rot": 1.2
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/barrel_03/barrel_03_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "depot-barrel-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -16,
+     0,
+     -8.1
+    ],
+    "rot": 2.6
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/barrel_03/barrel_03_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "depot-boom-barrel",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -14.6,
+     0,
+     -8.4
+    ],
+    "rot": 0.7
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/Barrel_01/Barrel_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "depot-jerrycan",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -14.8,
+     0,
+     -7.1
+    ],
+    "rot": 2.2
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/metal_jerrycan/metal_jerrycan_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "depot-oiltin",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -15.7,
+     0,
+     -7
+    ],
+    "rot": 0.8
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/oil_tin/oil_tin_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "depot-wad",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -13.9,
+     0,
+     -7.6
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "paperWad",
+     "seed": 67,
+     "params": [
+      0.11
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "depot-waterbarrel",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -17.3,
+     0,
+     -7.4
+    ],
+    "rot": 2.8
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack/Water_Barrel/Water_Barrel.fbx",
+     "texture": "/models/industrial-pack/Water_Barrel/Water_Barrel_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "nwall-milcrate",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -15.4,
+     0,
+     -10.5
+    ],
+    "rot": 0.35
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/old_military_crate/old_military_crate_1k.gltf",
+     "split": "suffix-ab"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "nwall-woodcrate",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -17.6,
+     0,
+     -10.3
+    ],
+    "rot": 0.2
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/wooden_crate_01/wooden_crate_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "nwall-plasticcrate",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -13.9,
+     0,
+     -9.8
+    ],
+    "rot": 1.9
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "hall-sign",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -12.3,
+     0,
+     -11
+    ],
+    "rot": 0.8
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/CautionSign_WetFloor/Caution_Sign.fbx",
+     "texture": "/models/industrial-pack2/CautionSign_WetFloor/Caution_Sign_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "hall-ebox-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -5.6,
+     1.25,
+     -11.85
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack/ElectricalBox/ElectricalBox.fbx",
+     "texture": "/models/industrial-pack/ElectricalBox/ElectricalBox_Base_Color.png"
+    }
+   ]
+  },
+  {
+   "id": "hall-ebox-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -4.2,
+     1.4,
+     -11.85
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack/ElectricalBox02/ElectricalBox02.fbx",
+     "texture": "/models/industrial-pack/ElectricalBox02/ElectricalBox02_Base_Color.png"
+    }
+   ]
+  },
+  {
+   "id": "hall-box-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -5.6,
+     0,
+     -10.7
+    ],
+    "rot": 0.5
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "hall-box-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -5.7,
+     0.56,
+     -10.8
+    ],
+    "rot": 1.1
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "hall-box-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -4.7,
+     0,
+     -11
+    ],
+    "rot": 2.8
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "hall-wad",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -6.8,
+     0,
+     -8.9
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "paperWad",
+     "seed": 37,
+     "params": [
+      0.1
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "rack-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     3,
+     0,
+     11.35
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "rack"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "rack-1/shelf-1",
+   "parent": "rack-1",
+   "transform": {
+    "pos": [
+     0,
+     0.12,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2,
+      0.035,
+      0.55
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rack-1/shelf-2",
+   "parent": "rack-1",
+   "transform": {
+    "pos": [
+     0,
+     1,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2,
+      0.035,
+      0.55
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rack-1/shelf-3",
+   "parent": "rack-1",
+   "transform": {
+    "pos": [
+     0,
+     1.85,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2,
+      0.035,
+      0.55
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rack-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     7,
+     0,
+     11.35
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "rack"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "rack-2/shelf-1",
+   "parent": "rack-2",
+   "transform": {
+    "pos": [
+     0,
+     0.12,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2,
+      0.035,
+      0.55
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rack-2/shelf-2",
+   "parent": "rack-2",
+   "transform": {
+    "pos": [
+     0,
+     1,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2,
+      0.035,
+      0.55
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rack-2/shelf-3",
+   "parent": "rack-2",
+   "transform": {
+    "pos": [
+     0,
+     1.85,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2,
+      0.035,
+      0.55
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rack-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     11,
+     0,
+     11.35
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "rack"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "rack-3/shelf-1",
+   "parent": "rack-3",
+   "transform": {
+    "pos": [
+     0,
+     0.12,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2,
+      0.035,
+      0.55
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rack-3/shelf-2",
+   "parent": "rack-3",
+   "transform": {
+    "pos": [
+     0,
+     1,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2,
+      0.035,
+      0.55
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rack-3/shelf-3",
+   "parent": "rack-3",
+   "transform": {
+    "pos": [
+     0,
+     1.85,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2,
+      0.035,
+      0.55
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shelf-box-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     2,
+     1.1,
+     11.35
+    ],
+    "rot": 0.1
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-box-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     3.8,
+     1.1,
+     11.3
+    ],
+    "rot": 1.6
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-box-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     3.6,
+     0.2,
+     11.4
+    ],
+    "rot": 0.4
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-ammo-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     6.5,
+     1.1,
+     11.4
+    ],
+    "rot": 0.2
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/ammo_box/ammo_box_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-ammo-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     7.1,
+     1.1,
+     11.3
+    ],
+    "rot": 1.7
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/ammo_box/ammo_box_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-oiltin",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     7.9,
+     1.1,
+     11.3
+    ],
+    "rot": 2.2
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/oil_tin/oil_tin_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-jerrycan",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     7.5,
+     0.2,
+     11.5
+    ],
+    "rot": 1.2
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/metal_jerrycan/metal_jerrycan_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-box-4",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     2.5,
+     1.95,
+     11.35
+    ],
+    "rot": 0.3
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-box-5",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     10.4,
+     0.2,
+     11.4
+    ],
+    "rot": 2.9
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-cans",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     11.1,
+     1.12,
+     11.35
+    ],
+    "rot": 0.5
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/russian_food_cans_01/russian_food_cans_01_1k.gltf",
+     "split": "mesh"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-crate",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     11.8,
+     1.12,
+     11.4
+    ],
+    "rot": 0.15
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "rackend-barrel-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     0.2,
+     0,
+     11.1
+    ],
+    "rot": 1.9
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/barrel_03/barrel_03_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "rackend-barrel-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     0.5,
+     0,
+     10
+    ],
+    "rot": 4.2
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/barrel_03/barrel_03_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "rackend-woodcrate",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     13.8,
+     0,
+     11.2
+    ],
+    "rot": 0.05
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/wooden_crate_01/wooden_crate_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "rackend-plasticcrate",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     13.75,
+     0.62,
+     11.15
+    ],
+    "rot": 0.12
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "rackend-wad-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     13,
+     0,
+     10.2
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "paperWad",
+     "seed": 13,
+     "params": [
+      0.08
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "rackend-wad-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     1.3,
+     0,
+     9.4
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "paperWad",
+     "seed": 17,
+     "params": [
+      0.07
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "lane-pallet-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     15.3,
+     0,
+     1.3
+    ],
+    "rot": 0.06
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "pallet-boxes"
+    }
+   ]
+  },
+  {
+   "id": "lane-pallet-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     15.5,
+     0,
+     -1.5
+    ],
+    "rot": -0.09
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "pallet-crate"
+    }
+   ]
+  },
+  {
+   "id": "lane-pallet-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     12.6,
+     0,
+     0.1
+    ],
+    "rot": 0.14
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "pallet-plastic"
+    }
+   ]
+  },
+  {
+   "id": "rack-staged-pallet",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     5,
+     0,
+     9.5
+    ],
+    "rot": 1.55
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "pallet-crate"
+    }
+   ]
+  },
+  {
+   "id": "stage-pallet-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -1.6,
+     0,
+     -0.9
+    ],
+    "rot": 0.04
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "pallet-crate"
+    }
+   ]
+  },
+  {
+   "id": "stage-pallet-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     0.3,
+     0,
+     -0.9
+    ],
+    "rot": -0.07
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "pallet-boxes"
+    }
+   ]
+  },
+  {
+   "id": "stage-pallet-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     2.2,
+     0,
+     -0.9
+    ],
+    "rot": 0.11
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "pallet-plastic"
+    }
+   ]
+  },
+  {
+   "id": "stage-pallet-4",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -1.6,
+     0,
+     1.1
+    ],
+    "rot": -0.05
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "pallet-plastic"
+    }
+   ]
+  },
+  {
+   "id": "stage-pallet-5",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     0.3,
+     0,
+     1.1
+    ],
+    "rot": 0.09
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "pallet-crate"
+    }
+   ]
+  },
+  {
+   "id": "stage-pallet-empty",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     2.2,
+     0,
+     1.1
+    ],
+    "rot": 0.18
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
+     "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "dock-truck",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     13.9,
+     0,
+     1.9
+    ],
+    "rot": 3.05
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack/PalletTruck/PalletTruck.fbx",
+     "texture": "/models/industrial-pack/PalletTruck/PalletTruck_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "dock-trolley",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     15.8,
+     0,
+     -5.6
+    ],
+    "rot": 1.15,
+    "scale": 0.7
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack/Platform_Trolley/Platform_Trolley.fbx",
+     "texture": "/models/industrial-pack/Platform_Trolley/Platform_Trolley_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "dock-pallet-stack-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     18.4,
+     0,
+     -3.8
+    ],
+    "rot": 0.05
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
+     "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "dock-pallet-stack-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     18.35,
+     0.16,
+     -3.85
+    ],
+    "rot": 0.16
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
+     "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "dock-pallet-stack-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     18.42,
+     0.32,
+     -3.75
+    ],
+    "rot": -0.06
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
+     "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "dock-extinguisher",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     19.5,
+     0,
+     -4.4
+    ],
+    "rot": 3.6,
+    "scale": 0.25
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Fire_Extinguisher/Fire_extinguisher.fbx",
+     "texture": "/models/industrial-pack2/Fire_Extinguisher/Fire_extinguisher_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "dock-boom-barrel",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     18.6,
+     0,
+     -9.7
+    ],
+    "rot": 1.9
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack/ExplosiveBarrel/ExplosiveBarrel.fbx",
+     "texture": "/models/industrial-pack/ExplosiveBarrel/ExplosiveBarrel_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "stock-box-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     17.5,
+     0,
+     -3
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "stock-box-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     17.4,
+     0,
+     -1.7
+    ],
+    "rot": 0.4
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "stock-box-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     17.45,
+     0.55,
+     -2.4
+    ],
+    "rot": 0.9
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "stock-jerrycan",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     18.3,
+     0,
+     -4.1
+    ],
+    "rot": 0.9
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/metal_jerrycan/metal_jerrycan_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "stock-wad",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     16.3,
+     0,
+     -1
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "paperWad",
+     "seed": 29,
+     "params": [
+      0.09
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "trash-can",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     18.6,
+     0,
+     7.5
+    ],
+    "rot": 0.6
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/metal_trash_can/metal_trash_can_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "trimesh",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "trash-bag",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     17.8,
+     2.15,
+     9.4
+    ],
+    "rot": 1.7
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/trashbag/trashbag_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "trash-pile",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     16.8,
+     0,
+     9
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "trashPile",
+     "seed": 900,
+     "params": [
+      1.5,
+      0.42
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "trimesh",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "trash-pile-junk-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     16.605356778183776,
+     1.4170723734237254,
+     8.647091660257425
+    ],
+    "rot": 3.0997904424170506
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/trashbag/trashbag_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "trash-pile-junk-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     16.724740300789247,
+     0.975634165275842,
+     8.933560345355135
+    ],
+    "rot": 1.0038787230982915
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/trashbag/trashbag_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "trash-pile-junk-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     17.07414833523238,
+     1.1228202023822815,
+     8.904546058509
+    ],
+    "rot": 5.800731195212155
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/can_rusted/can_rusted_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "trash-pile-junk-4",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     16.691676985787005,
+     1.0609848914016038,
+     8.247668270803967
+    ],
+    "rot": 0.21537435744648
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/can_rusted/can_rusted_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "trash-pile-junk-5",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     17.55313784218625,
+     1.2647127419756725,
+     8.727961762403568
+    ],
+    "rot": 1.6202111350171482
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/oil_tin/oil_tin_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "trash-pile-junk-6",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     17.119280783675897,
+     1.3542085890239104,
+     9.010855577994537
+    ],
+    "rot": 5.37360680573261
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "paperWad",
+     "seed": 27905,
+     "params": [
+      0.07
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "trash-pile-junk-7",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     16.804484202759138,
+     1.291201762650162,
+     8.962619852914619
+    ],
+    "rot": 0.01657930764613981
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/trashbag/trashbag_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "trash-pile-junk-8",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     16.36076740607416,
+     0.893050064756535,
+     9.293974245370187
+    ],
+    "rot": 1.912841217537532
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/can_rusted/can_rusted_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pillar-box",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     12.8,
+     0,
+     -6.3
+    ],
+    "rot": 0.7
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "pillar-wad",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     11.4,
+     0,
+     -7.4
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "paperWad",
+     "seed": 43,
+     "params": [
+      0.08
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "wwall-barrel-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -18.5,
+     0,
+     3.7
+    ],
+    "rot": 0.4
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/barrel_03/barrel_03_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "wwall-barrel-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -18.2,
+     0,
+     5
+    ],
+    "rot": 4.1
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/barrel_03/barrel_03_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "wwall-crate",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -18.4,
+     0,
+     6.4
+    ],
+    "rot": 2.4
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/plastic_crate_01/plastic_crate_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "hall-boom-barrel",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -13.6,
+     0,
+     -10.8
+    ],
+    "rot": 2.1
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/Barrel_01/Barrel_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-worklight",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -13.8,
+     0,
+     -22.6
+    ],
+    "rot": 3.5
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack/Worklight02/WorkLight02.fbx",
+     "texture": "/models/industrial-pack/Worklight02/WorkLight02_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": false
+    }
+   ]
+  },
+  {
+   "id": "sewer-gas-1",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -10.7,
+     0,
+     -32.6
+    ],
+    "rot": 0.4
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack/Gas_Cylinder/Gas_Cylinder.fbx",
+     "texture": "/models/industrial-pack/Gas_Cylinder/Gas_Cylinder_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-gas-2",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -10.1,
+     0,
+     -32.15
+    ],
+    "rot": 2.3
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack/Gas_Cylinder/Gas_Cylinder.fbx",
+     "texture": "/models/industrial-pack/Gas_Cylinder/Gas_Cylinder_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-generator",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -17.5,
+     0,
+     -21.4
+    ],
+    "rot": 1.2
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Generator/Generator.fbx",
+     "texture": "/models/industrial-pack2/Generator/Generator_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-compressor",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -11.5,
+     0,
+     -32.9
+    ],
+    "rot": 0.15
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/old_military_compressor/old_military_compressor_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-generator-ph",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     0.2,
+     0,
+     -32.6
+    ],
+    "rot": 2.6
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/portable_generator/portable_generator_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-propane-1",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -19.3,
+     0,
+     -32.6
+    ],
+    "rot": 1.1
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/propane_tank/propane_tank_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-propane-2",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -20.1,
+     0,
+     -31.8
+    ],
+    "rot": 3.8
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/propane_tank/propane_tank_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-barrel-1",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -2.5,
+     0,
+     -32.9
+    ],
+    "rot": 2.3
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/barrel_03/barrel_03_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-barrel-2",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -1.3,
+     0,
+     -32.5
+    ],
+    "rot": 4.4
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/barrel_03/barrel_03_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-barrel-3",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -20.5,
+     0,
+     -21.5
+    ],
+    "rot": 1.9
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/barrel_03/barrel_03_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-barrel-4",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -19.4,
+     0,
+     -20.9
+    ],
+    "rot": 4
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/barrel_03/barrel_03_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-woodcrate",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -20.2,
+     0,
+     -23.2
+    ],
+    "rot": 0.8
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/wooden_crate_01/wooden_crate_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-can",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -13,
+     0,
+     -23.5
+    ],
+    "rot": 2.4
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/can_rusted/can_rusted_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-bag",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     0.6,
+     0,
+     -21
+    ],
+    "rot": 3.4
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/trashbag/trashbag_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-wad",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     -18.6,
+     0,
+     -22.4
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "paperWad",
+     "seed": 83,
+     "params": [
+      0.09
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-locker-1",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.55,
+     0,
+     -1.9
+    ],
+    "rot": -1.5708
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Locker/Locker.fbx",
+     "texture": "/models/industrial-pack2/Locker/Locker_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "office-locker-2",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.55,
+     0,
+     -1.05
+    ],
+    "rot": -1.5708
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Locker/Locker.fbx",
+     "texture": "/models/industrial-pack2/Locker/Locker_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "office-locker-3",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.55,
+     0,
+     -0.2
+    ],
+    "rot": -1.5708
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Locker/Locker.fbx",
+     "texture": "/models/industrial-pack2/Locker/Locker_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "hull",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "office-toolbox",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -18.1,
+     0.82,
+     2.5
+    ],
+    "rot": 2.9
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/metal_toolbox/metal_toolbox_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-gascan",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.1,
+     0,
+     -2.5
+    ],
+    "rot": 1.1
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack/Gas_can/Gas_Canister.fbx",
+     "texture": "/models/industrial-pack/Gas_can/GasCan_Base_Color.png"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-chair",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -16.95,
+     0,
+     1.15
+    ],
+    "rot": -0.8
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/painted_wooden_chair_01/painted_wooden_chair_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-binder",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -16.25,
+     0.82,
+     1.15
+    ],
+    "rot": 0.35
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/binder_notebook/binder_notebook_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-can",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -17.5,
+     0.82,
+     2.45
+    ],
+    "rot": 2.2
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/can_rusted/can_rusted_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-wad-1",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -17.1,
+     0,
+     -1.4
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "paperWad",
+     "seed": 91,
+     "params": [
+      0.08
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-wad-2",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -18.9,
+     0,
+     2.2
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "paperWad",
+     "seed": 97,
+     "params": [
+      0.09
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "canRusted-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     8.7,
+     0,
+     1.3
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/can_rusted/can_rusted_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  }
+ ]
 }

@@ -65,9 +65,40 @@ function layoutWriter(): Plugin {
   }
 }
 
+/** dev-only: accepts the edited node tree from the editor and overwrites
+ * src/engine/scene.json (git-tracked, HMR-reloaded) */
+function sceneWriter(): Plugin {
+  return {
+    name: 'scene-writer',
+    configureServer(server) {
+      server.middlewares.use('/__scene', (req, res) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405
+          res.end('POST only')
+          return
+        }
+        const chunks: Buffer[] = []
+        req.on('data', (c) => chunks.push(c))
+        req.on('end', () => {
+          try {
+            const body = Buffer.concat(chunks).toString('utf8')
+            const parsed = JSON.parse(body)
+            if (!Array.isArray(parsed.nodes)) throw new Error('no nodes')
+            fs.writeFileSync(path.resolve(__dirname, 'src/engine/scene.json'), body)
+            res.end('ok')
+          } catch {
+            res.statusCode = 400
+            res.end('invalid scene json')
+          }
+        })
+      })
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), sheetWriter(), layoutWriter()],
+  plugins: [react(), sheetWriter(), layoutWriter(), sceneWriter()],
   build: {
     rollupOptions: {
       input: {

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { editorStore } from '../game/editorStore'
+import { sceneStore as editorStore } from '../engine/sceneStore'
 
 const LOOK_SPEED = 0.0032
 const BASE_SPEED = 8

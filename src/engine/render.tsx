@@ -15,13 +15,13 @@ import {
   lightRadii,
   lightSpots,
 } from '../ps2/PS2Material'
-import { applyPS2Materials } from '../game/Prop'
 import { addCollider } from '../game/collision'
 import { registerGrabbable } from '../game/grabbables'
 import { mulberry32 } from '../game/rand'
 import { Rat } from '../game/Rat'
 import { Rack } from '../game/Rack'
 import { useWorldTexture } from './textures'
+import { MODEL_REGISTRY } from './models'
 import { acquireLightSlot, releaseLightSlot } from './lights'
 import type {
   SceneNode,
@@ -44,6 +44,34 @@ export const useEngineMode = () => useContext(EngineContext)
 /** three.js group of the node currently being rendered (for cross-component
  * effects like a light syncing its fixture's glass glow). */
 const NodeGroupContext = createContext<React.RefObject<THREE.Group | null> | null>(null)
+
+/** Swap every mesh's material for the PS2 vertex-lit equivalent, in place. */
+export function applyPS2Materials(root: THREE.Object3D) {
+  root.traverse((obj) => {
+    if (obj instanceof THREE.Mesh) {
+      const src = (Array.isArray(obj.material) ? obj.material[0] : obj.material) as THREE.MeshStandardMaterial
+      // "glass" can live on the mesh OR the material name (gltf sub-primitives
+      // get generic mesh names like Cylinder_1)
+      if (obj.name.toLowerCase().includes('glass') || src.name?.toLowerCase().includes('glass')) {
+        // bulb glass renders as a lit diffuser: fullbright, warm lamp white —
+        // PS2 games drew light sources as unlit bright geometry
+        obj.material = createPS2Material({ fullbright: true, color: 0xf3f0da })
+      } else {
+        // housing stays scene-lit; emissive texels (the bulb) glow additively
+        const map = src.map ? prepTexture(src.map) : null
+        const emissiveMap = src.emissiveMap ? prepTexture(src.emissiveMap) : null
+        obj.material = createPS2Material({ map, emissiveMap })
+      }
+      obj.castShadow = false
+      obj.receiveShadow = false
+    }
+  })
+}
+
+// preload every registered gltf so props pop in together
+Object.values(MODEL_REGISTRY).forEach((def) => {
+  if (def.source === 'gltf') useGLTF.preload(def.url)
+})
 
 // ---------------------------------------------------------------- transforms
 
