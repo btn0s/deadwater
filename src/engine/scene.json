@@ -17,7 +17,7 @@
      "fog": {
       "color": "#07080a",
       "near": 10,
-      "far": 48
+      "far": 72
      }
     }
    ]
@@ -7974,6 +7974,456 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "dock-light",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "dock-light/post",
+   "parent": "dock-light",
+   "transform": {
+    "pos": [
+     0,
+     2.6,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.06,
+      0.09,
+      5.2,
+      6
+     ],
+     "tint": "#3a3f44"
+    }
+   ]
+  },
+  {
+   "id": "dock-light/head",
+   "parent": "dock-light",
+   "transform": {
+    "pos": [
+     0.28,
+     5.26,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.72,
+      0.14,
+      0.24
+     ],
+     "tint": "#2f3338"
+    }
+   ]
+  },
+  {
+   "id": "dock-light/plate",
+   "parent": "dock-light",
+   "transform": {
+    "pos": [
+     0.38,
+     5.17,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.34,
+      0.03,
+      0.18
+     ],
+     "tint": "#d8e8dc",
+     "fullbright": true
+    }
+   ]
+  },
+  {
+   "id": "dock-light/light",
+   "parent": "dock-light",
+   "transform": {
+    "pos": [
+     0.6,
+     5,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#c8dcd4",
+     "intensity": 1.25,
+     "radius": 13,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "yard/dock-light-1",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     41.65,
+     0,
+     -10
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "dock-light"
+    }
+   ]
+  },
+  {
+   "id": "yard/dock-light-2",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     41.65,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "dock-light"
+    }
+   ]
+  },
+  {
+   "id": "yard/dock-light-3",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     41.65,
+     0,
+     10
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "dock-light"
+    }
+   ]
+  },
+  {
+   "id": "yard/edge-rail",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     41.85,
+     0,
+     0
+    ],
+    "rot": 1.5708
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "railing",
+     "params": [
+      32,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "yard/seawall",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     42,
+     -1.1,
+     0
+    ],
+    "rot": 1.5708
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 32,
+     "height": 2.2,
+     "segments": [
+      32,
+      3
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      14,
+      1.2
+     ],
+     "tint": "#6b6b66",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "yard/harbor",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     52,
+     -0.7,
+     0
+    ],
+    "rot": 1.5708
+   },
+   "components": [
+    {
+     "type": "water",
+     "width": 40,
+     "height": 20
+    }
+   ]
+  },
+  {
+   "id": "yard/seabed",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     52,
+     -3.5,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      10,
+      0.5,
+      20
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mooring-dolphin",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "mooring-dolphin/pile-1",
+   "parent": "mooring-dolphin",
+   "transform": {
+    "pos": [
+     0,
+     -0.4,
+     0
+    ],
+    "rot": [
+     0.1,
+     0,
+     0.08
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.14,
+      0.17,
+      3.4,
+      6
+     ],
+     "tint": "#463d33"
+    }
+   ]
+  },
+  {
+   "id": "mooring-dolphin/pile-2",
+   "parent": "mooring-dolphin",
+   "transform": {
+    "pos": [
+     -0.35,
+     -0.55,
+     0.22
+    ],
+    "rot": [
+     -0.06,
+     0,
+     -0.12
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.13,
+      0.16,
+      3.1,
+      6
+     ],
+     "tint": "#4a4038"
+    }
+   ]
+  },
+  {
+   "id": "mooring-dolphin/pile-3",
+   "parent": "mooring-dolphin",
+   "transform": {
+    "pos": [
+     0.3,
+     -0.6,
+     -0.25
+    ],
+    "rot": [
+     0.05,
+     0,
+     0.14
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.13,
+      0.16,
+      3,
+      6
+     ],
+     "tint": "#403830"
+    }
+   ]
+  },
+  {
+   "id": "mooring-dolphin/cap",
+   "parent": "mooring-dolphin",
+   "transform": {
+    "pos": [
+     0,
+     1.32,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.55,
+      0.1,
+      0.55
+     ],
+     "tint": "#33302b"
+    }
+   ]
+  },
+  {
+   "id": "mooring-dolphin/marker",
+   "parent": "mooring-dolphin",
+   "transform": {
+    "pos": [
+     0,
+     1.46,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.16,
+      0.18,
+      0.16
+     ],
+     "tint": "#d8e8dc",
+     "fullbright": true
+    }
+   ]
+  },
+  {
+   "id": "mooring-dolphin/light",
+   "parent": "mooring-dolphin",
+   "transform": {
+    "pos": [
+     0,
+     1.9,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#c8dcd4",
+     "intensity": 2.2,
+     "radius": 13,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "yard/dolphin-1",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     53,
+     0,
+     -5
+    ],
+    "rot": 0.5
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "mooring-dolphin"
+    }
+   ]
+  },
+  {
+   "id": "yard/dolphin-2",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     49.5,
+     0,
+     9
+    ],
+    "rot": -1.1
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "mooring-dolphin"
     }
    ]
   }

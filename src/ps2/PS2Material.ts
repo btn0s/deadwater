@@ -7,7 +7,7 @@ import * as THREE from 'three'
  * GS dithered into a 16-bit framebuffer.
  */
 
-export const MAX_LIGHTS = 16
+export const MAX_LIGHTS = 20
 
 // Shared light state. The same object references are installed into every
 // material's uniforms, so mutating these lights the whole scene at once.
