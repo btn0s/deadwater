@@ -231,3 +231,55 @@ body,
   color: #6d757d;
   font-size: 10px;
 }
+
+.editor-placing {
+  background: #2c4a63;
+  color: #dfe9f2;
+  padding: 5px 8px;
+  font-size: 11px;
+}
+
+.editor-palette {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid #2a2e33;
+  padding: 4px;
+}
+
+.editor-tile {
+  aspect-ratio: 1;
+  background: #1d2024;
+  border: 1px solid #33383e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 9px;
+  text-align: center;
+  word-break: break-all;
+  padding: 2px;
+}
+
+.editor-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.editor-tile.text {
+  font-size: 11px;
+}
+
+.editor-tile:hover {
+  border-color: #9fe0a0;
+}
+
+.editor-tile.on {
+  outline: 2px solid #9fe0a0;
+  outline-offset: -2px;
+}

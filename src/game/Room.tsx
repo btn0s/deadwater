@@ -1,27 +1,21 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { Suspense, useEffect, useMemo } from 'react'
 import { useTexture } from '@react-three/drei'
-import { useControls } from 'leva'
 import {
   createPS2Material,
   prepTexture,
   rawColorFromString,
   ambientColor,
   fogSettings,
-  lightPositions,
-  lightColors,
-  lightRadii,
-  lightSpots,
 } from '../ps2/PS2Material'
 import { CuboidCollider } from '@react-three/rapier'
 import { addCollider } from './collision'
-import { Lamp } from './Lamp'
 import { Rat } from './Rat'
 import { Surface } from './Surface'
 import { SewerWing } from './SewerWing'
 import { LoadingDock } from './LoadingDock'
 import { Office } from './Office'
 import { PlacedItems } from './PlacedItems'
+import { useEditor } from './editorStore'
 
 // warehouse: 40m x 24m footprint, 6m ceiling
 const W = 40
@@ -42,17 +36,7 @@ const TEXTURE_URLS: Record<string, string> = {
   MetalPlates006: '/textures/MetalPlates006.jpg',
   DangerSign: '/textures/PaintedMetal017.jpg',
 }
-const TEXTURE_OPTIONS = Object.keys(TEXTURE_URLS)
-
-const LAMP_XZ: [number, number][] = [
-  [-13, -5.5],
-  [0, -5.5],
-  [13, -5.5],
-  [-13, 5.5],
-  [0, 5.5],
-  [13, 5.5],
-]
-const FLICKER_INDEX = 4
+export const TEXTURE_OPTIONS = Object.keys(TEXTURE_URLS)
 
 const PILLARS: [number, number][] = [
   [-12, -6.8],
@@ -63,101 +47,26 @@ const PILLARS: [number, number][] = [
   [12, 6.8],
 ]
 
-interface LightSettings {
-  lampColor: string
-  intensity: number
-  radius: number
-  flicker: boolean
-}
-
-function Lights({ lampColor, intensity, radius, flicker }: LightSettings) {
-  const flickerState = useRef({ on: true, nextToggle: 0.5 })
-  const settings = useRef<LightSettings>({ lampColor, intensity, radius, flicker })
-  settings.current = { lampColor, intensity, radius, flicker }
-
-  useEffect(() => {
-    LAMP_XZ.forEach(([x, z], i) => {
-      lightPositions[i].set(x, 4.6, z)
-      lightColors[i].copy(rawColorFromString(lampColor)).multiplyScalar(intensity)
-      lightRadii[i] = radius
-      lightSpots[i] = 1 // shaded fixtures: no upward spill
-    })
-  }, [lampColor, intensity, radius])
-
-  useFrame(({ clock }) => {
-    const s = settings.current
-    const f = flickerState.current
-    if (!s.flicker) return
-    const t = clock.elapsedTime
-    if (t > f.nextToggle) {
-      f.on = !f.on
-      // long stretches lit, short violent dropouts — HL2 fluorescent cadence
-      f.nextToggle = t + (f.on ? 0.4 + Math.random() * 2.5 : 0.04 + Math.random() * 0.18)
-      const level = f.on ? s.intensity : 0.08
-      lightColors[FLICKER_INDEX].copy(rawColorFromString(s.lampColor)).multiplyScalar(level)
-    }
-  })
-
-  return null
-}
-
 export function Room() {
   const textures = useTexture(TEXTURE_URLS, (loaded) => Object.values(loaded).forEach(prepTexture))
 
-  const walls = useControls('Walls', {
-    texture: { value: 'Concrete031', options: TEXTURE_OPTIONS },
-    repeatX: { value: 16, min: 1, max: 40, step: 0.5 },
-    repeatY: { value: 2, min: 0.5, max: 10, step: 0.1 },
-    tint: '#ffffff',
-    breakupTiling: true,
-    breakupScale: { value: 1, min: 0.25, max: 4, step: 0.25 },
-  })
-
-  const floor = useControls('Floor', {
-    texture: { value: 'Concrete034', options: TEXTURE_OPTIONS },
-    repeatX: { value: 13, min: 1, max: 40, step: 0.5 },
-    repeatY: { value: 8, min: 1, max: 30, step: 0.5 },
-    tint: '#6e6e6e',
-    breakupTiling: false,
-    breakupScale: { value: 1, min: 0.25, max: 4, step: 0.25 },
-  })
-
-  const ceiling = useControls('Ceiling', {
-    texture: { value: 'CorrugatedSteel005', options: TEXTURE_OPTIONS },
-    repeatX: { value: 20, min: 1, max: 30, step: 0.5 },
-    repeatY: { value: 12, min: 1, max: 30, step: 0.5 },
-    tint: '#b4b4b4',
-    breakupTiling: true,
-    breakupScale: { value: 1, min: 0.25, max: 4, step: 0.25 },
-  })
-
-  const lighting = useControls('Lighting', {
-    ambient: '#1a1c20',
-    lampColor: '#d8e6c8',
-    intensity: { value: 1.2, min: 0, max: 2, step: 0.05 },
-    radius: { value: 18, min: 4, max: 40, step: 0.5 },
-    flicker: true,
-  })
-
-  const fog = useControls('Fog', {
-    color: '#07080a',
-    near: { value: 10, min: 0, max: 40, step: 0.5 },
-    far: { value: 48, min: 10, max: 120, step: 1 },
-  })
+  // world settings live in layout.json, edited via the editor's World tab
+  const { world } = useEditor()
+  const { walls, floor, ceiling } = world
 
   // push ambient + fog into the shared shader uniforms
   useEffect(() => {
-    ambientColor.copy(rawColorFromString(lighting.ambient))
-  }, [lighting.ambient])
+    ambientColor.copy(rawColorFromString(world.ambient))
+  }, [world.ambient])
   useEffect(() => {
-    fogSettings.color.copy(rawColorFromString(fog.color))
-    fogSettings.near.value = fog.near
-    fogSettings.far.value = fog.far
-  }, [fog.color, fog.near, fog.far])
+    fogSettings.color.copy(rawColorFromString(world.fog.color))
+    fogSettings.near.value = world.fog.near
+    fogSettings.far.value = world.fog.far
+  }, [world.fog.color, world.fog.near, world.fog.far])
 
-  const wallMap = textures[walls.texture]
-  const floorMap = textures[floor.texture]
-  const ceilingMap = textures[ceiling.texture]
+  const wallMap = textures[walls.texture] ?? textures.Concrete031
+  const floorMap = textures[floor.texture] ?? textures.Concrete034
+  const ceilingMap = textures[ceiling.texture] ?? textures.CorrugatedSteel005
 
   const pillarMaterial = useMemo(() => {
     const m = createPS2Material({ map: wallMap, repeat: [1, 4], color: walls.tint })
@@ -183,18 +92,17 @@ export function Room() {
 
   const wallRepeat: [number, number] = [walls.repeatX, walls.repeatY]
   const wallRepeatSide: [number, number] = [walls.repeatX * (D / W), walls.repeatY]
-  const wallBombing = walls.breakupTiling ? walls.breakupScale : 0
+  const wallBombing = walls.bombing
 
   return (
     <group>
-      <Lights lampColor={lighting.lampColor} intensity={lighting.intensity} radius={lighting.radius} flicker={lighting.flicker} />
       <SewerWing />
       <LoadingDock />
       <Office />
 
       {/* floor / ceiling — floor tinted down so it sits darker than the walls */}
-      <Surface size={[W, D]} segments={[40, 24]} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} map={floorMap} repeat={[floor.repeatX, floor.repeatY]} color={floor.tint} bombing={floor.breakupTiling ? floor.breakupScale : 0} />
-      <Surface size={[W, D]} segments={[40, 24]} position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]} map={ceilingMap} repeat={[ceiling.repeatX, ceiling.repeatY]} color={ceiling.tint} bombing={ceiling.breakupTiling ? ceiling.breakupScale : 0} />
+      <Surface size={[W, D]} segments={[40, 24]} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} map={floorMap} repeat={[floor.repeatX, floor.repeatY]} color={floor.tint} bombing={floor.bombing} />
+      <Surface size={[W, D]} segments={[40, 24]} position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]} map={ceilingMap} repeat={[ceiling.repeatX, ceiling.repeatY]} color={ceiling.tint} bombing={ceiling.bombing} />
 
       {/* walls — north wall is split around the hallway opening (x -11.5..-8.5, 3m tall) */}
       <Surface size={[8.5, H]} segments={[9, 8]} position={[-15.75, H / 2, -D / 2]} map={wallMap} repeat={[walls.repeatX * (8.5 / W), walls.repeatY]} color={walls.tint} bombing={wallBombing} />
@@ -216,10 +124,7 @@ export function Room() {
         </mesh>
       ))}
 
-      {/* hanging fluorescents at each light position; glass glow tracks the light */}
-      {LAMP_XZ.map(([x, z], i) => (
-        <Lamp key={`lamp${x},${z}`} position={[x, H, z]} lightIndex={i} />
-      ))}
+      {/* lamps are layout items now (kind: 'lamp') — see PlacedItems */}
 
       {/* all placeable props live in src/game/layout.json — edit in-game via
           the editor mode (E key / window.__editor) and SAVE */}

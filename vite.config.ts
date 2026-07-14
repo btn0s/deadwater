@@ -68,4 +68,12 @@ function layoutWriter(): Plugin {
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), sheetWriter(), layoutWriter()],
+  build: {
+    rollupOptions: {
+      input: {
+        game: path.resolve(__dirname, 'index.html'),
+        editor: path.resolve(__dirname, 'editor.html'),
+      },
+    },
+  },
 })

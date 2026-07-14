@@ -1,5 +1,169 @@
 {
+  "world": {
+    "walls": {
+      "texture": "Concrete031",
+      "repeatX": 16,
+      "repeatY": 2,
+      "tint": "#ffffff",
+      "bombing": 1
+    },
+    "floor": {
+      "texture": "Concrete034",
+      "repeatX": 13,
+      "repeatY": 8,
+      "tint": "#6e6e6e",
+      "bombing": 0
+    },
+    "ceiling": {
+      "texture": "CorrugatedSteel005",
+      "repeatX": 20,
+      "repeatY": 12,
+      "tint": "#b4b4b4",
+      "bombing": 1
+    },
+    "ambient": "#1a1c20",
+    "fog": {
+      "color": "#07080a",
+      "near": 10,
+      "far": 48
+    }
+  },
   "items": [
+    {
+      "id": "lamp-w-1",
+      "kind": "lamp",
+      "pos": [
+        -13,
+        6,
+        -5.5
+      ],
+      "light": 0,
+      "lightY": 4.6,
+      "color": "#d8e6c8",
+      "intensity": 1.2,
+      "radius": 18,
+      "flicker": false
+    },
+    {
+      "id": "lamp-w-2",
+      "kind": "lamp",
+      "pos": [
+        0,
+        6,
+        -5.5
+      ],
+      "light": 1,
+      "lightY": 4.6,
+      "color": "#d8e6c8",
+      "intensity": 1.2,
+      "radius": 18,
+      "flicker": false
+    },
+    {
+      "id": "lamp-w-3",
+      "kind": "lamp",
+      "pos": [
+        13,
+        6,
+        -5.5
+      ],
+      "light": 2,
+      "lightY": 4.6,
+      "color": "#d8e6c8",
+      "intensity": 1.2,
+      "radius": 18,
+      "flicker": false
+    },
+    {
+      "id": "lamp-w-4",
+      "kind": "lamp",
+      "pos": [
+        -13,
+        6,
+        5.5
+      ],
+      "light": 3,
+      "lightY": 4.6,
+      "color": "#d8e6c8",
+      "intensity": 1.2,
+      "radius": 18,
+      "flicker": false
+    },
+    {
+      "id": "lamp-w-5",
+      "kind": "lamp",
+      "pos": [
+        0,
+        6,
+        5.5
+      ],
+      "light": 4,
+      "lightY": 4.6,
+      "color": "#d8e6c8",
+      "intensity": 1.2,
+      "radius": 18,
+      "flicker": true
+    },
+    {
+      "id": "lamp-w-6",
+      "kind": "lamp",
+      "pos": [
+        13,
+        6,
+        5.5
+      ],
+      "light": 5,
+      "lightY": 4.6,
+      "color": "#d8e6c8",
+      "intensity": 1.2,
+      "radius": 18,
+      "flicker": false
+    },
+    {
+      "id": "lamp-hall",
+      "kind": "lamp",
+      "pos": [
+        -10,
+        3,
+        -16
+      ],
+      "light": 6,
+      "lightY": 2.4,
+      "color": "#d8e6c8",
+      "intensity": 0.9,
+      "radius": 9,
+      "flicker": false
+    },
+    {
+      "id": "lamp-sewer-s",
+      "kind": "lamp",
+      "pos": [
+        -10,
+        5,
+        -22.5
+      ],
+      "light": 7,
+      "lightY": 4.2,
+      "color": "#d8e6c8",
+      "intensity": 1.1,
+      "radius": 14,
+      "flicker": false
+    },
+    {
+      "id": "lamp-sewer-n",
+      "kind": "lamp",
+      "pos": [
+        -10,
+        5,
+        -31.5
+      ],
+      "light": 8,
+      "lightY": 4.2,
+      "color": "#cfe0c0",
+      "intensity": 1,
+      "radius": 14,
+      "flicker": false
+    },
     {
       "id": "depot-barrel-1",
       "kind": "prop",

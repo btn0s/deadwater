@@ -14,7 +14,6 @@ import {
 import { Surface } from './Surface'
 import { SewerWater } from './SewerWater'
 import { addCollider } from './collision'
-import { Lamp } from './Lamp'
 
 /*
  * Layout (top view; main warehouse is south, z increases downward):
@@ -73,9 +72,7 @@ function SewerLights() {
       lightRadii[i] = radius
       lightSpots[i] = 1
     }
-    set(6, HALL_CX, 2.4, HALL_CZ, '#d8e6c8', 0.9, 9)
-    set(7, CX, 4.2, -22.5, '#d8e6c8', 1.1, 14)
-    set(8, CX, 4.2, -31.5, '#cfe0c0', 1.0, 14)
+    // lamps 6-8 are layout items now; only the unfixtured accent stays here
     set(9, -16, 3.0, CH_CZ, '#9fd8a8', 0.7, 11) // sickly green over the water
   }, [])
   return null
@@ -269,7 +266,7 @@ export function SewerWing() {
       <Surface size={[3, 8]} segments={[4, 8]} position={[HALL_CX, HALL_H, HALL_CZ]} rotation={[Math.PI / 2, 0, 0]} map={textures.steel} repeat={[2, 5]} color={0xb4b4b4} />
       <Surface size={[8, HALL_H]} segments={[8, 4]} position={[HALL_X0, HALL_H / 2, HALL_CZ]} rotation={[0, Math.PI / 2, 0]} map={textures.wall} repeat={[4, 1.5]} bombing={1} />
       <Surface size={[8, HALL_H]} segments={[8, 4]} position={[HALL_X1, HALL_H / 2, HALL_CZ]} rotation={[0, -Math.PI / 2, 0]} map={textures.wall} repeat={[4, 1.5]} bombing={1} />
-      <Lamp position={[HALL_CX, HALL_H, HALL_CZ]} lightIndex={6} />
+      {/* hallway lamp is a layout item */}
 
       {/* ---------- sewer room shell ---------- */}
       {/* platforms */}
@@ -337,8 +334,7 @@ export function SewerWing() {
       <Surface size={[1.1, 1.1]} segments={[2, 2]} position={[HALL_X1 + 1.6, 1.8, Z1 - 0.04]} rotation={[0, Math.PI, 0]} map={textures.danger} repeat={[1, 1]} />
 
       {/* lamps over the platforms */}
-      <Lamp position={[CX, H, -22.5]} lightIndex={7} />
-      <Lamp position={[CX, H, -31.5]} lightIndex={8} />
+      {/* platform lamps are layout items */}
 
       {/* pump station on the north platform, kept clear of the walkway */}
       <PumpUnit x={-16.5} plates={textures.plates} steel={textures.steel} concrete={textures.floor} />

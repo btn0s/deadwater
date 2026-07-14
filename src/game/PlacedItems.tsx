@@ -5,6 +5,7 @@ import { Prop, SplitProp, FbxProp, MODELS, FBX_MODELS } from './Prop'
 import { PaperWad } from './PaperWad'
 import { TrashPile } from './TrashPile'
 import { Rack } from './Rack'
+import { Lamp } from './Lamp'
 import { useEditor, editorStore, type LayoutItem } from './editorStore'
 
 const SPLITTERS: Record<string, (n: string) => string> = {
@@ -109,6 +110,20 @@ function ItemVisual({ item, inert, zeroed = false }: { item: LayoutItem; inert: 
       return <LoadedPallet position={pos2} rotationY={rot} variant={item.variant ?? 0} inert={inert} />
     case 'rack':
       return <Rack position={pos2} rotationY={rot} inert={inert} />
+    case 'lamp':
+      // lamps keep lighting even in the editor — the room would be black otherwise
+      return (
+        <Lamp
+          position={pos}
+          lightIndex={item.light ?? 11}
+          lightY={item.lightY}
+          color={item.color}
+          intensity={item.intensity}
+          radius={item.radius ?? 18}
+          flicker={item.flicker}
+          lightAt={zeroed ? item.pos : undefined}
+        />
+      )
   }
 }
 
