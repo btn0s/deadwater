@@ -15,7 +15,7 @@ import {
 } from '../ps2/PS2Material'
 import { CuboidCollider } from '@react-three/rapier'
 import { addCollider } from './collision'
-import { Prop, SplitProp, MODELS } from './Prop'
+import { Prop, SplitProp, FbxProp, MODELS, FBX_MODELS } from './Prop'
 import { PaperWad } from './PaperWad'
 import { Rat } from './Rat'
 import { TrashPile } from './TrashPile'
@@ -271,6 +271,30 @@ export function Room() {
       <Prop url={MODELS.plasticCrate} position={[13.75, 0.62, 11.15]} rotationY={0.12} collide={false} grabbable />
       <PaperWad position={[13, 0, 10.2]} seed={13} size={0.08} />
       <PaperWad position={[1.3, 0, 9.4]} seed={17} size={0.07} />
+
+      {/* ---- dock equipment ---- */}
+      <FbxProp url={FBX_MODELS.palletTruck.url} textureUrl={FBX_MODELS.palletTruck.tex} position={[13.2, 0, 3.6]} rotationY={2.45} />
+      <FbxProp url={FBX_MODELS.carJack.url} textureUrl={FBX_MODELS.carJack.tex} position={[12.3, 0, 2.4]} rotationY={0.8} collide={false} grabbable />
+      <FbxProp url={FBX_MODELS.trolley.url} textureUrl={FBX_MODELS.trolley.tex} position={[15.8, 0, -5.6]} rotationY={1.15} scale={0.7} />
+      <FbxProp url={FBX_MODELS.pallet.url} textureUrl={FBX_MODELS.pallet.tex} position={[16.6, 0, -0.4]} rotationY={0.12} grabbable />
+      <FbxProp url={FBX_MODELS.pallet.url} textureUrl={FBX_MODELS.pallet.tex} position={[16.5, 0.16, -0.5]} rotationY={0.3} collide={false} grabbable />
+      <FbxProp url={FBX_MODELS.cautionSign.url} textureUrl={FBX_MODELS.cautionSign.tex} position={[14.2, 0, 7.4]} rotationY={-0.5} collide={false} grabbable />
+      <FbxProp url={FBX_MODELS.fireExtinguisher.url} textureUrl={FBX_MODELS.fireExtinguisher.tex} position={[19.5, 0, -4.4]} rotationY={3.6} scale={0.25} collide={false} grabbable />
+      <FbxProp url={FBX_MODELS.explosiveBarrel2.url} textureUrl={FBX_MODELS.explosiveBarrel2.tex} position={[18.6, 0, -9.7]} rotationY={1.9} />
+
+      {/* ---- center-west landmark + wall dressing ---- */}
+      <FbxProp url={FBX_MODELS.cableDrum.url} textureUrl={FBX_MODELS.cableDrum.tex} position={[-4.8, 0, 2.4]} rotationY={0.4} />
+      <FbxProp url={FBX_MODELS.electricalBox.url} textureUrl={FBX_MODELS.electricalBox.tex} position={[-5.6, 1.25, -11.85]} physics="none" collide={false} />
+      <FbxProp url={FBX_MODELS.electricalBox2.url} textureUrl={FBX_MODELS.electricalBox2.tex} position={[-4.2, 1.4, -11.85]} physics="none" collide={false} />
+      <FbxProp url={FBX_MODELS.workLight.url} textureUrl={FBX_MODELS.workLight.tex} position={[-12.6, 0, -9.2]} rotationY={0.7} collide={false} />
+      <FbxProp url={FBX_MODELS.motorOil.url} textureUrl={FBX_MODELS.motorOil.tex} position={[-8.7, 0, -9.1]} rotationY={2.2} collide={false} grabbable />
+      <FbxProp url={FBX_MODELS.sprayCan.url} textureUrl={FBX_MODELS.sprayCan.tex} position={[-9.3, 0, -8.6]} rotationY={4.4} collide={false} grabbable />
+
+      {/* ---- worker lockers along the west wall, north of the office ---- */}
+      <FbxProp url={FBX_MODELS.locker.url} textureUrl={FBX_MODELS.locker.tex} position={[-19.55, 0, -3.7]} rotationY={Math.PI / 2} />
+      <FbxProp url={FBX_MODELS.locker.url} textureUrl={FBX_MODELS.locker.tex} position={[-19.55, 0, -4.55]} rotationY={Math.PI / 2} />
+      <FbxProp url={FBX_MODELS.gasCan.url} textureUrl={FBX_MODELS.gasCan.tex} position={[-19, 0, -5.4]} rotationY={1.1} collide={false} grabbable />
+      <FbxProp url={FBX_MODELS.waterBarrel.url} textureUrl={FBX_MODELS.waterBarrel.tex} position={[-17.3, 0, -7.4]} rotationY={2.8} />
 
       {/* ---- stock corner, NE ---- */}
       <Prop url={MODELS.cardboardBox} position={[17.5, 0, -3]} grabbable />

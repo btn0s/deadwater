@@ -17,3 +17,11 @@ Textures downscaled to 256px for PS2-era authenticity.
 - "Mixed municipal solid waste at an open dumpsite" by UniqueMonik, CC BY 4.0
   https://commons.wikimedia.org/wiki/File:Mixed_municipal_solid_waste_at_an_open_dumpsite.jpg
   (cropped and downscaled)
+
+## itch.io packs — 3dmodelscc0 (CC0)
+- Free CC0 Industrial 3D Models (pallet truck, trolley, electrical boxes,
+  cable drum, work lights, gas cylinder/can, water/explosive barrels, car jack)
+  https://3dmodelscc0.itch.io/free-cc0-industrial-3d-models
+- Free CC0 3D Industrial Props Pack #2 (pallet, locker, caution sign, fire
+  extinguisher, cement mixer, generator, motor oil, spray can)
+  https://3dmodelscc0.itch.io/free-cc0-3d-industrial-props-pack-2

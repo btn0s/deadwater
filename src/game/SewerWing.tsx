@@ -14,7 +14,7 @@ import {
 import { Surface } from './Surface'
 import { SewerWater } from './SewerWater'
 import { addCollider } from './collision'
-import { Prop, MODELS } from './Prop'
+import { Prop, FbxProp, MODELS, FBX_MODELS } from './Prop'
 import { PaperWad } from './PaperWad'
 
 /*
@@ -350,6 +350,13 @@ export function SewerWing() {
       <Prop url={MODELS.propaneTank} position={[-20.1, 0, -31.8]} rotationY={3.8} />
       <Prop url={MODELS.barrel} position={[-2.5, 0, -32.9]} rotationY={2.3} />
       <Prop url={MODELS.barrel} position={[-1.3, 0, -32.5]} rotationY={4.4} />
+
+      {/* maintenance gear from the industrial packs */}
+      <FbxProp url={FBX_MODELS.workLight2.url} textureUrl={FBX_MODELS.workLight2.tex} position={[-13.8, 0, -22.6]} rotationY={3.5} collide={false} />
+      <FbxProp url={FBX_MODELS.gasCylinder.url} textureUrl={FBX_MODELS.gasCylinder.tex} position={[-10.7, 0, -32.6]} rotationY={0.4} />
+      <FbxProp url={FBX_MODELS.gasCylinder.url} textureUrl={FBX_MODELS.gasCylinder.tex} position={[-10.1, 0, -32.15]} rotationY={2.3} />
+      <FbxProp url={FBX_MODELS.cementMixer.url} textureUrl={FBX_MODELS.cementMixer.tex} position={[-0.6, 0, -31.9]} rotationY={2.6} />
+      <FbxProp url={FBX_MODELS.generator2.url} textureUrl={FBX_MODELS.generator2.tex} position={[-17.5, 0, -21.4]} rotationY={1.2} />
 
       {/* south platform: small maintenance cache at the west end, route stays clear */}
       <Prop url={MODELS.barrel} position={[-20.5, 0, -21.5]} rotationY={1.9} />

@@ -82,3 +82,12 @@ packs), unzip into `public/models/<pack>/`, convert to GLTF if needed
 4. Flags: `grabbable` for junk, `physics="trimesh"` for hollow containers,
    `physics="none"` for ceiling-mounted decor, `collide` for player-blocking.
 5. Add attribution to `public/models/CREDITS.md` (required for CC BY).
+
+## CLI download tool (works)
+
+`npx itchio-downloader --url <pack-url> --downloadDirectory <dir>` — free
+packs, no API key ([repo](https://github.com/Wal33D/itchio-downloader)).
+Note: some "zips" are actually RAR5 — extract with `bsdtar -xf`. FBX packs
+load at runtime via FbxProp (drei useFBX + explicit base-color texture);
+scale is auto-normalized (cm heuristic) with a manual `scale` prop override.
+Alternative: [itch-dl](https://github.com/DragoonAethis/itch-dl) (needs API key).

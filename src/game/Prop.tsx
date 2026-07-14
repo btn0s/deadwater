@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { useGLTF } from '@react-three/drei'
+import { useGLTF, useFBX, useTexture } from '@react-three/drei'
 import { RigidBody, type RapierRigidBody } from '@react-three/rapier'
 import * as THREE from 'three'
 import { createPS2Material, prepTexture } from '../ps2/PS2Material'
@@ -169,6 +169,96 @@ export function SplitProp({ url, position, rotationY = 0, groupBy = (n) => n }: 
       ))}
     </>
   )
+}
+
+interface FbxPropProps {
+  url: string
+  textureUrl: string
+  position: [number, number, number]
+  rotationY?: number
+  scale?: number
+  collide?: boolean
+  grabbable?: boolean
+  physics?: 'hull' | 'trimesh' | 'none'
+}
+
+/**
+ * FBX prop (itch.io packs): loads the mesh + its base-color map explicitly,
+ * swaps in the PS2 material, and normalizes cm-scale exports to meters.
+ */
+export function FbxProp({ url, textureUrl, position, rotationY = 0, scale = 1, collide = true, grabbable = false, physics = 'hull' }: FbxPropProps) {
+  const fbx = useFBX(url)
+  const map = useTexture(textureUrl)
+  const group = useRef<THREE.Group>(null)
+
+  const cloned = useMemo(() => {
+    const c = fbx.clone(true)
+    const box = new THREE.Box3().setFromObject(c)
+    const size = box.getSize(new THREE.Vector3())
+    const maxDim = Math.max(size.x, size.y, size.z)
+    // cm-unit exports come in ~100x too big
+    const unit = maxDim > 8 ? 0.01 : 1
+    c.scale.setScalar(unit * scale)
+    // rebase so the model's lowest point sits at y=0
+    c.updateMatrixWorld(true)
+    const scaled = new THREE.Box3().setFromObject(c)
+    c.position.y -= scaled.min.y
+    const material = createPS2Material({ map: prepTexture(map) })
+    c.traverse((obj) => {
+      if (obj instanceof THREE.Mesh) {
+        obj.material = material
+        obj.castShadow = false
+        obj.receiveShadow = false
+      }
+    })
+    return c
+  }, [fbx, map, scale])
+
+  useEffect(() => {
+    if (grabbable || !collide || !group.current) return
+    const box = new THREE.Box3().setFromObject(group.current)
+    return addCollider({ minX: box.min.x, maxX: box.max.x, minZ: box.min.z, maxZ: box.max.z })
+  }, [collide, grabbable])
+
+  if (grabbable) {
+    return <GrabbablePiece object={cloned} position={position} rotationY={rotationY} />
+  }
+  const visual = (
+    <group ref={group} position={position} rotation-y={rotationY}>
+      <primitive object={cloned} />
+    </group>
+  )
+  if (physics === 'none') return visual
+  return (
+    <RigidBody type="fixed" colliders={physics}>
+      {visual}
+    </RigidBody>
+  )
+}
+
+const IP = '/models/industrial-pack'
+const IP2 = '/models/industrial-pack2'
+export const FBX_MODELS = {
+  palletTruck: { url: `${IP}/PalletTruck/PalletTruck.fbx`, tex: `${IP}/PalletTruck/PalletTruck_Base_Color.png` },
+  trolley: { url: `${IP}/Platform_Trolley/Platform_Trolley.fbx`, tex: `${IP}/Platform_Trolley/Platform_Trolley_Base_Color.png` },
+  electricalBox: { url: `${IP}/ElectricalBox/ElectricalBox.fbx`, tex: `${IP}/ElectricalBox/ElectricalBox_Base_Color.png` },
+  electricalBox2: { url: `${IP}/ElectricalBox02/ElectricalBox02.fbx`, tex: `${IP}/ElectricalBox02/ElectricalBox02_Base_Color.png` },
+  cableDrum: { url: `${IP}/CableDrum/CableDrum.fbx`, tex: `${IP}/CableDrum/CableDrum_Base_Color.png` },
+  workLight: { url: `${IP}/WorkLight/WorkLight.fbx`, tex: `${IP}/WorkLight/WorkLight_Base_Color.png` },
+  workLight2: { url: `${IP}/Worklight02/WorkLight02.fbx`, tex: `${IP}/Worklight02/WorkLight02_Base_Color.png` },
+  gasCylinder: { url: `${IP}/Gas_Cylinder/Gas_Cylinder.fbx`, tex: `${IP}/Gas_Cylinder/Gas_Cylinder_Base_Color.png` },
+  gasCan: { url: `${IP}/Gas_can/Gas_Canister.fbx`, tex: `${IP}/Gas_can/GasCan_Base_Color.png` },
+  waterBarrel: { url: `${IP}/Water_Barrel/Water_Barrel.fbx`, tex: `${IP}/Water_Barrel/Water_Barrel_Base_Color.png` },
+  explosiveBarrel2: { url: `${IP}/ExplosiveBarrel/ExplosiveBarrel.fbx`, tex: `${IP}/ExplosiveBarrel/ExplosiveBarrel_Base_Color.png` },
+  carJack: { url: `${IP}/Car_Jack/CarJack.fbx`, tex: `${IP}/Car_Jack/CarJack_Base_Color.png` },
+  pallet: { url: `${IP2}/Wood_Pallet/Wood_Pallet.fbx`, tex: `${IP2}/Wood_Pallet/Wood_Pallet_Base_Color.png` },
+  locker: { url: `${IP2}/Locker/Locker.fbx`, tex: `${IP2}/Locker/Locker_Base_Color.png` },
+  cautionSign: { url: `${IP2}/CautionSign_WetFloor/Caution_Sign.fbx`, tex: `${IP2}/CautionSign_WetFloor/Caution_Sign_Base_Color.png` },
+  fireExtinguisher: { url: `${IP2}/Fire_Extinguisher/Fire_extinguisher.fbx`, tex: `${IP2}/Fire_Extinguisher/Fire_extinguisher_Base_Color.png` },
+  cementMixer: { url: `${IP2}/Cement_Mixer/Cement_Mixer.fbx`, tex: `${IP2}/Cement_Mixer/Cement_Mixer_Base_Color.png` },
+  generator2: { url: `${IP2}/Generator/Generator.fbx`, tex: `${IP2}/Generator/Generator_Base_Color.png` },
+  motorOil: { url: `${IP2}/Motor_Oil/Motor_Oil.fbx`, tex: `${IP2}/Motor_Oil/Motor_Oil_Base_Color.png` },
+  sprayCan: { url: `${IP2}/SprayCan/Spray_can.fbx`, tex: `${IP2}/SprayCan/SprayCan_Base_Color.png` },
 }
 
 export const MODELS = {
