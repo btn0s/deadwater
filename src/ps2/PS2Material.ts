@@ -7,7 +7,7 @@ import * as THREE from 'three'
  * GS dithered into a 16-bit framebuffer.
  */
 
-export const MAX_LIGHTS = 8
+export const MAX_LIGHTS = 12
 
 // Shared light state. The same object references are installed into every
 // material's uniforms, so mutating these lights the whole scene at once.
@@ -75,6 +75,7 @@ const vertexShader = /* glsl */ `
   uniform float uLightSpot[${MAX_LIGHTS}];
   uniform vec3 uAmbient;
   uniform vec2 uUvRepeat;
+  uniform vec2 uUvOffset;
   uniform float uFullbright;
 
   varying vec2 vUv;
@@ -82,7 +83,7 @@ const vertexShader = /* glsl */ `
   varying float vFogDepth;
 
   void main() {
-    vUv = uv * uUvRepeat;
+    vUv = uv * uUvRepeat + uUvOffset;
 
     vec4 worldPos = modelMatrix * vec4(position, 1.0);
     vec3 worldNormal = normalize(mat3(modelMatrix) * normal);
@@ -199,6 +200,7 @@ export function createPS2Material(opts: PS2MaterialOptions = {}): THREE.ShaderMa
       emissiveMap: { value: opts.emissiveMap ?? getBlackTexture() },
       uColor: { value: resolveColor(opts.color) },
       uUvRepeat: { value: new THREE.Vector2(...(opts.repeat ?? [1, 1])) },
+      uUvOffset: { value: new THREE.Vector2(0, 0) },
       uFullbright: { value: opts.fullbright ? 1 : 0 },
       uBomb: { value: opts.bombing ?? 0 },
     },

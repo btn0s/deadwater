@@ -4,6 +4,7 @@ import * as THREE from 'three'
 import { RigidBodyType } from '@dimforge/rapier3d-compat'
 import { allGrabbables, findGrabbable, type Grabbable } from './grabbables'
 import { player } from './playerState'
+import { clampHeldTarget } from './worldBounds'
 
 const GRAB_RANGE = 4.2
 const HOLD_DIST = 1.9
@@ -11,9 +12,6 @@ const HOLD_STIFFNESS = 10 // spring rate toward the hold point
 const SPIN_RATE = 0.6
 const BOB_AMPLITUDE = 0.05
 const TOSS_CAP = 7
-// keep held objects inside the room shell
-const BOUND_X = 19.6
-const BOUND_Z = 11.6
 
 export function Telekinesis() {
   const camera = useThree((s) => s.camera)
@@ -80,9 +78,7 @@ export function Telekinesis() {
       camera.getWorldDirection(fwd)
       const target = camera.position.clone().addScaledVector(fwd, HOLD_DIST)
       target.y += Math.sin(clock.elapsedTime * 2.5) * BOB_AMPLITUDE
-      const r = held.current.radius
-      target.x = THREE.MathUtils.clamp(target.x, -BOUND_X + r, BOUND_X - r)
-      target.z = THREE.MathUtils.clamp(target.z, -BOUND_Z + r, BOUND_Z - r)
+      clampHeldTarget(target, held.current.radius)
       target.y = THREE.MathUtils.clamp(target.y, 0.25, 4.6)
 
       const t = body.translation()

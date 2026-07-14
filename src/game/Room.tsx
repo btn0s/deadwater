@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useTexture } from '@react-three/drei'
 import { useControls } from 'leva'
-import * as THREE from 'three'
 import {
   createPS2Material,
   prepTexture,
@@ -20,6 +19,8 @@ import { Prop, SplitProp, MODELS } from './Prop'
 import { PaperWad } from './PaperWad'
 import { Rat } from './Rat'
 import { TrashPile } from './TrashPile'
+import { Surface } from './Surface'
+import { SewerWing } from './SewerWing'
 
 // warehouse: 40m x 24m footprint, 6m ceiling
 const W = 40
@@ -60,31 +61,6 @@ const PILLARS: [number, number][] = [
   [0, 6.8],
   [12, 6.8],
 ]
-
-interface SurfaceProps {
-  size: [number, number]
-  segments: [number, number]
-  position: [number, number, number]
-  rotation?: [number, number, number]
-  map: THREE.Texture
-  repeat: [number, number]
-  color?: number | string
-  bombing?: number
-}
-
-function Surface({ size, segments, position, rotation = [0, 0, 0], map, repeat, color, bombing = 0 }: SurfaceProps) {
-  const material = useMemo(
-    () => createPS2Material({ map, repeat, color, bombing }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [map, repeat[0], repeat[1], color, bombing],
-  )
-  useEffect(() => () => material.dispose(), [material])
-  return (
-    <mesh position={position} rotation={rotation} material={material}>
-      <planeGeometry args={[size[0], size[1], segments[0], segments[1]]} />
-    </mesh>
-  )
-}
 
 interface LightSettings {
   lampColor: string
@@ -191,7 +167,9 @@ export function Room() {
   // static world colliders: four walls + pillars
   useEffect(() => {
     const removers = [
-      addCollider({ minX: -W / 2 - 1, maxX: W / 2 + 1, minZ: -D / 2 - 1, maxZ: -D / 2 }),
+      // north wall, split around the hallway opening
+      addCollider({ minX: -W / 2 - 1, maxX: -11.5, minZ: -D / 2 - 1, maxZ: -D / 2 }),
+      addCollider({ minX: -8.5, maxX: W / 2 + 1, minZ: -D / 2 - 1, maxZ: -D / 2 }),
       addCollider({ minX: -W / 2 - 1, maxX: W / 2 + 1, minZ: D / 2, maxZ: D / 2 + 1 }),
       addCollider({ minX: -W / 2 - 1, maxX: -W / 2, minZ: -D / 2 - 1, maxZ: D / 2 + 1 }),
       addCollider({ minX: W / 2, maxX: W / 2 + 1, minZ: -D / 2 - 1, maxZ: D / 2 + 1 }),
@@ -209,20 +187,22 @@ export function Room() {
   return (
     <group>
       <Lights lampColor={lighting.lampColor} intensity={lighting.intensity} radius={lighting.radius} flicker={lighting.flicker} />
+      <SewerWing />
 
       {/* floor / ceiling — floor tinted down so it sits darker than the walls */}
       <Surface size={[W, D]} segments={[40, 24]} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} map={floorMap} repeat={[floor.repeatX, floor.repeatY]} color={floor.tint} bombing={floor.breakupTiling ? floor.breakupScale : 0} />
       <Surface size={[W, D]} segments={[40, 24]} position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]} map={ceilingMap} repeat={[ceiling.repeatX, ceiling.repeatY]} color={ceiling.tint} bombing={ceiling.breakupTiling ? ceiling.breakupScale : 0} />
 
-      {/* walls */}
-      <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, -D / 2]} map={wallMap} repeat={wallRepeat} color={walls.tint} bombing={wallBombing} />
+      {/* walls — north wall is split around the hallway opening (x -11.5..-8.5, 3m tall) */}
+      <Surface size={[8.5, H]} segments={[9, 8]} position={[-15.75, H / 2, -D / 2]} map={wallMap} repeat={[walls.repeatX * (8.5 / W), walls.repeatY]} color={walls.tint} bombing={wallBombing} />
+      <Surface size={[28.5, H]} segments={[29, 8]} position={[5.75, H / 2, -D / 2]} map={wallMap} repeat={[walls.repeatX * (28.5 / W), walls.repeatY]} color={walls.tint} bombing={wallBombing} />
+      <Surface size={[3, 3]} segments={[3, 4]} position={[-10, 4.5, -D / 2]} map={wallMap} repeat={[walls.repeatX * (3 / W), walls.repeatY / 2]} color={walls.tint} bombing={wallBombing} />
+      <Surface size={[3, 3]} segments={[3, 4]} position={[-10, 4.5, -D / 2 - 0.01]} rotation={[0, Math.PI, 0]} map={wallMap} repeat={[walls.repeatX * (3 / W), walls.repeatY / 2]} color={walls.tint} />
       <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, D / 2]} rotation={[0, Math.PI, 0]} map={wallMap} repeat={wallRepeat} color={walls.tint} bombing={wallBombing} />
       <Surface size={[D, H]} segments={[24, 8]} position={[-W / 2, H / 2, 0]} rotation={[0, Math.PI / 2, 0]} map={wallMap} repeat={wallRepeatSide} color={walls.tint} bombing={wallBombing} />
       <Surface size={[D, H]} segments={[24, 8]} position={[W / 2, H / 2, 0]} rotation={[0, -Math.PI / 2, 0]} map={wallMap} repeat={wallRepeatSide} color={walls.tint} bombing={wallBombing} />
 
-      {/* roller door on the north wall, with warning signage */}
-      <Surface size={[5, 4.6]} segments={[6, 6]} position={[-10, 2.3, -D / 2 + 0.04]} map={textures.CorrugatedSteel005} repeat={[4, 2.2]} />
-      <Surface size={[1.2, 1.2]} segments={[2, 2]} position={[-10, 2.6, -D / 2 + 0.06]} map={textures.DangerSign} repeat={[1, 1]} />
+      {/* warning signage beside the hallway mouth */}
       <Surface size={[1.1, 1.1]} segments={[2, 2]} position={[-13.2, 1.9, -D / 2 + 0.06]} map={textures.DangerSign} repeat={[1, 1]} />
       <Surface size={[1.1, 1.1]} segments={[2, 2]} position={[W / 2 - 0.06, 1.8, 2.5]} rotation={[0, -Math.PI / 2, 0]} map={textures.DangerSign} repeat={[1, 1]} />
 
@@ -276,7 +256,10 @@ export function Room() {
       {/* static physics shell for junk to rest against */}
       <CuboidCollider args={[W / 2 + 1, 0.5, D / 2 + 1]} position={[0, -0.5, 0]} />
       <CuboidCollider args={[W / 2 + 1, 0.5, D / 2 + 1]} position={[0, H + 0.5, 0]} />
-      <CuboidCollider args={[W / 2 + 1, H / 2, 0.5]} position={[0, H / 2, -D / 2 - 0.5]} />
+      {/* north wall split around the hallway opening */}
+      <CuboidCollider args={[4.75, H / 2, 0.5]} position={[-16.25, H / 2, -D / 2 - 0.5]} />
+      <CuboidCollider args={[14.75, H / 2, 0.5]} position={[6.25, H / 2, -D / 2 - 0.5]} />
+      <CuboidCollider args={[1.5, 1.5, 0.5]} position={[-10, 4.5, -D / 2 - 0.5]} />
       <CuboidCollider args={[W / 2 + 1, H / 2, 0.5]} position={[0, H / 2, D / 2 + 0.5]} />
       <CuboidCollider args={[0.5, H / 2, D / 2 + 1]} position={[-W / 2 - 0.5, H / 2, 0]} />
       <CuboidCollider args={[0.5, H / 2, D / 2 + 1]} position={[W / 2 + 0.5, H / 2, 0]} />

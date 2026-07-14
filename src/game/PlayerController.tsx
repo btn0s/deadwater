@@ -79,6 +79,11 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
     if (import.meta.env.DEV) {
       // escape hatch for automated testing: pointer lock is unavailable in
       // embedded/headless browsers
+      ;(window as unknown as Record<string, unknown>).__playerPos = () => ({
+        x: +pos.current.x.toFixed(2),
+        z: +pos.current.z.toFixed(2),
+        yaw: +yaw.current.toFixed(2),
+      })
       ;(window as unknown as Record<string, unknown>).__devLock = (v: boolean) => {
         locked.current = v
         player.locked = v
