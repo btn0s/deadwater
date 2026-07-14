@@ -47,16 +47,20 @@ export function TrashPile({ position, radius = 1.4, height = 0.4, seed, items = 
     // a low displaced grid: plane, semi-random subdivision, interior raised a little
     const geo = new THREE.PlaneGeometry(radius * 2, radius * 2, 4, 4)
     const pos = geo.attributes.position
+    const cell = (radius * 2) / 4
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i)
       const y = pos.getY(i)
       const isEdge = Math.max(Math.abs(x), Math.abs(y)) > radius * 0.99
-      if (isEdge) continue
-      const cell = (radius * 2) / 4
       const jx = x + (rand() - 0.5) * cell * 0.7
       const jy = y + (rand() - 0.5) * cell * 0.7
+      if (isEdge) {
+        // sink the skirt below grade — the floor clips it into an organic outline
+        pos.setXYZ(i, jx, jy, -(0.05 + rand() * 0.14))
+        continue
+      }
       const falloff = 1 - Math.hypot(jx, jy) / (radius * 1.35)
-      const elevation = Math.max(0, height * falloff * (0.5 + rand()))
+      const elevation = Math.max(0.04, height * falloff * (0.5 + rand()))
       pos.setXYZ(i, jx, jy, elevation)
     }
     geo.rotateX(-Math.PI / 2)
