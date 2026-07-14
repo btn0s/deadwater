@@ -4,7 +4,7 @@ import { useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import { createPS2Material, prepTexture, rawColor, lightPositions, lightColors, lightRadii } from '../ps2/PS2Material'
 import { addCollider } from './collision'
-import { Prop, MODELS } from './Prop'
+import { Prop, SplitProp, MODELS } from './Prop'
 import { PaperWad } from './PaperWad'
 
 // warehouse: 40m x 24m footprint, 6m ceiling
@@ -169,7 +169,12 @@ export function Room() {
       <Prop url={MODELS.woodenCrate} position={[-6.5, 0, -10]} rotationY={0.3} grabbable />
       <Prop url={MODELS.plasticCrate} position={[-5.4, 0, -10.3]} rotationY={1.1} grabbable />
       <Prop url={MODELS.plasticCrate} position={[-5.9, 0, -9.2]} rotationY={2.4} grabbable />
-      <Prop url={MODELS.militaryCrate} position={[12.8, 0, 9.8]} rotationY={2.9} grabbable />
+      <SplitProp
+        url={MODELS.militaryCrate}
+        position={[12.8, 0, 9.8]}
+        rotationY={2.9}
+        groupBy={(n) => (n.endsWith('_a') ? 'a' : 'b')}
+      />
       <Prop url={MODELS.trashCan} position={[18.6, 0, 7.5]} rotationY={0.6} />
       <Prop url={MODELS.trashbag} position={[17.7, 0, 6.4]} rotationY={1.7} collide={false} grabbable />
       <Prop url={MODELS.trashbag} position={[18.3, 0, 5.6]} rotationY={4.2} collide={false} grabbable />
@@ -177,8 +182,8 @@ export function Room() {
       <Prop url={MODELS.oilTin} position={[-15.9, 0, -7.4]} rotationY={0.8} collide={false} grabbable />
       <Prop url={MODELS.canRusted} position={[6.2, 0, 3.4]} rotationY={1.2} collide={false} grabbable />
       <Prop url={MODELS.canRusted} position={[-3.8, 0, 1.6]} rotationY={3.9} collide={false} grabbable />
-      <Prop url={MODELS.foodCans} position={[3.9, 0.68, -2.1]} rotationY={0.5} collide={false} grabbable />
-      <Prop url={MODELS.foodCans} position={[13.4, 0, 9.1]} rotationY={2.8} collide={false} grabbable />
+      <SplitProp url={MODELS.foodCans} position={[3.9, 0.68, -2.1]} rotationY={0.5} />
+      <SplitProp url={MODELS.foodCans} position={[13.4, 0, 9.1]} rotationY={2.8} />
 
       {/* crumpled paper scattered on the floor */}
       <PaperWad position={[2.2, 0, 4.8]} seed={11} />
