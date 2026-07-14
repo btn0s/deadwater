@@ -52,7 +52,7 @@ export default function App() {
               <PlayerBody />
             </Physics>
           </Suspense>
-          <PlayerController onLockChange={setLocked} spawn={[15, 8.5]} initialYaw={Math.PI / 3} />
+          <PlayerController onLockChange={setLocked} spawn={[0, 4]} initialYaw={0} />
           <Telekinesis />
           <InteractionSystem />
           <PS2Pipeline />
