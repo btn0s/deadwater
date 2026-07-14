@@ -11,13 +11,15 @@ function applyPS2Materials(root: THREE.Object3D) {
   root.traverse((obj) => {
     if (obj instanceof THREE.Mesh) {
       const src = (Array.isArray(obj.material) ? obj.material[0] : obj.material) as THREE.MeshStandardMaterial
-      // bulb glass renders as a lit diffuser: fullbright, warm lamp white —
-      // PS2 games drew light sources as unlit bright geometry
-      if (obj.name.toLowerCase().includes('glass') || src.emissiveMap) {
+      if (obj.name.toLowerCase().includes('glass')) {
+        // bulb glass renders as a lit diffuser: fullbright, warm lamp white —
+        // PS2 games drew light sources as unlit bright geometry
         obj.material = createPS2Material({ fullbright: true, color: 0xf3f0da })
       } else {
+        // housing stays scene-lit; emissive texels (the bulb) glow additively
         const map = src.map ? prepTexture(src.map) : null
-        obj.material = createPS2Material({ map })
+        const emissiveMap = src.emissiveMap ? prepTexture(src.emissiveMap) : null
+        obj.material = createPS2Material({ map, emissiveMap })
       }
       obj.castShadow = false
       obj.receiveShadow = false

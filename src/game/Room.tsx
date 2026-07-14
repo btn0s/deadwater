@@ -19,6 +19,7 @@ import { addCollider } from './collision'
 import { Prop, SplitProp, MODELS } from './Prop'
 import { PaperWad } from './PaperWad'
 import { Rat } from './Rat'
+import { TrashPile } from './TrashPile'
 
 // warehouse: 40m x 24m footprint, 6m ceiling
 const W = 40
@@ -283,21 +284,16 @@ export function Room() {
         <CuboidCollider key={`p${x},${z}`} args={[0.35, H / 2, 0.35]} position={[x, H / 2, z]} />
       ))}
 
-      {/* ---- trash corner, SE — cans, bags, spilled junk ---- */}
+      {/* ---- trash corner, SE — cans flank a big debris mound ---- */}
       <Prop url={MODELS.trashCan} position={[18.6, 0, 7.5]} rotationY={0.6} physics="trimesh" />
       <Prop url={MODELS.trashCan} position={[17.5, 0, 10.7]} rotationY={2.3} physics="trimesh" />
       <Prop url={MODELS.trashbag} position={[17.8, 0, 6.3]} rotationY={1.7} collide={false} grabbable />
-      <Prop url={MODELS.trashbag} position={[18.5, 0, 5.4]} rotationY={4.2} collide={false} grabbable />
-      <Prop url={MODELS.trashbag} position={[16.4, 0, 10.9]} rotationY={0.9} collide={false} grabbable />
-      <Prop url={MODELS.canRusted} position={[17.2, 0, 8.6]} rotationY={1.2} collide={false} grabbable />
-      <Prop url={MODELS.canRusted} position={[18.1, 0, 9.4]} rotationY={3.9} collide={false} grabbable />
-      <Prop url={MODELS.canRusted} position={[16.6, 0, 7.9]} rotationY={5.1} collide={false} grabbable />
-      <Prop url={MODELS.oilTin} position={[17.9, 0, 10.2]} rotationY={2.6} collide={false} grabbable />
-      <SplitProp url={MODELS.foodCans} position={[16.9, 0, 9.9]} rotationY={2.8} />
-      <PaperWad position={[16.2, 0, 8.9]} seed={53} />
-      <PaperWad position={[17.6, 0, 8]} seed={11} size={0.08} />
-      <PaperWad position={[18.9, 0, 8.9]} seed={23} size={0.075} />
-      <PaperWad position={[15.8, 0, 10.1]} seed={71} size={0.1} />
+      <SplitProp url={MODELS.foodCans} position={[15.4, 0, 10.4]} rotationY={2.8} />
+      <TrashPile position={[16.8, 9]} radius={1.5} height={0.42} seed={900} items={8} />
+
+      {/* ---- smaller trash heaps ---- */}
+      <TrashPile position={[-6.7, -8.1]} radius={1.05} height={0.32} seed={901} items={5} />
+      <TrashPile position={[-0.6, 10.2]} radius={1.3} height={0.38} seed={902} items={6} />
 
       {/* ---- stray junk between zones ---- */}
       <SplitProp url={MODELS.foodCans} position={[3.9, 0.68, -2.1]} rotationY={0.5} />

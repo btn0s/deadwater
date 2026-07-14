@@ -9,3 +9,8 @@ All assets CC0 (public domain).
 - Concrete016, Concrete034, CorrugatedSteel005, MetalPlates006, PaintedMetal017, Plaster001
 
 Textures downscaled to 256px for PS2-era authenticity.
+
+## Trash pile texture — Wikimedia Commons
+- "Mixed municipal solid waste at an open dumpsite" by UniqueMonik, CC BY 4.0
+  https://commons.wikimedia.org/wiki/File:Mixed_municipal_solid_waste_at_an_open_dumpsite.jpg
+  (cropped and downscaled)
