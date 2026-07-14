@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from 'react'
-import { useFrame } from '@react-three/fiber'
 import { useTexture } from '@react-three/drei'
 import { CuboidCollider } from '@react-three/rapier'
 import * as THREE from 'three'
@@ -13,8 +12,10 @@ import {
   lightSpots,
 } from '../ps2/PS2Material'
 import { Surface } from './Surface'
+import { SewerWater } from './SewerWater'
 import { addCollider } from './collision'
 import { Prop, MODELS } from './Prop'
+import { PaperWad } from './PaperWad'
 
 /*
  * Layout (top view; main warehouse is south, z increases downward):
@@ -64,36 +65,6 @@ const WATER_W = 2 * (CH_W / 2 + WATER_Y) + 0.15
 // grate bridge across the channel
 const BRIDGE_CX = 0
 const BRIDGE_W = 2
-
-/** murky sewage water: procedural streaky tile, scrolled along the channel */
-function makeWaterTexture(): THREE.DataTexture {
-  const size = 64
-  const data = new Uint8Array(size * size * 4)
-  const base = [24, 46, 42]
-  const crest = [96, 138, 118]
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const s =
-        Math.sin(x * 0.35 + Math.sin(y * 0.45) * 2.2) +
-        Math.sin((x + y * 2.3) * 0.16) +
-        Math.sin(y * 0.55 + Math.sin(x * 0.22) * 1.7)
-      const t = Math.pow(THREE.MathUtils.clamp(s / 3 + 0.5, 0, 1), 1.6)
-      const i = (y * size + x) * 4
-      data[i] = base[0] + (crest[0] - base[0]) * t
-      data[i + 1] = base[1] + (crest[1] - base[1]) * t
-      data[i + 2] = base[2] + (crest[2] - base[2]) * t
-      data[i + 3] = 255
-    }
-  }
-  const tex = new THREE.DataTexture(data, size, size)
-  tex.wrapS = THREE.RepeatWrapping
-  tex.wrapT = THREE.RepeatWrapping
-  tex.magFilter = THREE.LinearFilter
-  tex.minFilter = THREE.LinearMipmapNearestFilter
-  tex.generateMipmaps = true
-  tex.needsUpdate = true
-  return tex
-}
 
 function SewerLights() {
   useEffect(() => {
@@ -259,22 +230,11 @@ export function SewerWing() {
     (loaded) => Object.values(loaded).forEach(prepTexture),
   )
 
-  const waterMaterial = useMemo(
-    () => createPS2Material({ map: makeWaterTexture(), repeat: [6, 2] }),
-    [],
-  )
   const pipeMaterial = useMemo(
     () => createPS2Material({ map: textures.plates, repeat: [6, 1] }),
     [textures.plates],
   )
   const voidMaterial = useMemo(() => createPS2Material({ color: 0x000000, fullbright: true }), [])
-
-  useFrame(({ clock }) => {
-    const t = clock.elapsedTime
-    const offset = waterMaterial.uniforms.uUvOffset.value as THREE.Vector2
-    offset.x = t * 0.045 // slow drift toward the east grate
-    offset.y = Math.sin(t * 0.4) * 0.015
-  })
 
   // player-blocking AABBs for the wing
   useEffect(() => {
@@ -333,9 +293,7 @@ export function SewerWing() {
       {/* north bank, descending southward */}
       <Surface size={[RW, BANK_LEN]} segments={[24, 2]} position={[CX, -CH_DEPTH / 2, CH_Z0 + BANK_RUN / 2]} rotation={[-Math.PI / 4, 0, 0]} map={textures.wall} repeat={[10, 0.9]} color={0x8a8a8a} bombing={1} />
       {/* water */}
-      <mesh material={waterMaterial} position={[CX, WATER_Y, CH_CZ]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[RW + 0.2, WATER_W, 24, 4]} />
-      </mesh>
+      <SewerWater position={[CX, WATER_Y, CH_CZ]} size={[RW + 0.2, WATER_W]} />
 
       {/* walkway guard railings, split around the bridge */}
       <RailingX x0={X0} x1={BRIDGE_CX - BRIDGE_W / 2} z={CH_Z1} />
@@ -393,10 +351,13 @@ export function SewerWing() {
       <Prop url={MODELS.barrel} position={[-2.5, 0, -32.9]} rotationY={2.3} />
       <Prop url={MODELS.barrel} position={[-1.3, 0, -32.5]} rotationY={4.4} />
 
-      {/* junk in the wing */}
+      {/* south platform: small maintenance cache at the west end, route stays clear */}
       <Prop url={MODELS.barrel} position={[-20.5, 0, -21.5]} rotationY={1.9} />
+      <Prop url={MODELS.barrel} position={[-19.4, 0, -20.9]} rotationY={4.0} />
+      <Prop url={MODELS.woodenCrate} position={[-20.2, 0, -23.2]} rotationY={0.8} grabbable />
       <Prop url={MODELS.canRusted} position={[-13, 0, -23.5]} rotationY={2.4} collide={false} grabbable />
       <Prop url={MODELS.trashbag} position={[0.6, 0, -21]} rotationY={3.4} collide={false} grabbable />
+      <PaperWad position={[-18.6, 0, -22.4]} seed={83} size={0.09} />
 
       {/* ---------- physics shell so junk can be thrown in ---------- */}
       {/* hallway */}

@@ -7,6 +7,7 @@ import { PlayerController } from './game/PlayerController'
 import { PlayerBody } from './game/PlayerBody'
 import { Telekinesis } from './game/Telekinesis'
 import { Room } from './game/Room'
+import { DevViews } from './game/DevViews'
 
 export default function App() {
   const [locked, setLocked] = useState(false)
@@ -25,6 +26,7 @@ export default function App() {
           <PlayerController onLockChange={setLocked} spawn={[15, 8.5]} initialYaw={Math.PI / 3} />
           <Telekinesis />
           <PS2Pipeline />
+          {import.meta.env.DEV && <DevViews />}
         </Canvas>
 
         {locked ? (

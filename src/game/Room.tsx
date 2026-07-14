@@ -21,6 +21,7 @@ import { Rat } from './Rat'
 import { TrashPile } from './TrashPile'
 import { Surface } from './Surface'
 import { SewerWing } from './SewerWing'
+import { Rack } from './Rack'
 
 // warehouse: 40m x 24m footprint, 6m ceiling
 const W = 40
@@ -226,8 +227,6 @@ export function Room() {
       <Prop url={MODELS.jerrycan} position={[-14.8, 0, -7.1]} rotationY={2.2} collide={false} grabbable />
       <Prop url={MODELS.oilTin} position={[-15.7, 0, -7]} rotationY={0.8} collide={false} grabbable />
       <PaperWad position={[-13.9, 0, -7.6]} seed={67} size={0.11} />
-      <Prop url={MODELS.barrel} position={[-18.5, 0, 3]} rotationY={0.4} />
-      <Prop url={MODELS.barrel} position={[-18.2, 0, 4.3]} rotationY={4.1} />
 
       {/* ---- loading zone by the roller door ---- */}
       <SplitProp
@@ -244,14 +243,38 @@ export function Room() {
       <PaperWad position={[-9.9, 0, -8.4]} seed={41} size={0.08} />
       <PaperWad position={[-6.8, 0, -8.9]} seed={37} size={0.1} />
 
-      {/* ---- work area, center-east ---- */}
-      <Prop url={MODELS.ammoBox} position={[4, 0, -2.5]} rotationY={0.3} grabbable />
-      <Prop url={MODELS.ammoBox} position={[4.7, 0, -1.9]} rotationY={1.8} grabbable />
-      <Prop url={MODELS.ammoBox} position={[4.3, 0.34, -2.2]} rotationY={0.9} collide={false} grabbable />
-      <Prop url={MODELS.barrelExplosive} position={[0.95, 0, 7.7]} rotationY={2.1} />
+      {/* ---- storage racking: back-to-back double row, one strong mid-floor mass ----
+           big (racks) -> medium (barrels, crate stacks at the ends) -> small (wads) */}
+      <Rack position={[3.5, -0.55]} />
+      <Rack position={[7.5, -0.55]} />
+      <Rack position={[3.5, 0.65]} />
+      <Rack position={[7.5, 0.65]} />
+      {/* goods on the shelves (settle onto shelf colliders) */}
+      <Prop url={MODELS.cardboardBox} position={[2.5, 1.1, -0.55]} rotationY={0.1} collide={false} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[4.3, 1.1, -0.6]} rotationY={1.6} collide={false} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[4.1, 0.2, -0.5]} rotationY={0.4} collide={false} grabbable />
+      <Prop url={MODELS.ammoBox} position={[7, 1.1, -0.5]} rotationY={0.2} collide={false} grabbable />
+      <Prop url={MODELS.ammoBox} position={[7.6, 1.1, -0.6]} rotationY={1.7} collide={false} grabbable />
+      <Prop url={MODELS.oilTin} position={[8.4, 1.1, -0.6]} rotationY={2.2} collide={false} grabbable />
+      <Prop url={MODELS.jerrycan} position={[8, 0.2, -0.4]} rotationY={1.2} collide={false} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[3, 1.95, 0.65]} rotationY={0.3} collide={false} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[6.9, 0.2, 0.7]} rotationY={2.9} collide={false} grabbable />
+      <SplitProp url={MODELS.foodCans} position={[4.1, 1.12, 0.65]} rotationY={0.5} />
+      <Prop url={MODELS.plasticCrate} position={[7.8, 1.12, 0.7]} rotationY={0.15} collide={false} grabbable />
+      {/* end-of-row clusters */}
+      <Prop url={MODELS.barrel} position={[0.7, 0, -0.2]} rotationY={1.9} />
+      <Prop url={MODELS.barrel} position={[1, 0, 0.9]} rotationY={4.2} />
+      <Prop url={MODELS.woodenCrate} position={[10.3, 0, 0]} rotationY={0.05} grabbable />
+      <Prop url={MODELS.plasticCrate} position={[10.25, 0.62, -0.05]} rotationY={0.12} collide={false} grabbable />
+      <PaperWad position={[9.6, 0, 1.2]} seed={13} size={0.08} />
+      <PaperWad position={[1.8, 0, -1.4]} seed={17} size={0.07} />
+
+      {/* ---- stock corner, NE ---- */}
       <Prop url={MODELS.cardboardBox} position={[17.5, 0, -3]} grabbable />
       <Prop url={MODELS.cardboardBox} position={[17.4, 0, -1.7]} rotationY={0.4} grabbable />
       <Prop url={MODELS.cardboardBox} position={[17.45, 0.55, -2.4]} rotationY={0.9} collide={false} grabbable />
+      <Prop url={MODELS.jerrycan} position={[18.3, 0, -4.1]} rotationY={0.9} collide={false} grabbable />
+      <PaperWad position={[16.3, 0, -1]} seed={29} size={0.09} />
 
       {/* static physics shell for junk to rest against */}
       <CuboidCollider args={[W / 2 + 1, 0.5, D / 2 + 1]} position={[0, -0.5, 0]} />
@@ -278,14 +301,21 @@ export function Room() {
       <TrashPile position={[-6.7, -8.1]} radius={1.05} height={0.32} seed={901} items={5} />
       <TrashPile position={[-0.6, 10.2]} radius={1.3} height={0.38} seed={902} items={6} />
 
-      {/* ---- stray junk between zones ---- */}
-      <SplitProp url={MODELS.foodCans} position={[3.9, 0.68, -2.1]} rotationY={0.5} />
-      <Prop url={MODELS.plasticCrate} position={[-5.9, 0, 9.9]} rotationY={2.4} grabbable />
-      <Prop url={MODELS.cardboardBox} position={[8, 0, 10.6]} rotationY={1.9} grabbable />
-      <Prop url={MODELS.canRusted} position={[-3.8, 0, 1.6]} rotationY={3.9} collide={false} grabbable />
-      <PaperWad position={[2.2, 0, 4.8]} seed={13} />
-      <PaperWad position={[-9.1, 0, 5.4]} seed={43} size={0.08} />
-      <PaperWad position={[10.4, 0, 4.9]} seed={73} size={0.07} />
+      {/* ---- west wall storage ---- */}
+      <Prop url={MODELS.barrel} position={[-18.5, 0, 3]} rotationY={0.4} />
+      <Prop url={MODELS.barrel} position={[-18.2, 0, 4.3]} rotationY={4.1} />
+      <Prop url={MODELS.plasticCrate} position={[-18.4, 0, 5.7]} rotationY={2.4} grabbable />
+
+      {/* ---- hazard cue by the hallway mouth ---- */}
+      <Prop url={MODELS.barrelExplosive} position={[-13.6, 0, -10.8]} rotationY={2.1} />
+
+      {/* ---- pillar-base dressing ---- */}
+      <Prop url={MODELS.cardboardBox} position={[12.8, 0, -6.3]} rotationY={0.7} grabbable />
+      <PaperWad position={[11.4, 0, -7.4]} seed={43} size={0.08} />
+      <Prop url={MODELS.canRusted} position={[0.75, 0, 6.3]} rotationY={3.9} collide={false} grabbable />
+      <PaperWad position={[-0.7, 0, 7.4]} seed={47} size={0.09} />
+      <Prop url={MODELS.trashbag} position={[-12.7, 0, 6.2]} rotationY={2.8} collide={false} grabbable />
+      <PaperWad position={[-11.2, 0, 7.3]} seed={59} size={0.08} />
 
       {/* rats */}
       <Rat seed={101} spawn={[10, -10.5]} />

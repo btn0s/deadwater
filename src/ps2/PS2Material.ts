@@ -37,7 +37,7 @@ export const fogColor = fogColorUniform.value
 /** live fog settings — mutate to retune the whole scene */
 export const fogSettings = { color: fogColorUniform.value, near: fogNearUniform, far: fogFarUniform }
 
-const sharedLightUniforms = {
+export const sharedLightUniforms = {
   uLightPos: { value: lightPositions },
   uLightColor: { value: lightColors },
   uLightRadius: { value: lightRadii },
