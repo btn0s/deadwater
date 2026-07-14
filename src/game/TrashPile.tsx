@@ -17,6 +17,7 @@ interface TrashPileProps {
   seed: number
   /** how many loose junk items rain onto the mound */
   items?: number
+  inert?: boolean
 }
 
 type JunkKind = 'bag' | 'can' | 'paper' | 'tin'
@@ -33,7 +34,7 @@ function pickKind(r: number): JunkKind {
  * junk spawns just above the mound with seeded scatter and physics-settles
  * onto its slopes.
  */
-export function TrashPile({ position, radius = 1.4, height = 0.4, seed, items = 6 }: TrashPileProps) {
+export function TrashPile({ position, radius = 1.4, height = 0.4, seed, items = 6, inert = false }: TrashPileProps) {
   const trashMap = useTexture(TRASH_URL, (t) => {
     prepTexture(t)
     // photo texture: mirrored wrap hides the tiling seams
@@ -91,6 +92,7 @@ export function TrashPile({ position, radius = 1.4, height = 0.4, seed, items = 
 
   // keep the player from walking through the heap
   useEffect(() => {
+    if (inert) return
     const r = radius * 0.7
     return addCollider({
       minX: position[0] - r,
@@ -98,23 +100,25 @@ export function TrashPile({ position, radius = 1.4, height = 0.4, seed, items = 
       minZ: position[1] - r,
       maxZ: position[1] + r,
     })
-  }, [position, radius])
+  }, [position, radius, inert])
+
+  const mound = (
+    <mesh geometry={geometry} material={material} position={[position[0], 0, position[1]]} rotation-y={rotation} />
+  )
 
   return (
     <>
-      <RigidBody type="fixed" colliders="trimesh">
-        <mesh geometry={geometry} material={material} position={[position[0], 0, position[1]]} rotation-y={rotation} />
-      </RigidBody>
+      {inert ? mound : <RigidBody type="fixed" colliders="trimesh">{mound}</RigidBody>}
       {junk.map((j, i) => {
         switch (j.kind) {
           case 'bag':
-            return <Prop key={i} url={MODELS.trashbag} position={j.pos} rotationY={j.rotY} collide={false} grabbable />
+            return <Prop key={i} url={MODELS.trashbag} position={j.pos} rotationY={j.rotY} collide={false} grabbable inert={inert} />
           case 'can':
-            return <Prop key={i} url={MODELS.canRusted} position={j.pos} rotationY={j.rotY} collide={false} grabbable />
+            return <Prop key={i} url={MODELS.canRusted} position={j.pos} rotationY={j.rotY} collide={false} grabbable inert={inert} />
           case 'tin':
-            return <Prop key={i} url={MODELS.oilTin} position={j.pos} rotationY={j.rotY} collide={false} grabbable />
+            return <Prop key={i} url={MODELS.oilTin} position={j.pos} rotationY={j.rotY} collide={false} grabbable inert={inert} />
           case 'paper':
-            return <PaperWad key={i} position={j.pos} seed={j.seed} size={0.07 + (j.seed % 5) * 0.01} />
+            return <PaperWad key={i} position={j.pos} seed={j.seed} size={0.07 + (j.seed % 5) * 0.01} inert={inert} />
         }
       })}
     </>

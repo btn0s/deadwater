@@ -14,6 +14,135 @@ body,
   justify-content: center;
 }
 
+/* editor mode: viewport left, panel right */
+.frame.editing {
+  gap: 0;
+}
+
+.frame.editing .viewport {
+  flex: 1;
+  max-width: none;
+  max-height: 100%;
+  aspect-ratio: auto;
+  height: 100%;
+}
+
+.editor-panel {
+  width: 320px;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #16181b;
+  color: #cdd3d8;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  border-left: 1px solid #2a2e33;
+  padding: 10px;
+  box-sizing: border-box;
+  gap: 8px;
+}
+
+.editor-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #9fe0a0;
+  letter-spacing: 1px;
+}
+
+.editor-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.editor-panel button {
+  background: #24282d;
+  color: #cdd3d8;
+  border: 1px solid #33383e;
+  padding: 4px 10px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.editor-panel button.on {
+  background: #3a5a3c;
+  border-color: #9fe0a0;
+}
+
+.editor-panel button.save {
+  background: #2c4a63;
+  margin-left: auto;
+}
+
+.editor-panel button.danger {
+  background: #5a2c2c;
+}
+
+.editor-panel select,
+.editor-panel input {
+  background: #1d2024;
+  color: #cdd3d8;
+  border: 1px solid #33383e;
+  font: inherit;
+  padding: 3px 6px;
+}
+
+.editor-inspect {
+  border: 1px solid #2a2e33;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.editor-id span,
+.editor-item span {
+  color: #6d757d;
+}
+
+.editor-inspect label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 62px;
+}
+
+.editor-inspect input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.editor-filter {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.editor-list {
+  flex: 1;
+  overflow-y: auto;
+  border-top: 1px solid #2a2e33;
+}
+
+.editor-item {
+  padding: 3px 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.editor-item:hover {
+  background: #22262b;
+}
+
+.editor-item.sel {
+  background: #2c4a63;
+  color: #fff;
+}
+
 /* 4:3 letterboxed viewport, like a CRT, capped at 80% of the screen */
 .viewport {
   position: relative;
@@ -96,4 +225,9 @@ body,
   50% {
     opacity: 0.15;
   }
+}
+
+.editor-hint {
+  color: #6d757d;
+  font-size: 10px;
 }

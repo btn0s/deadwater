@@ -35,7 +35,37 @@ function sheetWriter(): Plugin {
   }
 }
 
+/** dev-only: accepts edited layout JSON from the in-game editor and
+ * overwrites src/game/layout.json (git-tracked, HMR-reloaded) */
+function layoutWriter(): Plugin {
+  return {
+    name: 'layout-writer',
+    configureServer(server) {
+      server.middlewares.use('/__layout', (req, res) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405
+          res.end('POST only')
+          return
+        }
+        const chunks: Buffer[] = []
+        req.on('data', (c) => chunks.push(c))
+        req.on('end', () => {
+          try {
+            const body = Buffer.concat(chunks).toString('utf8')
+            JSON.parse(body) // validate before overwriting
+            fs.writeFileSync(path.resolve(__dirname, 'src/game/layout.json'), body)
+            res.end('ok')
+          } catch {
+            res.statusCode = 400
+            res.end('invalid json')
+          }
+        })
+      })
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), sheetWriter()],
+  plugins: [react(), sheetWriter(), layoutWriter()],
 })

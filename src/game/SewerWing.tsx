@@ -14,8 +14,7 @@ import {
 import { Surface } from './Surface'
 import { SewerWater } from './SewerWater'
 import { addCollider } from './collision'
-import { Prop, FbxProp, MODELS, FBX_MODELS } from './Prop'
-import { PaperWad } from './PaperWad'
+import { Lamp } from './Lamp'
 
 /*
  * Layout (top view; main warehouse is south, z increases downward):
@@ -270,7 +269,7 @@ export function SewerWing() {
       <Surface size={[3, 8]} segments={[4, 8]} position={[HALL_CX, HALL_H, HALL_CZ]} rotation={[Math.PI / 2, 0, 0]} map={textures.steel} repeat={[2, 5]} color={0xb4b4b4} />
       <Surface size={[8, HALL_H]} segments={[8, 4]} position={[HALL_X0, HALL_H / 2, HALL_CZ]} rotation={[0, Math.PI / 2, 0]} map={textures.wall} repeat={[4, 1.5]} bombing={1} />
       <Surface size={[8, HALL_H]} segments={[8, 4]} position={[HALL_X1, HALL_H / 2, HALL_CZ]} rotation={[0, -Math.PI / 2, 0]} map={textures.wall} repeat={[4, 1.5]} bombing={1} />
-      <Prop url={MODELS.hangingLamp} position={[HALL_CX, HALL_H, HALL_CZ]} collide={false} physics="none" />
+      <Lamp position={[HALL_CX, HALL_H, HALL_CZ]} lightIndex={6} />
 
       {/* ---------- sewer room shell ---------- */}
       {/* platforms */}
@@ -338,32 +337,15 @@ export function SewerWing() {
       <Surface size={[1.1, 1.1]} segments={[2, 2]} position={[HALL_X1 + 1.6, 1.8, Z1 - 0.04]} rotation={[0, Math.PI, 0]} map={textures.danger} repeat={[1, 1]} />
 
       {/* lamps over the platforms */}
-      <Prop url={MODELS.hangingLamp} position={[CX, H, -22.5]} collide={false} physics="none" />
-      <Prop url={MODELS.hangingLamp} position={[CX, H, -31.5]} collide={false} physics="none" />
+      <Lamp position={[CX, H, -22.5]} lightIndex={7} />
+      <Lamp position={[CX, H, -31.5]} lightIndex={8} />
 
       {/* pump station on the north platform, kept clear of the walkway */}
       <PumpUnit x={-16.5} plates={textures.plates} steel={textures.steel} concrete={textures.floor} />
       <PumpUnit x={-6} plates={textures.plates} steel={textures.steel} concrete={textures.floor} />
-      <Prop url={MODELS.compressor} position={[-11.5, 0, -32.9]} rotationY={0.15} />
-      <Prop url={MODELS.generator} position={[0.2, 0, -32.6]} rotationY={2.6} />
-      <Prop url={MODELS.propaneTank} position={[-19.3, 0, -32.6]} rotationY={1.1} />
-      <Prop url={MODELS.propaneTank} position={[-20.1, 0, -31.8]} rotationY={3.8} />
-      <Prop url={MODELS.barrel} position={[-2.5, 0, -32.9]} rotationY={2.3} />
-      <Prop url={MODELS.barrel} position={[-1.3, 0, -32.5]} rotationY={4.4} />
+      {/* (machinery-bay props are layout.json items too) */}
 
-      {/* maintenance gear from the industrial packs */}
-      <FbxProp url={FBX_MODELS.workLight2.url} textureUrl={FBX_MODELS.workLight2.tex} position={[-13.8, 0, -22.6]} rotationY={3.5} collide={false} />
-      <FbxProp url={FBX_MODELS.gasCylinder.url} textureUrl={FBX_MODELS.gasCylinder.tex} position={[-10.7, 0, -32.6]} rotationY={0.4} />
-      <FbxProp url={FBX_MODELS.gasCylinder.url} textureUrl={FBX_MODELS.gasCylinder.tex} position={[-10.1, 0, -32.15]} rotationY={2.3} />
-      <FbxProp url={FBX_MODELS.generator2.url} textureUrl={FBX_MODELS.generator2.tex} position={[-17.5, 0, -21.4]} rotationY={1.2} />
-
-      {/* south platform: small maintenance cache at the west end, route stays clear */}
-      <Prop url={MODELS.barrel} position={[-20.5, 0, -21.5]} rotationY={1.9} />
-      <Prop url={MODELS.barrel} position={[-19.4, 0, -20.9]} rotationY={4.0} />
-      <Prop url={MODELS.woodenCrate} position={[-20.2, 0, -23.2]} rotationY={0.8} grabbable />
-      <Prop url={MODELS.canRusted} position={[-13, 0, -23.5]} rotationY={2.4} collide={false} grabbable />
-      <Prop url={MODELS.trashbag} position={[0.6, 0, -21]} rotationY={3.4} collide={false} grabbable />
-      <PaperWad position={[-18.6, 0, -22.4]} seed={83} size={0.09} />
+      {/* movable props live in layout.json (see PlacedItems) */}
 
       {/* ---------- physics shell so junk can be thrown in ---------- */}
       {/* hallway */}

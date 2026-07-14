@@ -14,7 +14,7 @@ const SHELF_YS = [0.12, 1.0, 1.85]
  * Industrial pallet-rack shelving: four uprights and three shelf boards.
  * Static architecture — junk can be placed (or thrown) onto the shelves.
  */
-export function Rack({ position, rotationY = 0 }: { position: [number, number]; rotationY?: number }) {
+export function Rack({ position, rotationY = 0, inert = false }: { position: [number, number]; rotationY?: number; inert?: boolean }) {
   const plates = useTexture('/textures/MetalPlates006.jpg', prepTexture)
   const frameMaterial = useMemo(() => createPS2Material({ color: 0x5a5148 }), [])
   const shelfMaterial = useMemo(() => createPS2Material({ map: plates, repeat: [3, 1], color: 0x9aa0a4 }), [plates])
@@ -22,6 +22,7 @@ export function Rack({ position, rotationY = 0 }: { position: [number, number]; 
 
   // player AABB from the rotated footprint
   useEffect(() => {
+    if (inert) return
     const cos = Math.abs(Math.cos(rotationY))
     const sin = Math.abs(Math.sin(rotationY))
     const hx = (LEN * cos + DEPTH * sin) / 2
@@ -32,7 +33,7 @@ export function Rack({ position, rotationY = 0 }: { position: [number, number]; 
       minZ: position[1] - hz,
       maxZ: position[1] + hz,
     })
-  }, [position, rotationY])
+  }, [position, rotationY, inert])
 
   return (
     <group ref={group} position={[position[0], 0, position[1]]} rotation-y={rotationY}>
@@ -50,7 +51,7 @@ export function Rack({ position, rotationY = 0 }: { position: [number, number]; 
           <mesh material={shelfMaterial} position={[0, y, 0]}>
             <boxGeometry args={[LEN, 0.07, DEPTH]} />
           </mesh>
-          <CuboidCollider args={[LEN / 2, 0.035, DEPTH / 2]} position={[0, y, 0]} />
+          {!inert && <CuboidCollider args={[LEN / 2, 0.035, DEPTH / 2]} position={[0, y, 0]} />}
         </group>
       ))}
       {/* top beam */}

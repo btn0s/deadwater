@@ -7,7 +7,7 @@ import { addCollider } from './collision'
 import { registerGrabbable } from './grabbables'
 
 /** Swap every mesh's material for the PS2 vertex-lit equivalent, in place. */
-function applyPS2Materials(root: THREE.Object3D) {
+export function applyPS2Materials(root: THREE.Object3D) {
   root.traverse((obj) => {
     if (obj instanceof THREE.Mesh) {
       const src = (Array.isArray(obj.material) ? obj.material[0] : obj.material) as THREE.MeshStandardMaterial
@@ -30,20 +30,30 @@ function applyPS2Materials(root: THREE.Object3D) {
 }
 
 /** Dynamic physics body that the telekinesis system can pick up. */
-export function GrabbablePiece({ object, position, rotationY = 0 }: {
+export function GrabbablePiece({ object, position, rotationY = 0, inert = false }: {
   object: THREE.Object3D
   position: [number, number, number]
   rotationY?: number
+  /** editor mode: render visuals only — no physics, no grab registration */
+  inert?: boolean
 }) {
   const body = useRef<RapierRigidBody>(null)
   const inner = useRef<THREE.Group>(null)
 
   useEffect(() => {
-    if (!body.current || !inner.current) return
+    if (inert || !body.current || !inner.current) return
     const box = new THREE.Box3().setFromObject(inner.current)
     const radius = Math.max(box.max.x - box.min.x, box.max.z - box.min.z) / 2
     return registerGrabbable({ root: inner.current, body: body.current, radius })
-  }, [])
+  }, [inert])
+
+  if (inert) {
+    return (
+      <group position={position} rotation={[0, rotationY, 0]}>
+        <primitive object={object} />
+      </group>
+    )
+  }
 
   return (
     <RigidBody
@@ -72,9 +82,11 @@ interface PropProps {
   grabbable?: boolean
   /** static props only: fixed physics collider shape for junk to rest against */
   physics?: 'hull' | 'trimesh' | 'none'
+  /** editor mode: visuals only */
+  inert?: boolean
 }
 
-export function Prop({ url, position, rotationY = 0, scale = 1, collide = true, grabbable = false, physics = 'hull' }: PropProps) {
+export function Prop({ url, position, rotationY = 0, scale = 1, collide = true, grabbable = false, physics = 'hull', inert = false }: PropProps) {
   const { scene } = useGLTF(url)
   const group = useRef<THREE.Group>(null)
 
@@ -86,13 +98,13 @@ export function Prop({ url, position, rotationY = 0, scale = 1, collide = true, 
 
   // static props register a player-blocking AABB once
   useEffect(() => {
-    if (grabbable || !collide || !group.current) return
+    if (inert || grabbable || !collide || !group.current) return
     const box = new THREE.Box3().setFromObject(group.current)
     return addCollider({ minX: box.min.x, maxX: box.max.x, minZ: box.min.z, maxZ: box.max.z })
-  }, [collide, grabbable])
+  }, [collide, grabbable, inert])
 
   if (grabbable) {
-    return <GrabbablePiece object={cloned} position={position} rotationY={rotationY} />
+    return <GrabbablePiece object={cloned} position={position} rotationY={rotationY} inert={inert} />
   }
 
   const visual = (
@@ -100,7 +112,7 @@ export function Prop({ url, position, rotationY = 0, scale = 1, collide = true, 
       <primitive object={cloned} />
     </group>
   )
-  if (physics === 'none') return visual
+  if (inert || physics === 'none') return visual
   return (
     <RigidBody type="fixed" colliders={physics}>
       {visual}
@@ -115,13 +127,14 @@ interface SplitPropProps {
   /** maps a mesh name to a piece key; meshes sharing a key move as one piece.
    * Default: every mesh is its own piece. */
   groupBy?: (meshName: string) => string
+  inert?: boolean
 }
 
 /**
  * Like Prop, but every piece of the model (grouped by `groupBy`) becomes its
  * own independently grabbable object with a pivot recentered on the piece.
  */
-export function SplitProp({ url, position, rotationY = 0, groupBy = (n) => n }: SplitPropProps) {
+export function SplitProp({ url, position, rotationY = 0, groupBy = (n) => n, inert = false }: SplitPropProps) {
   const { scene } = useGLTF(url)
 
   const pieces = useMemo(() => {
@@ -167,6 +180,7 @@ export function SplitProp({ url, position, rotationY = 0, groupBy = (n) => n }: 
             position[2] - p.offset.x * sin + p.offset.z * cos,
           ]}
           rotationY={rotationY}
+          inert={inert}
         />
       ))}
     </>
@@ -182,13 +196,14 @@ interface FbxPropProps {
   collide?: boolean
   grabbable?: boolean
   physics?: 'hull' | 'trimesh' | 'none'
+  inert?: boolean
 }
 
 /**
  * FBX prop (itch.io packs): loads the mesh + its base-color map explicitly,
  * swaps in the PS2 material, and normalizes cm-scale exports to meters.
  */
-export function FbxProp({ url, textureUrl, position, rotationY = 0, scale = 1, collide = true, grabbable = false, physics = 'hull' }: FbxPropProps) {
+export function FbxProp({ url, textureUrl, position, rotationY = 0, scale = 1, collide = true, grabbable = false, physics = 'hull', inert = false }: FbxPropProps) {
   const fbx = useFBX(url)
   const map = useTexture(textureUrl)
   const group = useRef<THREE.Group>(null)
@@ -217,20 +232,20 @@ export function FbxProp({ url, textureUrl, position, rotationY = 0, scale = 1, c
   }, [fbx, map, scale])
 
   useEffect(() => {
-    if (grabbable || !collide || !group.current) return
+    if (inert || grabbable || !collide || !group.current) return
     const box = new THREE.Box3().setFromObject(group.current)
     return addCollider({ minX: box.min.x, maxX: box.max.x, minZ: box.min.z, maxZ: box.max.z })
-  }, [collide, grabbable])
+  }, [collide, grabbable, inert])
 
   if (grabbable) {
-    return <GrabbablePiece object={cloned} position={position} rotationY={rotationY} />
+    return <GrabbablePiece object={cloned} position={position} rotationY={rotationY} inert={inert} />
   }
   const visual = (
     <group ref={group} position={position} rotation-y={rotationY}>
       <primitive object={cloned} />
     </group>
   )
-  if (physics === 'none') return visual
+  if (inert || physics === 'none') return visual
   return (
     <RigidBody type="fixed" colliders={physics}>
       {visual}

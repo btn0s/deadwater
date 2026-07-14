@@ -8,10 +8,11 @@ interface PaperWadProps {
   position: [number, number, number]
   seed?: number
   size?: number
+  inert?: boolean
 }
 
 /** Low-poly crumpled paper ball — a jittered icosahedron with flat facets. */
-export function PaperWad({ position, seed = 1, size = 0.09 }: PaperWadProps) {
+export function PaperWad({ position, seed = 1, size = 0.09, inert = false }: PaperWadProps) {
   const { object, rotation } = useMemo(() => {
     const rand = mulberry32(seed)
     const geo = new THREE.IcosahedronGeometry(size, 1)
@@ -31,5 +32,5 @@ export function PaperWad({ position, seed = 1, size = 0.09 }: PaperWadProps) {
     return { object, rotation: rand() * Math.PI * 2 }
   }, [seed, size])
 
-  return <GrabbablePiece object={object} position={position} rotationY={rotation} />
+  return <GrabbablePiece object={object} position={position} rotationY={rotation} inert={inert} />
 }
