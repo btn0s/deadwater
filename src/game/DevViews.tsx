@@ -39,8 +39,8 @@ function makeViews(): View[] {
     { label: 'sewer top-down', camera: look(ortho(13.5), [-10, 60, -27], [-10, 0, -27.01]) },
     { label: 'warehouse iso', camera: look(persp(55), [17, 9, 10], [-5, 0, -5]) },
     { label: 'channel from east', camera: look(persp(60), [0.5, 1.2, -27], [-20, -0.8, -27]) },
-    { label: 'trash corner', camera: look(persp(60), [10, 2.5, 4], [18, 0.4, 9.5]) },
-    { label: 'sewer from hallway', camera: look(persp(60), [-10, 2, -19], [-10, -0.5, -29]) },
+    { label: 'dock bays', camera: look(persp(62), [11, 2.4, -5.5], [20, 1.4, 0.5]) },
+    { label: 'office', camera: look(persp(62), [-11.5, 2.4, 5], [-18.5, 1, 9.8]) },
   ]
 }
 

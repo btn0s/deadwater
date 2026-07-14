@@ -189,6 +189,10 @@ export const MODELS = {
   compressor: '/models/old_military_compressor/old_military_compressor_1k.gltf',
   generator: '/models/portable_generator/portable_generator_1k.gltf',
   propaneTank: '/models/propane_tank/propane_tank_1k.gltf',
+  table: '/models/WoodenTable_02/WoodenTable_02_1k.gltf',
+  chair: '/models/painted_wooden_chair_01/painted_wooden_chair_01_1k.gltf',
+  cabinet: '/models/drawer_cabinet/drawer_cabinet_1k.gltf',
+  binder: '/models/binder_notebook/binder_notebook_1k.gltf',
 }
 
 Object.values(MODELS).forEach((url) => useGLTF.preload(url))

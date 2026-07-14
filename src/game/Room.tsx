@@ -22,6 +22,8 @@ import { TrashPile } from './TrashPile'
 import { Surface } from './Surface'
 import { SewerWing } from './SewerWing'
 import { Rack } from './Rack'
+import { LoadingDock } from './LoadingDock'
+import { Office } from './Office'
 
 // warehouse: 40m x 24m footprint, 6m ceiling
 const W = 40
@@ -189,6 +191,8 @@ export function Room() {
     <group>
       <Lights lampColor={lighting.lampColor} intensity={lighting.intensity} radius={lighting.radius} flicker={lighting.flicker} />
       <SewerWing />
+      <LoadingDock />
+      <Office />
 
       {/* floor / ceiling — floor tinted down so it sits darker than the walls */}
       <Surface size={[W, D]} segments={[40, 24]} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} map={floorMap} repeat={[floor.repeatX, floor.repeatY]} color={floor.tint} bombing={floor.breakupTiling ? floor.breakupScale : 0} />
