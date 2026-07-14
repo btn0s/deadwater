@@ -58,7 +58,7 @@ export function LoadedPallet({ position, rotationY = 0, variant = 0, inert = fal
 
 /** Render one layout item. When `zeroed`, the item renders at the origin so an
  * editor wrapper group can own the transform. */
-function ItemVisual({ item, inert, zeroed = false }: { item: LayoutItem; inert: boolean; zeroed?: boolean }) {
+export function ItemVisual({ item, inert, zeroed = false }: { item: LayoutItem; inert: boolean; zeroed?: boolean }) {
   const pos: [number, number, number] = zeroed ? [0, 0, 0] : item.pos
   const pos2: [number, number] = zeroed ? [0, 0] : [item.pos[0], item.pos[2]]
   const rot = zeroed ? 0 : (item.rot ?? 0)
@@ -124,7 +124,36 @@ function ItemVisual({ item, inert, zeroed = false }: { item: LayoutItem; inert: 
           lightAt={zeroed ? item.pos : undefined}
         />
       )
+    case 'prefab':
+      return <PrefabInstance name={item.model ?? ''} pos={pos} rot={rot} inert={inert} />
   }
+}
+
+/** An instance of a user-authored prefab: children rendered as independent
+ * items at the instance's transform (physics per child, like LoadedPallet). */
+function PrefabInstance({ name, pos, rot, inert }: { name: string; pos: [number, number, number]; rot: number; inert: boolean }) {
+  const { prefabs } = useEditor()
+  const def = prefabs.find((p) => p.name === name)
+  if (!def) return null
+  const sin = Math.sin(rot)
+  const cos = Math.cos(rot)
+  return (
+    <group>
+      {def.children.map((c, i) => {
+        const child: LayoutItem = {
+          ...c,
+          id: `${name}-${i}`,
+          pos: [
+            pos[0] + c.pos[0] * cos + c.pos[2] * sin,
+            pos[1] + c.pos[1],
+            pos[2] - c.pos[0] * sin + c.pos[2] * cos,
+          ],
+          rot: (c.rot ?? 0) + rot,
+        }
+        return <ItemVisual key={i} item={child} inert={inert} />
+      })}
+    </group>
+  )
 }
 
 function EditableItem({ item, selected }: { item: LayoutItem; selected: boolean }) {

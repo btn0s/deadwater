@@ -1,12 +1,15 @@
 import { Suspense, useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, FlyControls, PerspectiveCamera } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
 import { Room, TEXTURE_OPTIONS } from '../game/Room'
 import { DevViews } from '../game/DevViews'
-import { EditorChrome, FloorPlacer, ThumbnailFactory } from '../game/EditorExtras'
+import { EditorChrome, ThumbnailFactory } from '../game/EditorExtras'
 import { useEditor, editorStore, type LayoutItem, type WorldSettings } from '../game/editorStore'
 import { MODELS, FBX_MODELS } from '../game/Prop'
+import { EditorFlyControls } from './EditorFlyControls'
+import { ScenePlacer } from './ScenePlacer'
+import { AssetsView } from './AssetsView'
 
 const SPECIAL_KINDS = [
   { kind: 'lamp', label: '💡 lamp' },
@@ -26,20 +29,19 @@ function EditorCamera() {
   return (
     <>
       <PerspectiveCamera makeDefault fov={55} near={0.1} far={300} position={[14, 18, 20]} />
-      {camMode === 'orbit' ? (
-        <OrbitControls makeDefault target={[0, 0, -2]} />
-      ) : (
-        <FlyControls makeDefault movementSpeed={8} rollSpeed={0.6} dragToLook />
-      )}
+      {camMode === 'orbit' ? <OrbitControls makeDefault target={[0, 0, -2]} /> : <EditorFlyControls />}
     </>
   )
 }
 
 function Toolbar() {
-  const { saving, gizmoMode, camMode, placing, canUndo, canRedo } = useEditor()
+  const { saving, gizmoMode, camMode, placing, canUndo, canRedo, viewMode } = useEditor()
   return (
     <div className="ed-toolbar">
       <strong className="ed-logo">DEADWATER</strong>
+      <span className="ed-sep" />
+      <button className={viewMode === 'scene' ? 'on' : ''} onClick={() => editorStore.setViewMode('scene')}>scene</button>
+      <button className={viewMode === 'assets' ? 'on' : ''} onClick={() => editorStore.setViewMode('assets')}>assets</button>
       <span className="ed-sep" />
       <button className={gizmoMode === 'translate' ? 'on' : ''} onClick={() => editorStore.setGizmoMode('translate')} title="W">
         move
@@ -51,11 +53,11 @@ function Toolbar() {
       <button disabled={!canUndo} onClick={() => editorStore.undo()} title="⌘Z">↩</button>
       <button disabled={!canRedo} onClick={() => editorStore.redo()} title="⇧⌘Z">↪</button>
       <span className="ed-sep" />
-      <button className={camMode === 'orbit' ? 'on' : ''} onClick={() => editorStore.setCamMode('orbit')}>orbit</button>
       <button className={camMode === 'fly' ? 'on' : ''} onClick={() => editorStore.setCamMode('fly')}>fly</button>
-      <span className="ed-hint">{camMode === 'fly' ? 'WASD+RF · drag look' : 'drag orbit · wheel zoom'}</span>
+      <button className={camMode === 'orbit' ? 'on' : ''} onClick={() => editorStore.setCamMode('orbit')}>orbit</button>
+      <span className="ed-hint">{camMode === 'fly' ? 'hold RMB: look + WASD/QE fly, shift turbo' : 'drag orbit · wheel zoom'}</span>
       {placing && (
-        <span className="ed-placing">placing {placing.model ?? placing.kind} — click floor · shift multi · esc cancel</span>
+        <span className="ed-placing">placing {placing.model ?? placing.kind} — click/drop on any surface · shift multi · esc cancel</span>
       )}
       <span className="ed-spacer" />
       <button className="save" onClick={() => editorStore.save()}>{saving ?? 'SAVE'}</button>
@@ -64,6 +66,8 @@ function Toolbar() {
   )
 }
 
+const WORLD_SURFACES = ['walls', 'floor', 'ceiling'] as const
+
 function Hierarchy() {
   const { items, selectedId } = useEditor()
   const [filter, setFilter] = useState('')
@@ -71,6 +75,17 @@ function Hierarchy() {
     <div className="ed-left">
       <input className="ed-filter" placeholder="filter…" value={filter} onChange={(e) => setFilter(e.target.value)} />
       <div className="ed-list">
+        <div className="ed-subhead ed-listhead">world</div>
+        {WORLD_SURFACES.filter((s) => s.includes(filter)).map((s) => (
+          <div
+            key={s}
+            className={`ed-item${selectedId === `world:${s}` ? ' sel' : ''}`}
+            onClick={() => editorStore.select(`world:${s}`)}
+          >
+            {s} <span>surface</span>
+          </div>
+        ))}
+        <div className="ed-subhead ed-listhead">entities</div>
         {items
           .filter((i) => i.id.includes(filter) || (i.model ?? '').includes(filter) || i.kind.includes(filter))
           .map((i) => (
@@ -215,9 +230,7 @@ function WorldTab() {
   const { world } = useEditor()
   return (
     <div className="ed-details">
-      <SurfaceSection name="walls" section={world.walls} />
-      <SurfaceSection name="floor" section={world.floor} />
-      <SurfaceSection name="ceiling" section={world.ceiling} />
+      <div className="ed-hint">surfaces are in the hierarchy under “world” — select one to edit it</div>
       <div className="ed-section">
         <div className="ed-subhead">lighting & fog</div>
         <div className="ed-row">
@@ -232,8 +245,9 @@ function WorldTab() {
 }
 
 function RightPanel() {
-  const { items, selectedId, rightTab } = useEditor()
+  const { items, selectedId, rightTab, world } = useEditor()
   const selected = items.find((i) => i.id === selectedId)
+  const surface = selectedId?.startsWith('world:') ? (selectedId.slice(6) as 'walls' | 'floor' | 'ceiling') : null
   return (
     <div className="ed-right">
       <div className="ed-tabs">
@@ -241,7 +255,15 @@ function RightPanel() {
         <button className={rightTab === 'world' ? 'on' : ''} onClick={() => editorStore.setRightTab('world')}>world</button>
       </div>
       {rightTab === 'details' ? (
-        selected ? <Details item={selected} /> : <div className="ed-empty">select something</div>
+        surface ? (
+          <div className="ed-details">
+            <SurfaceSection name={surface} section={world[surface]} />
+          </div>
+        ) : selected ? (
+          <Details item={selected} />
+        ) : (
+          <div className="ed-empty">select something</div>
+        )
       ) : (
         <WorldTab />
       )}
@@ -250,26 +272,45 @@ function RightPanel() {
 }
 
 function PaletteStrip() {
-  const { placing, thumbs } = useEditor()
+  const { placing, thumbs, prefabs } = useEditor()
+  const [search, setSearch] = useState('')
+  const q = search.toLowerCase()
   return (
     <div className="ed-bottom">
-      {SPECIAL_KINDS.map((s) => (
+      <input className="ed-palette-search" placeholder="search…" value={search} onChange={(e) => setSearch(e.target.value)} />
+      {SPECIAL_KINDS.filter((s) => s.kind.toLowerCase().includes(q)).map((s) => (
         <div
           key={s.kind}
           className={`editor-tile text${placing?.kind === s.kind ? ' on' : ''}`}
+          draggable
+          onDragStart={() => editorStore.setPlacing({ kind: s.kind })}
           onClick={() => editorStore.setPlacing(placing?.kind === s.kind && !placing.model ? null : { kind: s.kind })}
           title={s.kind}
         >
           {s.label}
         </div>
       ))}
-      {PALETTE.map((p) => {
+      {prefabs.filter((p) => p.name.toLowerCase().includes(q)).map((p) => (
+        <div
+          key={`prefab:${p.name}`}
+          className={`editor-tile text${placing?.kind === 'prefab' && placing.model === p.name ? ' on' : ''}`}
+          draggable
+          onDragStart={() => editorStore.setPlacing({ kind: 'prefab', model: p.name })}
+          onClick={() => editorStore.setPlacing(placing?.model === p.name ? null : { kind: 'prefab', model: p.name })}
+          title={`prefab: ${p.name}`}
+        >
+          ⧉ {p.name}
+        </div>
+      ))}
+      {PALETTE.filter((p) => p.model.toLowerCase().includes(q)).map((p) => {
         const key = `${p.kind}:${p.model}`
         const armed = placing?.kind === p.kind && placing?.model === p.model
         return (
           <div
             key={key}
             className={`editor-tile${armed ? ' on' : ''}`}
+            draggable
+            onDragStart={() => editorStore.setPlacing({ kind: p.kind, model: p.model })}
             onClick={() => editorStore.setPlacing(armed ? null : { kind: p.kind, model: p.model })}
             title={p.model}
           >
@@ -295,9 +336,9 @@ export function EditorApp() {
         e.preventDefault()
         if (e.shiftKey) editorStore.redo()
         else editorStore.undo()
-      } else if (s.camMode === 'orbit' && e.code === 'KeyW') {
+      } else if (!s.flying && e.code === 'KeyW') {
         editorStore.setGizmoMode('translate')
-      } else if (s.camMode === 'orbit' && e.code === 'KeyE') {
+      } else if (!s.flying && e.code === 'KeyE') {
         editorStore.setGizmoMode('rotate')
       } else if ((e.code === 'Delete' || e.code === 'Backspace') && s.selectedId) {
         editorStore.remove(s.selectedId)
@@ -310,27 +351,35 @@ export function EditorApp() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  const { viewMode } = useEditor()
+
   return (
     <div className="ed-frame">
       <Toolbar />
-      <div className="ed-main">
-        <Hierarchy />
-        <div className="ed-viewport">
-          <Canvas gl={{ antialias: true }} dpr={window.devicePixelRatio}>
-            <Suspense fallback={null}>
-              <Physics gravity={[0, -12, 0]} paused>
-                <Room />
-              </Physics>
-            </Suspense>
-            <EditorCamera />
-            <EditorChrome />
-            <FloorPlacer />
-            <ThumbnailFactory />
-            {import.meta.env.DEV && <DevViews />}
-          </Canvas>
+      {viewMode === 'assets' ? (
+        <AssetsView />
+      ) : (
+        <div className="ed-main">
+          <Hierarchy />
+          <div className="ed-viewport">
+            <Canvas gl={{ antialias: true }} dpr={window.devicePixelRatio}>
+              <Suspense fallback={null}>
+                <Physics gravity={[0, -12, 0]} paused>
+                  <group name="level">
+                    <Room />
+                  </group>
+                </Physics>
+              </Suspense>
+              <EditorCamera />
+              <EditorChrome />
+              <ScenePlacer />
+              <ThumbnailFactory />
+              {import.meta.env.DEV && <DevViews />}
+            </Canvas>
+          </div>
+          <RightPanel />
         </div>
-        <RightPanel />
-      </div>
+      )}
       <PaletteStrip />
     </div>
   )

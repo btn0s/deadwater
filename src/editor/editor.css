@@ -257,3 +257,28 @@
   font: inherit;
   padding: 3px 6px;
 }
+
+.ed-palette-search {
+  width: 120px;
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.ed-mini {
+  width: 18px;
+  height: 18px;
+  object-fit: cover;
+  margin-right: 6px;
+  vertical-align: middle;
+  image-rendering: pixelated;
+}
+
+.ed-listhead {
+  padding: 6px 10px 2px;
+}
+
+.ed-x {
+  float: right;
+  padding: 0 6px;
+  font-size: 10px;
+}

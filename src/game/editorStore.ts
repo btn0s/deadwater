@@ -3,7 +3,7 @@ import layoutData from './layout.json'
 
 export interface LayoutItem {
   id: string
-  kind: 'prop' | 'fbx' | 'split' | 'paperWad' | 'trashPile' | 'loadedPallet' | 'rack' | 'lamp'
+  kind: 'prop' | 'fbx' | 'split' | 'paperWad' | 'trashPile' | 'loadedPallet' | 'rack' | 'lamp' | 'prefab'
   model?: string
   pos: [number, number, number]
   rot?: number
@@ -44,8 +44,27 @@ export interface WorldSettings {
   fog: { color: string; near: number; far: number }
 }
 
-export interface PlacingSpec {
+export interface PrefabChild {
   kind: LayoutItem['kind']
+  model?: string
+  pos: [number, number, number]
+  rot?: number
+  grabbable?: boolean
+  collide?: boolean
+  physics?: 'hull' | 'trimesh' | 'none'
+  scale?: number
+  variant?: number
+  seed?: number
+  size?: number
+}
+
+export interface PrefabDef {
+  name: string
+  children: PrefabChild[]
+}
+
+export interface PlacingSpec {
+  kind: LayoutItem['kind'] | 'prefab'
   model?: string
 }
 
@@ -64,6 +83,10 @@ interface EditorState {
   canRedo: boolean
   world: WorldSettings
   rightTab: 'details' | 'world'
+  viewMode: 'scene' | 'assets'
+  prefabs: PrefabDef[]
+  /** RMB fly-look active — movement keys are captured, gizmo hotkeys off */
+  flying: boolean
 }
 
 let state: EditorState = {
@@ -73,13 +96,16 @@ let state: EditorState = {
   selectedId: null,
   saving: null,
   gizmoMode: 'translate',
-  camMode: 'orbit',
+  camMode: 'fly',
   placing: null,
   thumbs: {},
   canUndo: false,
   canRedo: false,
   world: structuredClone((layoutData as { world: WorldSettings }).world),
   rightTab: 'details',
+  viewMode: 'scene',
+  prefabs: structuredClone((layoutData as unknown as { prefabs?: PrefabDef[] }).prefabs ?? []),
+  flying: false,
 }
 
 const subs = new Set<() => void>()
@@ -196,6 +222,18 @@ export const editorStore = {
   setRightTab(rightTab: 'details' | 'world') {
     emit({ rightTab })
   },
+  setViewMode(viewMode: 'scene' | 'assets') {
+    emit({ viewMode })
+  },
+  setFlying(flying: boolean) {
+    if (flying !== state.flying) emit({ flying })
+  },
+  addPrefab(def: PrefabDef) {
+    emit({ prefabs: [...state.prefabs.filter((p) => p.name !== def.name), def] })
+  },
+  removePrefab(name: string) {
+    emit({ prefabs: state.prefabs.filter((p) => p.name !== name) })
+  },
   /** patch a world settings section, e.g. updateWorld('walls', { tint: '#fff' }) */
   updateWorld<K extends keyof WorldSettings>(section: K, patch: Partial<WorldSettings[K]> | WorldSettings[K]) {
     const cur = state.world[section]
@@ -213,7 +251,7 @@ export const editorStore = {
       const res = await fetch('/__layout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ world: state.world, items }, null, 2) + '\n',
+        body: JSON.stringify({ world: state.world, prefabs: state.prefabs, items }, null, 2) + '\n',
       })
       emit({ saving: res.ok ? 'saved ✓' : `failed: ${res.status}` })
     } catch (e) {
