@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
+import { sceneDepthUniforms, waterMeshes } from './sceneDepth'
 
 // NTSC PS2 framebuffer: 512x448, stretched to 4:3 on the CRT
 export const INTERNAL_WIDTH = 512
@@ -41,12 +42,24 @@ const blitVertex = /* glsl */ `
 export function PS2Pipeline() {
   const gl = useThree((s) => s.gl)
 
-  const { target, postScene, postCamera } = useMemo(() => {
+  const { target, depthTarget, depthOverride, postScene, postCamera } = useMemo(() => {
     const target = new THREE.WebGLRenderTarget(INTERNAL_WIDTH, INTERNAL_HEIGHT, {
       minFilter: THREE.LinearFilter,
       magFilter: THREE.LinearFilter,
       depthBuffer: true,
     })
+
+    // opaque-depth pre-pass target: water reads this to find intersections
+    const depthTexture = new THREE.DepthTexture(INTERNAL_WIDTH, INTERNAL_HEIGHT)
+    depthTexture.type = THREE.UnsignedIntType
+    const depthTarget = new THREE.WebGLRenderTarget(INTERNAL_WIDTH, INTERNAL_HEIGHT, {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      depthTexture,
+      depthBuffer: true,
+    })
+    // geometry-only: skip every real material during the pre-pass
+    const depthOverride = new THREE.MeshBasicMaterial()
 
     // fullscreen triangle
     const geo = new THREE.BufferGeometry()
@@ -62,12 +75,30 @@ export function PS2Pipeline() {
     const postScene = new THREE.Scene()
     postScene.add(new THREE.Mesh(geo, mat))
     const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
-    return { target, postScene, postCamera }
+    return { target, depthTarget, depthOverride, postScene, postCamera }
   }, [])
 
   useFrame(({ gl: renderer, scene, camera }) => {
+    const cam = camera as THREE.PerspectiveCamera
+
+    // 1) opaque depth pre-pass (water hidden, materials overridden)
+    for (const w of waterMeshes) w.visible = false
+    scene.overrideMaterial = depthOverride
+    renderer.setRenderTarget(depthTarget)
+    renderer.render(scene, camera)
+    scene.overrideMaterial = null
+    for (const w of waterMeshes) w.visible = true
+
+    sceneDepthUniforms.uSceneDepth.value = depthTarget.depthTexture
+    sceneDepthUniforms.uCamNear.value = cam.near
+    sceneDepthUniforms.uCamFar.value = cam.far
+
+    // 2) main pass — foam enabled only here, where the depth matches the camera
+    sceneDepthUniforms.uFoamOn.value = 1
     renderer.setRenderTarget(target)
     renderer.render(scene, camera)
+    sceneDepthUniforms.uFoamOn.value = 0
+
     renderer.setRenderTarget(null)
     renderer.render(postScene, postCamera)
   }, 1)

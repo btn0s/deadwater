@@ -1,7 +1,8 @@
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { MAX_LIGHTS, sharedLightUniforms } from '../ps2/PS2Material'
+import { sceneDepthUniforms, waterMeshes } from '../ps2/sceneDepth'
 import { mulberry32 } from './rand'
 
 /**
@@ -101,11 +102,15 @@ const vertexShader = /* glsl */ `
       sin(worldPos.x * 1.31 + uTime * 1.7) * 0.5 +
       sin(worldPos.z * 2.17 - uTime * 1.1) * 0.35 +
       sin((worldPos.x + worldPos.z) * 0.73 + uTime * 0.6) * 0.15;
-    worldPos.y += wave * 0.03;
+    worldPos.y += wave * 0.045;
 
-    // the surface lights as flat water — tipped normals turn light pools
-    // into coherent stripes at this tessellation
-    vec3 worldNormal = vec3(0.0, 1.0, 0.0);
+    // near-flat surface with a faint multi-frequency shimmer — enough tilt
+    // to make the light pools breathe, far too little to stripe them
+    vec3 worldNormal = normalize(vec3(
+      sin(worldPos.x * 2.9 + uTime * 1.4) * 0.03 + sin(worldPos.z * 1.3 - uTime * 0.9) * 0.02,
+      1.0,
+      sin(worldPos.z * 3.7 - uTime * 1.6) * 0.03 + sin(worldPos.x * 0.9 + uTime * 0.7) * 0.02
+    ));
 
     vec3 light = uAmbient * 1.1;
     for (int i = 0; i < ${MAX_LIGHTS}; i++) {
@@ -137,6 +142,11 @@ const fragmentShader = /* glsl */ `
   uniform vec3 fogColor;
   uniform float fogNear;
   uniform float fogFar;
+  uniform sampler2D uSceneDepth;
+  uniform float uCamNear;
+  uniform float uCamFar;
+  uniform vec2 uResolution;
+  uniform float uFoamOn;
 
   varying vec2 vUv;
   varying vec3 vLight;
@@ -153,6 +163,21 @@ const fragmentShader = /* glsl */ `
 
     color *= vLight;
 
+    // intersection foam: compare this fragment's eye depth against the
+    // opaque scene behind it — where geometry pierces the surface the
+    // difference goes to zero and a lapping rim appears
+    float foam = 0.0;
+    if (uFoamOn > 0.5) {
+      vec2 suv = gl_FragCoord.xy / uResolution;
+      float d = texture2D(uSceneDepth, suv).x;
+      float sceneZ = (uCamNear * uCamFar) / (uCamFar - d * (uCamFar - uCamNear));
+      float band = clamp(1.0 - (sceneZ - vFogDepth) / 0.4, 0.0, 1.0);
+      // the scrolled noise gnaws at the rim so it laps instead of outlining
+      float n = clamp((layer2.g - 0.043) * 9.8, 0.0, 1.0);
+      foam = smoothstep(0.3, 0.85, band * (0.45 + 0.75 * n)) * step(vFogDepth, sceneZ + 0.4);
+      color += vec3(0.20, 0.26, 0.24) * foam * (0.4 + vLight.g);
+    }
+
     float fogFactor = clamp((vFogDepth - fogNear) / (fogFar - fogNear), 0.0, 1.0);
     color = mix(color, fogColor, fogFactor);
 
@@ -163,7 +188,7 @@ const fragmentShader = /* glsl */ `
     color = clamp(color + dither / steps, 0.0, 1.0);
     color = floor(color * steps + 0.5) / steps;
 
-    gl_FragColor = vec4(color, uOpacity);
+    gl_FragColor = vec4(color, uOpacity + foam * 0.12);
   }
 `
 
@@ -182,6 +207,7 @@ export function SewerWater({ position, size, flow = [0.045, 0] }: SewerWaterProp
         fragmentShader,
         uniforms: {
           ...sharedLightUniforms,
+          ...sceneDepthUniforms,
           map: { value: makeWaterTexture() },
           uTime: { value: 0 },
           uScroll1: { value: new THREE.Vector2(0, 0) },
@@ -197,13 +223,24 @@ export function SewerWater({ position, size, flow = [0.045, 0] }: SewerWaterProp
   )
   const flowRef = useRef(flow)
   flowRef.current = flow
+  const mesh = useRef<THREE.Mesh>(null)
+
+  // register with the depth pre-pass so foam sees through the surface
+  useEffect(() => {
+    const m = mesh.current
+    if (!m) return
+    waterMeshes.add(m)
+    return () => {
+      waterMeshes.delete(m)
+    }
+  }, [])
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime
     material.uniforms.uTime.value = t
     const [fx, fy] = flowRef.current
     ;(material.uniforms.uScroll1.value as THREE.Vector2).set(t * fx, t * fy)
-    ;(material.uniforms.uScroll2.value as THREE.Vector2).set(t * -fx * 0.6 + 0.37, t * (fy * 0.6 + 0.021))
+    ;(material.uniforms.uScroll2.value as THREE.Vector2).set(t * -fx * 0.6 + 0.37, t * (fy * 0.6 + 0.035))
   })
 
   // tessellate by area, not a fixed grid — big planes otherwise show the
@@ -211,7 +248,7 @@ export function SewerWater({ position, size, flow = [0.045, 0] }: SewerWaterProp
   const segX = Math.min(64, Math.max(8, Math.round(size[0] * 2)))
   const segY = Math.min(64, Math.max(8, Math.round(size[1] * 2)))
   return (
-    <mesh material={material} position={position} rotation={[-Math.PI / 2, 0, 0]} renderOrder={2}>
+    <mesh ref={mesh} material={material} position={position} rotation={[-Math.PI / 2, 0, 0]} renderOrder={2}>
       <planeGeometry args={[size[0], size[1], segX, segY]} />
     </mesh>
   )
