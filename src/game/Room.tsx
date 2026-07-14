@@ -129,14 +129,6 @@ export function Room() {
     tint: '#ffffff',
   })
 
-  const dado = useControls('Dado Band', {
-    enabled: true,
-    texture: { value: 'CorrugatedSteel005', options: TEXTURE_OPTIONS },
-    height: { value: 2.2, min: 0.4, max: 4, step: 0.1 },
-    repeatX: { value: 18, min: 1, max: 40, step: 0.5 },
-    tint: '#ffffff',
-  })
-
   const floor = useControls('Floor', {
     texture: { value: 'Concrete034', options: TEXTURE_OPTIONS },
     repeatX: { value: 13, min: 1, max: 40, step: 0.5 },
@@ -176,7 +168,6 @@ export function Room() {
   }, [fog.color, fog.near, fog.far])
 
   const wallMap = textures[walls.texture]
-  const dadoMap = textures[dado.texture]
   const floorMap = textures[floor.texture]
   const ceilingMap = textures[ceiling.texture]
 
@@ -216,16 +207,6 @@ export function Room() {
       <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, D / 2]} rotation={[0, Math.PI, 0]} map={wallMap} repeat={wallRepeat} color={walls.tint} />
       <Surface size={[D, H]} segments={[24, 8]} position={[-W / 2, H / 2, 0]} rotation={[0, Math.PI / 2, 0]} map={wallMap} repeat={wallRepeatSide} color={walls.tint} />
       <Surface size={[D, H]} segments={[24, 8]} position={[W / 2, H / 2, 0]} rotation={[0, -Math.PI / 2, 0]} map={wallMap} repeat={wallRepeatSide} color={walls.tint} />
-
-      {/* dado band around the walls */}
-      {dado.enabled && (
-        <>
-          <Surface size={[W, dado.height]} segments={[40, 3]} position={[0, dado.height / 2, -D / 2 + 0.02]} map={dadoMap} repeat={[dado.repeatX, 1]} color={dado.tint} />
-          <Surface size={[W, dado.height]} segments={[40, 3]} position={[0, dado.height / 2, D / 2 - 0.02]} rotation={[0, Math.PI, 0]} map={dadoMap} repeat={[dado.repeatX, 1]} color={dado.tint} />
-          <Surface size={[D, dado.height]} segments={[24, 3]} position={[-W / 2 + 0.02, dado.height / 2, 0]} rotation={[0, Math.PI / 2, 0]} map={dadoMap} repeat={[dado.repeatX * (D / W), 1]} color={dado.tint} />
-          <Surface size={[D, dado.height]} segments={[24, 3]} position={[W / 2 - 0.02, dado.height / 2, 0]} rotation={[0, -Math.PI / 2, 0]} map={dadoMap} repeat={[dado.repeatX * (D / W), 1]} color={dado.tint} />
-        </>
-      )}
 
       {/* roller door on the north wall, with warning signage */}
       <Surface size={[5, 4.6]} segments={[6, 6]} position={[-10, 2.3, -D / 2 + 0.04]} map={textures.CorrugatedSteel005} repeat={[4, 2.2]} />
