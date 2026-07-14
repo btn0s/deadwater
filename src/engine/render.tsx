@@ -20,6 +20,7 @@ import { registerGrabbable } from '../game/grabbables'
 import { mulberry32 } from '../game/rand'
 import { Rat } from '../game/Rat'
 import { Rack } from '../game/Rack'
+import { SewerWater } from '../game/SewerWater'
 import { useWorldTexture } from './textures'
 import { MODEL_REGISTRY } from './models'
 import { acquireLightSlot, releaseLightSlot } from './lights'
@@ -34,6 +35,7 @@ import type {
   GeneratorComponent,
   InstanceComponent,
   EnvironmentComponent,
+  WaterComponent,
 } from './types'
 
 /** 'game' runs physics/behaviors; 'editor' renders visuals + lights only. */
@@ -56,6 +58,9 @@ export function applyPS2Materials(root: THREE.Object3D) {
         // bulb glass renders as a lit diffuser: fullbright, warm lamp white —
         // PS2 games drew light sources as unlit bright geometry
         obj.material = createPS2Material({ fullbright: true, color: 0xf3f0da })
+        // tag so light components can find and drive the glow (and NOT drive
+        // other fullbright surfaces like outfall voids)
+        obj.material.userData.lampGlass = true
       } else {
         // housing stays scene-lit; emissive texels (the bulb) glow additively
         const map = src.map ? prepTexture(src.map) : null
@@ -206,7 +211,37 @@ function GeneratorVisual({ c }: { c: GeneratorComponent }) {
   if (c.generator === 'rack') return <Rack position={[0, 0]} inert />
   if (c.generator === 'paperWad') return <PaperWadVisual seed={c.seed ?? 1} size={c.params?.[0] ?? 0.09} />
   if (c.generator === 'trashPile') return <TrashMoundVisual seed={c.seed ?? 1} radius={c.params?.[0] ?? 1.4} height={c.params?.[1] ?? 0.4} />
+  if (c.generator === 'railing') return <RailingVisual length={c.params?.[0] ?? 4} spacing={c.params?.[1] ?? 2} />
   return null
+}
+
+const RAIL_H = 1.02
+
+/** guard railing along local x, centered on the node origin */
+function RailingVisual({ length, spacing }: { length: number; spacing: number }) {
+  const material = useMemo(() => createPS2Material({ color: 0x53575c }), [])
+  useEffect(() => () => material.dispose(), [material])
+  const posts: number[] = []
+  for (let x = -length / 2 + 0.3; x < length / 2; x += spacing) posts.push(x)
+  return (
+    <group>
+      {posts.map((x) => (
+        <mesh key={x} material={material} position={[x, RAIL_H / 2, 0]}>
+          <boxGeometry args={[0.05, RAIL_H, 0.05]} />
+        </mesh>
+      ))}
+      <mesh material={material} position={[0, RAIL_H, 0]}>
+        <boxGeometry args={[length, 0.07, 0.07]} />
+      </mesh>
+      <mesh material={material} position={[0, RAIL_H * 0.55, 0]}>
+        <boxGeometry args={[length, 0.05, 0.05]} />
+      </mesh>
+    </group>
+  )
+}
+
+function WaterVisual({ c }: { c: WaterComponent }) {
+  return <SewerWater position={[0, 0, 0]} size={[c.width, c.height]} />
 }
 
 function PaperWadVisual({ seed, size }: { seed: number; size: number }) {
@@ -348,7 +383,7 @@ function LightEffect({ c, nodeGroup, transform }: { c: LightComponent; nodeGroup
       // fixture = parent node's group (light nodes are children of fixtures)
       const fixture = g.parent
       fixture?.traverse((o) => {
-        if (o instanceof THREE.Mesh && o.material instanceof THREE.ShaderMaterial && o.material.uniforms.uFullbright?.value === 1) {
+        if (o instanceof THREE.Mesh && o.material instanceof THREE.ShaderMaterial && o.material.userData.lampGlass) {
           glass.current.push(o.material.uniforms.uColor.value as THREE.Color)
         }
       })
@@ -420,6 +455,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
   const instance = componentOf(node, 'instance')
   const light = componentOf(node, 'light')
   const environment = componentOf(node, 'environment')
+  const water = componentOf(node, 'water')
 
   const children = index.childrenOf.get(node.id) ?? []
 
@@ -430,15 +466,16 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
       {surface && <SurfaceVisual c={surface} />}
       {primitive && <PrimitiveVisual c={primitive} />}
       {generator && <GeneratorVisual c={generator} />}
+      {water && <WaterVisual c={water} />}
     </>
   )
-  const hasVisuals = !!(model && !model.split) || !!surface || !!primitive || !!generator
+  const hasVisuals = !!(model && !model.split) || !!surface || !!primitive || !!generator || !!water
 
   let body: React.ReactNode = visuals
   if (mode === 'game' && physics && hasVisuals) {
     if (physics.body === 'dynamic' && physics.grabbable) {
       body = <GrabbableBody>{visuals}</GrabbableBody>
-    } else if (physics.body === 'fixed' && physics.collider !== 'cuboid') {
+    } else if (physics.body === 'fixed' && physics.collider !== 'cuboid' && physics.collider !== 'none') {
       body = (
         <RigidBody type="fixed" colliders={physics.collider}>
           {visuals}

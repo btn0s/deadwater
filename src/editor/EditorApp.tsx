@@ -3,9 +3,6 @@ import { Canvas, useThree } from '@react-three/fiber'
 import { OrbitControls, PerspectiveCamera, TransformControls } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
 import * as THREE from 'three'
-import { SewerWing } from '../game/SewerWing'
-import { LoadingDock } from '../game/LoadingDock'
-import { Office } from '../game/Office'
 import { DevViews } from '../game/DevViews'
 import { EditorChrome } from '../game/EditorExtras'
 import { SceneRoot } from '../engine/render'
@@ -464,10 +461,6 @@ function EditableScene() {
       >
         <SceneRoot nodes={nodes} mode="editor" />
       </group>
-      {/* structure not yet migrated to nodes (#88) — backdrop only */}
-      <SewerWing />
-      <LoadingDock />
-      <Office />
     </group>
   )
 }

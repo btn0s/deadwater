@@ -32,7 +32,7 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
   ],
   physics: [
     { key: 'body', kind: 'select', options: ['fixed', 'dynamic'] },
-    { key: 'collider', kind: 'select', options: ['hull', 'trimesh', 'cuboid'] },
+    { key: 'collider', kind: 'select', options: ['hull', 'trimesh', 'cuboid', 'none'] },
     { key: 'size', label: 'size (half)', kind: 'vec', dims: 3, step: 0.05 },
     { key: 'grabbable', kind: 'check' },
     { key: 'blockPlayer', label: 'block player', kind: 'check' },
@@ -54,9 +54,13 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
     { key: 'fullbright', kind: 'check' },
   ],
   generator: [
-    { key: 'generator', kind: 'select', options: ['paperWad', 'trashPile', 'rack'] },
+    { key: 'generator', kind: 'select', options: ['paperWad', 'trashPile', 'rack', 'railing'] },
     { key: 'seed', kind: 'number', step: 1 },
     { key: 'params', kind: 'numbers', step: 0.05 },
+  ],
+  water: [
+    { key: 'width', kind: 'number', step: 0.5 },
+    { key: 'height', kind: 'number', step: 0.5 },
   ],
   behavior: [
     { key: 'behavior', kind: 'select', options: ['rat'] },
@@ -81,6 +85,7 @@ export const COMPONENT_DEFAULTS: Record<Exclude<ComponentType, 'environment'>, C
   generator: { type: 'generator', generator: 'paperWad', seed: 1 },
   behavior: { type: 'behavior', behavior: 'rat', seed: 1 },
   instance: { type: 'instance', of: '' },
+  water: { type: 'water', width: 4, height: 2 },
 }
 
 // dot-path helpers for nested fields (environment.fog.near)

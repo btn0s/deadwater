@@ -5,9 +5,6 @@ import { PS2Pipeline } from './ps2/PS2Pipeline'
 import { PlayerController } from './game/PlayerController'
 import { PlayerBody } from './game/PlayerBody'
 import { Telekinesis } from './game/Telekinesis'
-import { SewerWing } from './game/SewerWing'
-import { LoadingDock } from './game/LoadingDock'
-import { Office } from './game/Office'
 import { DevViews } from './game/DevViews'
 import { SceneRoot } from './engine/render'
 import { sceneNodes } from './engine/scene'
@@ -33,10 +30,6 @@ export default function App() {
           <Suspense fallback={null}>
             <Physics gravity={[0, -12, 0]}>
               <SceneRoot nodes={sceneNodes} mode="game" />
-              {/* structure not yet migrated to nodes (#88) */}
-              <SewerWing />
-              <LoadingDock />
-              <Office />
               <PlayerBody />
             </Physics>
           </Suspense>

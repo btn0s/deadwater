@@ -55,11 +55,12 @@ export interface LightComponent {
 }
 
 /** Rapier body. Dynamic bodies can be telekinesis-grabbable. On fixed bodies
- * blockPlayer adds a player-movement AABB from the rendered bounds. */
+ * blockPlayer adds a player-movement AABB (from size when given, else the
+ * rendered bounds). collider 'none' = no rapier body — player blocking only. */
 export interface PhysicsComponent {
   type: 'physics'
   body: 'fixed' | 'dynamic'
-  collider: 'hull' | 'trimesh' | 'cuboid'
+  collider: 'hull' | 'trimesh' | 'cuboid' | 'none'
   /** explicit half-extents for cuboid colliders (else derived from bounds) */
   size?: [number, number, number]
   grabbable?: boolean
@@ -95,10 +96,18 @@ export interface PrimitiveComponent {
 /** Procedural set pieces with seeded generation. */
 export interface GeneratorComponent {
   type: 'generator'
-  generator: 'paperWad' | 'trashPile' | 'rack'
+  generator: 'paperWad' | 'trashPile' | 'rack' | 'railing'
   seed?: number
-  /** paperWad: [size]; trashPile: [radius, height, junkCount] */
+  /** paperWad: [size]; trashPile: [radius, height];
+   * railing: [length, postSpacing] along local x */
   params?: number[]
+}
+
+/** Animated sewer-water plane (dual scrolling layers + sine vertex waves). */
+export interface WaterComponent {
+  type: 'water'
+  width: number
+  height: number
 }
 
 /** Scripted actors. */
@@ -131,5 +140,6 @@ export type Component =
   | BehaviorComponent
   | InstanceComponent
   | EnvironmentComponent
+  | WaterComponent
 
 export type ComponentType = Component['type']

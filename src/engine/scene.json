@@ -88,7 +88,7 @@
      0
     ],
     "rot": [
-     -1.5707963267948966,
+     -1.5708,
      0,
      0
     ]
@@ -146,7 +146,7 @@
      0
     ],
     "rot": [
-     1.5707963267948966,
+     1.5708,
      0,
      0
     ]
@@ -340,7 +340,7 @@
     ],
     "rot": [
      0,
-     3.141592653589793,
+     3.1416,
      0
     ]
    },
@@ -398,7 +398,7 @@
     ],
     "rot": [
      0,
-     3.141592653589793,
+     3.1416,
      0
     ]
    },
@@ -456,7 +456,7 @@
     ],
     "rot": [
      0,
-     1.5707963267948966,
+     1.5708,
      0
     ]
    },
@@ -514,7 +514,7 @@
     ],
     "rot": [
      0,
-     -1.5707963267948966,
+     -1.5708,
      0
     ]
    },
@@ -599,7 +599,7 @@
     ],
     "rot": [
      0,
-     -1.5707963267948966,
+     -1.5708,
      0
     ]
    },
@@ -1279,7 +1279,7 @@
    "transform": {
     "pos": [
      0,
-     -1.4000000000000004,
+     -1.4,
      0
     ]
    },
@@ -1317,7 +1317,7 @@
    "transform": {
     "pos": [
      0,
-     -1.4000000000000004,
+     -1.4,
      0
     ]
    },
@@ -1355,7 +1355,7 @@
    "transform": {
     "pos": [
      0,
-     -1.4000000000000004,
+     -1.4,
      0
     ]
    },
@@ -1393,7 +1393,7 @@
    "transform": {
     "pos": [
      0,
-     -1.4000000000000004,
+     -1.4,
      0
     ]
    },
@@ -1431,7 +1431,7 @@
    "transform": {
     "pos": [
      0,
-     -1.4000000000000004,
+     -1.4,
      0
     ]
    },
@@ -1470,7 +1470,7 @@
    "transform": {
     "pos": [
      0,
-     -1.4000000000000004,
+     -1.4,
      0
     ]
    },
@@ -1508,7 +1508,7 @@
    "transform": {
     "pos": [
      0,
-     -0.6000000000000001,
+     -0.6,
      0
     ]
    },
@@ -1546,7 +1546,7 @@
    "transform": {
     "pos": [
      0,
-     -0.7999999999999998,
+     -0.8,
      0
     ]
    },
@@ -1584,7 +1584,7 @@
    "transform": {
     "pos": [
      0,
-     -0.7999999999999998,
+     -0.8,
      0
     ]
    },
@@ -3329,11 +3329,11 @@
    "parent": "warehouse",
    "transform": {
     "pos": [
-     16.605356778183776,
-     1.4170723734237254,
-     8.647091660257425
+     16.6054,
+     1.4171,
+     8.6471
     ],
-    "rot": 3.0997904424170506
+    "rot": 3.0998
    },
    "components": [
     {
@@ -3354,11 +3354,11 @@
    "parent": "warehouse",
    "transform": {
     "pos": [
-     16.724740300789247,
-     0.975634165275842,
-     8.933560345355135
+     16.7247,
+     0.9756,
+     8.9336
     ],
-    "rot": 1.0038787230982915
+    "rot": 1.0039
    },
    "components": [
     {
@@ -3379,11 +3379,11 @@
    "parent": "warehouse",
    "transform": {
     "pos": [
-     17.07414833523238,
-     1.1228202023822815,
-     8.904546058509
+     17.0741,
+     1.1228,
+     8.9045
     ],
-    "rot": 5.800731195212155
+    "rot": 5.8007
    },
    "components": [
     {
@@ -3404,11 +3404,11 @@
    "parent": "warehouse",
    "transform": {
     "pos": [
-     16.691676985787005,
-     1.0609848914016038,
-     8.247668270803967
+     16.6917,
+     1.061,
+     8.2477
     ],
-    "rot": 0.21537435744648
+    "rot": 0.2154
    },
    "components": [
     {
@@ -3429,11 +3429,11 @@
    "parent": "warehouse",
    "transform": {
     "pos": [
-     17.55313784218625,
-     1.2647127419756725,
-     8.727961762403568
+     17.5531,
+     1.2647,
+     8.728
     ],
-    "rot": 1.6202111350171482
+    "rot": 1.6202
    },
    "components": [
     {
@@ -3454,11 +3454,11 @@
    "parent": "warehouse",
    "transform": {
     "pos": [
-     17.119280783675897,
-     1.3542085890239104,
-     9.010855577994537
+     17.1193,
+     1.3542,
+     9.0109
     ],
-    "rot": 5.37360680573261
+    "rot": 5.3736
    },
    "components": [
     {
@@ -3482,11 +3482,11 @@
    "parent": "warehouse",
    "transform": {
     "pos": [
-     16.804484202759138,
-     1.291201762650162,
-     8.962619852914619
+     16.8045,
+     1.2912,
+     8.9626
     ],
-    "rot": 0.01657930764613981
+    "rot": 0.0166
    },
    "components": [
     {
@@ -3507,11 +3507,11 @@
    "parent": "warehouse",
    "transform": {
     "pos": [
-     16.36076740607416,
-     0.893050064756535,
-     9.293974245370187
+     16.3608,
+     0.8931,
+     9.294
     ],
-    "rot": 1.912841217537532
+    "rot": 1.9128
    },
    "components": [
     {
@@ -4364,6 +4364,2968 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure",
+   "parent": "sewer-zone",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "sewer-structure/hall-floor",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     0,
+     -16
+    ],
+    "rot": [
+     -1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 3,
+     "height": 8,
+     "segments": [
+      4,
+      8
+     ],
+     "texture": "Concrete034",
+     "repeat": [
+      2,
+      5
+     ],
+     "tint": "#6e6e6e"
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/hall-ceiling",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     3,
+     -16
+    ],
+    "rot": [
+     1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 3,
+     "height": 8,
+     "segments": [
+      4,
+      8
+     ],
+     "texture": "CorrugatedSteel005",
+     "repeat": [
+      2,
+      5
+     ],
+     "tint": "#b4b4b4"
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/hall-wall-w",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -11.5,
+     1.5,
+     -16
+    ],
+    "rot": 1.5708
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 8,
+     "height": 3,
+     "segments": [
+      8,
+      4
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      4,
+      1.5
+     ],
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/hall-wall-e",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -8.5,
+     1.5,
+     -16
+    ],
+    "rot": -1.5708
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 8,
+     "height": 3,
+     "segments": [
+      8,
+      4
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      4,
+      1.5
+     ],
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/hall-floor-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -0.5,
+     -16
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      1.5,
+      0.5,
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/hall-ceiling-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     3.5,
+     -16
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      1.5,
+      0.5,
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/hall-wall-w-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -11.75,
+     1.5,
+     -16
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.25,
+      1.5,
+      4
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/hall-wall-e-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -8.25,
+     1.5,
+     -16
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.25,
+      1.5,
+      4
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/platform-s",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     0,
+     -22.5
+    ],
+    "rot": [
+     -1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 24,
+     "height": 5,
+     "segments": [
+      24,
+      5
+     ],
+     "texture": "Concrete034",
+     "repeat": [
+      8,
+      2
+     ],
+     "tint": "#686868",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/platform-n",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     0,
+     -31.5
+    ],
+    "rot": [
+     -1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 24,
+     "height": 5,
+     "segments": [
+      24,
+      5
+     ],
+     "texture": "Concrete034",
+     "repeat": [
+      8,
+      2
+     ],
+     "tint": "#686868",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/ceiling",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     5,
+     -27
+    ],
+    "rot": [
+     1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 24,
+     "height": 14,
+     "segments": [
+      24,
+      14
+     ],
+     "texture": "CorrugatedSteel005",
+     "repeat": [
+      12,
+      7
+     ],
+     "tint": "#9c9c9c",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-s-west",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -16.75,
+     2.5,
+     -20
+    ],
+    "rot": 3.1416
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 10.5,
+     "height": 5,
+     "segments": [
+      11,
+      6
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      5,
+      2
+     ],
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-s-east",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -3.25,
+     2.5,
+     -20
+    ],
+    "rot": 3.1416
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 10.5,
+     "height": 5,
+     "segments": [
+      11,
+      6
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      5,
+      2
+     ],
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-s-lintel",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     4,
+     -20
+    ],
+    "rot": 3.1416
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 3,
+     "height": 2,
+     "segments": [
+      3,
+      2
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      1.5,
+      0.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-n",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     2.5,
+     -34
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 24,
+     "height": 5,
+     "segments": [
+      24,
+      6
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      10,
+      2
+     ],
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-w",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -22,
+     2.5,
+     -27
+    ],
+    "rot": 1.5708
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 14,
+     "height": 5,
+     "segments": [
+      14,
+      6
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      6,
+      2
+     ],
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-e",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     2,
+     2.5,
+     -27
+    ],
+    "rot": -1.5708
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 14,
+     "height": 5,
+     "segments": [
+      14,
+      6
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      6,
+      2
+     ],
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/platform-s-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -0.5,
+     -22.5
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      12,
+      0.5,
+      2.5
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/platform-n-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -0.5,
+     -31.5
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      12,
+      0.5,
+      2.5
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/ceiling-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     5.5,
+     -27
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      12,
+      0.5,
+      7
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-w-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -22.5,
+     2.5,
+     -27
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.5,
+      2.5,
+      7
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-e-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     2.5,
+     2.5,
+     -27
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.5,
+      2.5,
+      7
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-n-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     2.5,
+     -34.5
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      12,
+      2.5,
+      0.5
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-s-west-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -16.75,
+     2.5,
+     -20.25
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      5.25,
+      2.5,
+      0.25
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-s-east-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -3.25,
+     2.5,
+     -20.25
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      5.25,
+      2.5,
+      0.25
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/wall-s-lintel-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     4,
+     -20.25
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      1.5,
+      1,
+      0.25
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/channel-bottom",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -1.5,
+     -27
+    ],
+    "rot": [
+     -1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 24,
+     "height": 1,
+     "segments": [
+      24,
+      2
+     ],
+     "texture": "Concrete034",
+     "repeat": [
+      10,
+      0.5
+     ],
+     "tint": "#4a4a4a"
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/bank-s",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -0.75,
+     -25.75
+    ],
+    "rot": [
+     -2.3562,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 24,
+     "height": 2.121320343559643,
+     "segments": [
+      24,
+      2
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      10,
+      0.9
+     ],
+     "tint": "#8a8a8a",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/bank-n",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -0.75,
+     -28.25
+    ],
+    "rot": [
+     -0.7854,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 24,
+     "height": 2.121320343559643,
+     "segments": [
+      24,
+      2
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      10,
+      0.9
+     ],
+     "tint": "#8a8a8a",
+     "bombing": 1
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/water",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -0.95,
+     -27
+    ]
+   },
+   "components": [
+    {
+     "type": "water",
+     "width": 24.2,
+     "height": 2.25
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/channel-bottom-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -2,
+     -27
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      12,
+      0.5,
+      0.5
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/bank-s-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -0.82,
+     -25.75
+    ],
+    "rot": [
+     -0.7854,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      12,
+      0.1,
+      1.0606601717798214
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/bank-n-body",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -0.82,
+     -28.25
+    ],
+    "rot": [
+     0.7854,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      12,
+      0.1,
+      1.0606601717798214
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/curb-s-west",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -11.5,
+     0,
+     -25.05
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "none",
+     "size": [
+      10.5,
+      0.3,
+      0.1
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/curb-s-east",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     1.5,
+     0,
+     -25.05
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "none",
+     "size": [
+      0.5,
+      0.3,
+      0.1
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/curb-n-west",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -11.5,
+     0,
+     -28.95
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "none",
+     "size": [
+      10.5,
+      0.3,
+      0.1
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/curb-n-east",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     1.5,
+     0,
+     -28.95
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "none",
+     "size": [
+      0.5,
+      0.3,
+      0.1
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/bridge-rail-w",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -1.1,
+     0.5,
+     -27
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "none",
+     "size": [
+      0.1,
+      0.5,
+      2
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/bridge-rail-e",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     1.1,
+     0.5,
+     -27
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "none",
+     "size": [
+      0.1,
+      0.5,
+      2
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/rail-s-west",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -11.5,
+     0,
+     -25
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "railing",
+     "params": [
+      21,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/rail-s-east",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     1.5,
+     0,
+     -25
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "railing",
+     "params": [
+      1,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/rail-n-west",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -11.5,
+     0,
+     -29
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "railing",
+     "params": [
+      21,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/rail-n-east",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     1.5,
+     0,
+     -29
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "railing",
+     "params": [
+      1,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/rail-bridge-w",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -1,
+     0,
+     -27
+    ],
+    "rot": 1.5708
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "railing",
+     "params": [
+      4,
+      1.9
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/rail-bridge-e",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     1,
+     0,
+     -27
+    ],
+    "rot": 1.5708
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "railing",
+     "params": [
+      4,
+      1.9
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/void-w",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -21.98,
+     -0.4,
+     -27
+    ],
+    "rot": 1.5708
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "plane",
+     "dims": [
+      4,
+      2.3
+     ],
+     "tint": "#000000",
+     "fullbright": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/void-e",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     1.98,
+     -0.4,
+     -27
+    ],
+    "rot": -1.5708
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "plane",
+     "dims": [
+      4,
+      2.3
+     ],
+     "tint": "#000000",
+     "fullbright": true
+    }
+   ]
+  },
+  {
+   "id": "grate",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "grate/bar-1",
+   "parent": "grate",
+   "transform": {
+    "pos": [
+     0,
+     -0.45,
+     -0.975
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.06,
+      2.3,
+      0.06
+     ],
+     "tint": "#33363a"
+    }
+   ]
+  },
+  {
+   "id": "grate/bar-2",
+   "parent": "grate",
+   "transform": {
+    "pos": [
+     0,
+     -0.45,
+     -0.635
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.06,
+      2.3,
+      0.06
+     ],
+     "tint": "#33363a"
+    }
+   ]
+  },
+  {
+   "id": "grate/bar-3",
+   "parent": "grate",
+   "transform": {
+    "pos": [
+     0,
+     -0.45,
+     -0.295
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.06,
+      2.3,
+      0.06
+     ],
+     "tint": "#33363a"
+    }
+   ]
+  },
+  {
+   "id": "grate/bar-4",
+   "parent": "grate",
+   "transform": {
+    "pos": [
+     0,
+     -0.45,
+     0.045
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.06,
+      2.3,
+      0.06
+     ],
+     "tint": "#33363a"
+    }
+   ]
+  },
+  {
+   "id": "grate/bar-5",
+   "parent": "grate",
+   "transform": {
+    "pos": [
+     0,
+     -0.45,
+     0.385
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.06,
+      2.3,
+      0.06
+     ],
+     "tint": "#33363a"
+    }
+   ]
+  },
+  {
+   "id": "grate/bar-6",
+   "parent": "grate",
+   "transform": {
+    "pos": [
+     0,
+     -0.45,
+     0.725
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.06,
+      2.3,
+      0.06
+     ],
+     "tint": "#33363a"
+    }
+   ]
+  },
+  {
+   "id": "grate/bar-7",
+   "parent": "grate",
+   "transform": {
+    "pos": [
+     0,
+     -0.45,
+     1.065
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.06,
+      2.3,
+      0.06
+     ],
+     "tint": "#33363a"
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/grate-w",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -21.9,
+     0,
+     -27
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "grate"
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/grate-e",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     1.9,
+     0,
+     -27
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "grate"
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/pipe-bank-1",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -0.62,
+     -28.45
+    ],
+    "rot": [
+     0,
+     0,
+     1.5708
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.22,
+      0.22,
+      23.8,
+      8
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      6,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/pipe-bank-2",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     -0.32,
+     -28.68
+    ],
+    "rot": [
+     0,
+     0,
+     1.5708
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.3,
+      0.3,
+      23.8,
+      8
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      6,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/pipe-trunk",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -10,
+     3.9,
+     -33.45
+    ],
+    "rot": [
+     0,
+     0,
+     1.5708
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.45,
+      0.45,
+      23.8,
+      8
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      6,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/pipe-feeder",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -16.5,
+     1.95,
+     -33.45
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.16,
+      0.16,
+      3.9,
+      8
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      6,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/bridge",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     0,
+     -0.02,
+     -27
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      2,
+      0.1,
+      4.4
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      6,
+      1
+     ]
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      1,
+      0.05,
+      2.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/sign-sewer",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -6.9,
+     1.8,
+     -20.04
+    ],
+    "rot": 3.1416
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 1.1,
+     "height": 1.1,
+     "segments": [
+      2,
+      2
+     ],
+     "texture": "DangerSign",
+     "repeat": [
+      1,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/accent-light",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -16,
+     3,
+     -27
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#9fd8a8",
+     "intensity": 0.7,
+     "radius": 11,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "pump-unit",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "pump-unit/plinth",
+   "parent": "pump-unit",
+   "transform": {
+    "pos": [
+     0,
+     0.15,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      2.7,
+      0.3,
+      1.7
+     ],
+     "texture": "Concrete034",
+     "repeat": [
+      2,
+      1
+     ],
+     "tint": "#5c5c5c"
+    }
+   ]
+  },
+  {
+   "id": "pump-unit/volute",
+   "parent": "pump-unit",
+   "transform": {
+    "pos": [
+     -0.45,
+     0.95,
+     0
+    ],
+    "rot": [
+     0,
+     0,
+     1.5708
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.55,
+      0.55,
+      1.3,
+      10
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      2,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pump-unit/flange-1",
+   "parent": "pump-unit",
+   "transform": {
+    "pos": [
+     -1.14,
+     0.95,
+     0
+    ],
+    "rot": [
+     0,
+     0,
+     1.5708
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.63,
+      0.63,
+      0.1,
+      10
+     ],
+     "tint": "#3c4045"
+    }
+   ]
+  },
+  {
+   "id": "pump-unit/flange-2",
+   "parent": "pump-unit",
+   "transform": {
+    "pos": [
+     0.24,
+     0.95,
+     0
+    ],
+    "rot": [
+     0,
+     0,
+     1.5708
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.63,
+      0.63,
+      0.1,
+      10
+     ],
+     "tint": "#3c4045"
+    }
+   ]
+  },
+  {
+   "id": "pump-unit/coupling",
+   "parent": "pump-unit",
+   "transform": {
+    "pos": [
+     0.45,
+     0.95,
+     0
+    ],
+    "rot": [
+     0,
+     0,
+     1.5708
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.18,
+      0.18,
+      0.35,
+      8
+     ],
+     "tint": "#3c4045"
+    }
+   ]
+  },
+  {
+   "id": "pump-unit/motor",
+   "parent": "pump-unit",
+   "transform": {
+    "pos": [
+     1.05,
+     0.93,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.85,
+      0.85,
+      0.85
+     ],
+     "texture": "CorrugatedSteel005",
+     "repeat": [
+      1.5,
+      1
+     ],
+     "tint": "#9aa886"
+    }
+   ]
+  },
+  {
+   "id": "pump-unit/riser",
+   "parent": "pump-unit",
+   "transform": {
+    "pos": [
+     -0.45,
+     2.4,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.24,
+      0.24,
+      3,
+      8
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      2,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pump-unit/outlet",
+   "parent": "pump-unit",
+   "transform": {
+    "pos": [
+     -0.45,
+     3.9,
+     -0.625
+    ],
+    "rot": [
+     1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.24,
+      0.24,
+      1.25,
+      8
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      2,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pump-unit/valve",
+   "parent": "pump-unit",
+   "transform": {
+    "pos": [
+     -0.45,
+     1.9,
+     0.28
+    ],
+    "rot": [
+     1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "torus",
+     "dims": [
+      0.22,
+      0.035,
+      6,
+      10
+     ],
+     "tint": "#3c4045"
+    }
+   ]
+  },
+  {
+   "id": "pump-unit/suction-drop",
+   "parent": "pump-unit",
+   "transform": {
+    "pos": [
+     -0.45,
+     -0.5,
+     3.72
+    ],
+    "rot": [
+     2.38,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.28,
+      0.28,
+      1.9,
+      8
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      2,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pump-unit/suction-run",
+   "parent": "pump-unit",
+   "transform": {
+    "pos": [
+     -0.45,
+     0.2,
+     2
+    ],
+    "rot": [
+     1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.28,
+      0.28,
+      3,
+      8
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      2,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/pump-1",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -16.5,
+     0,
+     -32.2
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "pump-unit"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "none",
+     "size": [
+      1.4,
+      1,
+      0.95
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "sewer-structure/pump-2",
+   "parent": "sewer-structure",
+   "transform": {
+    "pos": [
+     -6,
+     0,
+     -32.2
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "pump-unit"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "none",
+     "size": [
+      1.4,
+      1,
+      0.95
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "office-structure",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "office-structure/n-sill",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -17.9,
+     0.5,
+     -2.9
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      4.199999999999999,
+      1,
+      0.12
+     ],
+     "texture": "Plaster001",
+     "repeat": [
+      2.5,
+      1.8
+     ],
+     "tint": "#aebdaa"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/n-header",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -17.9,
+     2.6,
+     -2.9
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      4.199999999999999,
+      0.8,
+      0.12
+     ],
+     "texture": "Plaster001",
+     "repeat": [
+      2.5,
+      1.8
+     ],
+     "tint": "#aebdaa"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/n-pier-w",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -19.5,
+     1.6,
+     -2.9
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      1,
+      1.2,
+      0.12
+     ],
+     "texture": "Plaster001",
+     "repeat": [
+      2.5,
+      1.8
+     ],
+     "tint": "#aebdaa"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/n-pier-e",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -16.4,
+     1.6,
+     -2.9
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      1.2,
+      1.2,
+      0.12
+     ],
+     "texture": "Plaster001",
+     "repeat": [
+      2.5,
+      1.8
+     ],
+     "tint": "#aebdaa"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/n-mullion",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -18,
+     1.6,
+     -2.9
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.06,
+      1.2,
+      0.08
+     ],
+     "tint": "#474b4f"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/s-wall",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -17.9,
+     1.5,
+     2.9
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      4.199999999999999,
+      3,
+      0.12
+     ],
+     "texture": "Plaster001",
+     "repeat": [
+      2.5,
+      1.8
+     ],
+     "tint": "#aebdaa"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/e-door-jamb",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.8,
+     1.5,
+     -2.55
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.12,
+      3,
+      0.7
+     ],
+     "texture": "Plaster001",
+     "repeat": [
+      2.5,
+      1.8
+     ],
+     "tint": "#aebdaa"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/e-door-header",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.8,
+     2.6,
+     -1.7
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.12,
+      0.8,
+      1
+     ],
+     "texture": "Plaster001",
+     "repeat": [
+      2.5,
+      1.8
+     ],
+     "tint": "#aebdaa"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/e-pier-1",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.8,
+     1.5,
+     -0.75
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.12,
+      3,
+      0.9
+     ],
+     "texture": "Plaster001",
+     "repeat": [
+      2.5,
+      1.8
+     ],
+     "tint": "#aebdaa"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/e-sill",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.8,
+     0.5,
+     0.7
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.12,
+      1,
+      2
+     ],
+     "texture": "Plaster001",
+     "repeat": [
+      2.5,
+      1.8
+     ],
+     "tint": "#aebdaa"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/e-header",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.8,
+     2.6,
+     0.7
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.12,
+      0.8,
+      2
+     ],
+     "texture": "Plaster001",
+     "repeat": [
+      2.5,
+      1.8
+     ],
+     "tint": "#aebdaa"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/e-pier-2",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.8,
+     1.5,
+     2.3
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.12,
+      3,
+      1.2
+     ],
+     "texture": "Plaster001",
+     "repeat": [
+      2.5,
+      1.8
+     ],
+     "tint": "#aebdaa"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/e-mullion",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.8,
+     1.6,
+     0.7
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.08,
+      1.2,
+      0.06
+     ],
+     "tint": "#474b4f"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/roof",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -17.9,
+     3.07,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      4.35,
+      0.15,
+      5.95
+     ],
+     "tint": "#474b4f"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2.0999999999999996,
+      0.08,
+      2.9
+     ]
+    }
+   ]
+  },
+  {
+   "id": "office-structure/n-wall-body",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -17.9,
+     1.5,
+     -2.9
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2.0999999999999996,
+      1.5,
+      0.06
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "office-structure/s-wall-body",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -17.9,
+     1.5,
+     2.9
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2.0999999999999996,
+      1.5,
+      0.06
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "office-structure/e-body-door-side",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.8,
+     1.5,
+     -2.55
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.06,
+      1.5,
+      0.35
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "office-structure/e-body-window-side",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.8,
+     1.5,
+     0.85
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.06,
+      1.5,
+      2.05
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "office-structure/desk",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "office-structure/desk/top-window",
+   "parent": "office-structure/desk",
+   "transform": {
+    "pos": [
+     -16.24,
+     0.74,
+     1.62
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.76,
+      0.06,
+      2.44
+     ],
+     "tint": "#8a6f4d"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/desk/top-south",
+   "parent": "office-structure/desk",
+   "transform": {
+    "pos": [
+     -17.45,
+     0.74,
+     2.47
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      1.7,
+      0.06,
+      0.74
+     ],
+     "tint": "#8a6f4d"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/desk/leg-1",
+   "parent": "office-structure/desk",
+   "transform": {
+    "pos": [
+     -16.24,
+     0.37,
+     0.45
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.72,
+      0.74,
+      0.05
+     ],
+     "tint": "#3a3d40"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/desk/leg-2",
+   "parent": "office-structure/desk",
+   "transform": {
+    "pos": [
+     -18.26,
+     0.37,
+     2.47
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.05,
+      0.74,
+      0.7
+     ],
+     "tint": "#3a3d40"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/desk/leg-3",
+   "parent": "office-structure/desk",
+   "transform": {
+    "pos": [
+     -16.24,
+     0.37,
+     2.6
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.72,
+      0.74,
+      0.05
+     ],
+     "tint": "#3a3d40"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/desk/mass-window",
+   "parent": "office-structure/desk",
+   "transform": {
+    "pos": [
+     -16.24,
+     0.37,
+     1.62
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.38,
+      0.4,
+      1.22
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "office-structure/desk/mass-south",
+   "parent": "office-structure/desk",
+   "transform": {
+    "pos": [
+     -17.45,
+     0.37,
+     2.47
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.85,
+      0.4,
+      0.37
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "office-structure/light",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -17.9,
+     2.55,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#e8dcc0",
+     "intensity": 0.9,
+     "radius": 7.5,
+     "spot": 1
+    }
+   ]
+  },
+  {
+   "id": "dock-bay",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "dock-bay/door",
+   "parent": "dock-bay",
+   "transform": {
+    "pos": [
+     -0.06,
+     1.75,
+     0
+    ],
+    "rot": [
+     0,
+     -1.5708,
+     1.5708
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 3.5,
+     "height": 4.4,
+     "segments": [
+      4,
+      5
+     ],
+     "texture": "CorrugatedSteel005",
+     "repeat": [
+      2.6,
+      5
+     ],
+     "tint": "#b9bdc0"
+    }
+   ]
+  },
+  {
+   "id": "dock-bay/jamb-1",
+   "parent": "dock-bay",
+   "transform": {
+    "pos": [
+     -0.1,
+     1.85,
+     -2.29
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.16,
+      3.7,
+      0.18
+     ],
+     "tint": "#3d4044"
+    }
+   ]
+  },
+  {
+   "id": "dock-bay/jamb-2",
+   "parent": "dock-bay",
+   "transform": {
+    "pos": [
+     -0.1,
+     1.85,
+     2.29
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.16,
+      3.7,
+      0.18
+     ],
+     "tint": "#3d4044"
+    }
+   ]
+  },
+  {
+   "id": "dock-bay/header",
+   "parent": "dock-bay",
+   "transform": {
+    "pos": [
+     -0.1,
+     3.78,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.2,
+      0.36,
+      4.95
+     ],
+     "tint": "#3d4044"
+    }
+   ]
+  },
+  {
+   "id": "dock-bay/bumper-1",
+   "parent": "dock-bay",
+   "transform": {
+    "pos": [
+     -0.14,
+     0.28,
+     -1.85
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.22,
+      0.56,
+      0.4
+     ],
+     "tint": "#17181a"
+    }
+   ]
+  },
+  {
+   "id": "dock-bay/bumper-2",
+   "parent": "dock-bay",
+   "transform": {
+    "pos": [
+     -0.14,
+     0.28,
+     1.85
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.22,
+      0.56,
+      0.4
+     ],
+     "tint": "#17181a"
+    }
+   ]
+  },
+  {
+   "id": "dock",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "dock/bay-1",
+   "parent": "dock",
+   "transform": {
+    "pos": [
+     20,
+     0,
+     -7
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "dock-bay"
+    }
+   ]
+  },
+  {
+   "id": "dock/bay-2",
+   "parent": "dock",
+   "transform": {
+    "pos": [
+     20,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "dock-bay"
+    }
+   ]
+  },
+  {
+   "id": "dock/bay-3",
+   "parent": "dock",
+   "transform": {
+    "pos": [
+     20,
+     0,
+     7
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "dock-bay"
     }
    ]
   }

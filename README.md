@@ -93,8 +93,8 @@ fog, and dither.
 1. Keep `src/ps2/`, `src/engine/`, `src/editor/`, the vite middlewares, and
    the skills — that's the engine.
 2. Replace `src/engine/scene.json` with your own nodes (keep an
-   `environment` node), and swap the remaining code-built structure
-   (`SewerWing`, `Office`, `LoadingDock`) for your spaces.
+   `environment` node). The whole world is data — walls, lights, physics,
+   water, prefabs; there is no level code to port.
 3. Register new models in `src/engine/models.ts`; the palette, thumbnails,
    and editor pick them up automatically.
 4. Lay the level out in the editor (or have an agent patch `scene.json`).
