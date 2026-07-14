@@ -275,19 +275,20 @@ export function Room() {
       <Prop url={MODELS.oilTin} position={[-15.7, 0, -7]} rotationY={0.8} collide={false} grabbable />
       <PaperWad position={[-13.9, 0, -7.6]} seed={67} size={0.11} />
 
-      {/* ---- loading zone by the roller door ---- */}
+      {/* ---- north wall storage, west of the hallway (approach stays clear) ---- */}
       <SplitProp
         url={MODELS.militaryCrate}
-        position={[-11.6, 0, -10.1]}
+        position={[-15.4, 0, -10.5]}
         rotationY={0.35}
         groupBy={(n) => (n.endsWith('_a') ? 'a' : 'b')}
       />
-      <Prop url={MODELS.woodenCrate} position={[-8.3, 0, -10.4]} rotationY={0.2} grabbable />
-      <Prop url={MODELS.plasticCrate} position={[-9.5, 0, -9.4]} rotationY={1.9} grabbable />
-      <Prop url={MODELS.cardboardBox} position={[-7, 0, -9.7]} rotationY={0.5} grabbable />
-      <Prop url={MODELS.cardboardBox} position={[-7.1, 0.56, -9.8] } rotationY={1.1} collide={false} grabbable />
-      <Prop url={MODELS.cardboardBox} position={[-6.1, 0, -10.5]} rotationY={2.8} grabbable />
-      <PaperWad position={[-9.9, 0, -8.4]} seed={41} size={0.08} />
+      <Prop url={MODELS.woodenCrate} position={[-17.6, 0, -10.3]} rotationY={0.2} grabbable />
+      <Prop url={MODELS.plasticCrate} position={[-13.9, 0, -9.8]} rotationY={1.9} grabbable />
+
+      {/* ---- staged boxes east of the hallway, tucked to the wall ---- */}
+      <Prop url={MODELS.cardboardBox} position={[-5.6, 0, -10.7]} rotationY={0.5} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[-5.7, 0.56, -10.8]} rotationY={1.1} collide={false} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[-4.7, 0, -11]} rotationY={2.8} grabbable />
       <PaperWad position={[-6.8, 0, -8.9]} seed={37} size={0.1} />
 
       {/* ---- storage racking along the south wall ----
@@ -322,6 +323,17 @@ export function Room() {
       <LoadedPallet position={[15.5, -1.5]} rotationY={-0.09} variant={1} />
       <LoadedPallet position={[12.6, 0.1]} rotationY={0.14} variant={2} />
       <LoadedPallet position={[5, 9.5]} rotationY={1.55} variant={1} />
+
+      {/* ---- central staging block: palletized inventory awaiting put-away,
+           two neat rows with one empty slot — fills the mid-floor with an
+           organized mass, aisles all around ---- */}
+      <LoadedPallet position={[-1.6, -0.9]} rotationY={0.04} variant={1} />
+      <LoadedPallet position={[0.3, -0.9]} rotationY={-0.07} variant={0} />
+      <LoadedPallet position={[2.2, -0.9]} rotationY={0.11} variant={2} />
+      <LoadedPallet position={[-1.6, 1.1]} rotationY={-0.05} variant={2} />
+      <LoadedPallet position={[0.3, 1.1]} rotationY={0.09} variant={1} />
+      {/* empty slot at (2.2, 1.1) — bare pallet, its load already shelved */}
+      <FbxProp url={FBX_MODELS.pallet.url} textureUrl={FBX_MODELS.pallet.tex} position={[2.2, 0, 1.1]} rotationY={0.18} grabbable />
       <FbxProp url={FBX_MODELS.palletTruck.url} textureUrl={FBX_MODELS.palletTruck.tex} position={[13.9, 0, 1.9]} rotationY={3.05} />
       <FbxProp url={FBX_MODELS.trolley.url} textureUrl={FBX_MODELS.trolley.tex} position={[15.8, 0, -5.6]} rotationY={1.15} scale={0.7} />
       {/* empty pallet stack against the wall between bays */}
@@ -329,8 +341,8 @@ export function Room() {
       <FbxProp url={FBX_MODELS.pallet.url} textureUrl={FBX_MODELS.pallet.tex} position={[18.35, 0.16, -3.85]} rotationY={0.16} collide={false} grabbable />
       <FbxProp url={FBX_MODELS.pallet.url} textureUrl={FBX_MODELS.pallet.tex} position={[18.42, 0.32, -3.75]} rotationY={-0.06} collide={false} grabbable />
       <FbxProp url={FBX_MODELS.fireExtinguisher.url} textureUrl={FBX_MODELS.fireExtinguisher.tex} position={[19.5, 0, -4.4]} rotationY={3.6} scale={0.25} collide={false} grabbable />
-      {/* wet-floor sign at the sewer hallway mouth */}
-      <FbxProp url={FBX_MODELS.cautionSign.url} textureUrl={FBX_MODELS.cautionSign.tex} position={[-8.8, 0, -10.4]} rotationY={0.6} collide={false} grabbable />
+      {/* wet-floor sign beside the sewer hallway mouth, out of the walk path */}
+      <FbxProp url={FBX_MODELS.cautionSign.url} textureUrl={FBX_MODELS.cautionSign.tex} position={[-12.3, 0, -11]} rotationY={0.8} collide={false} grabbable />
 
       {/* ---- wall dressing by the hallway ---- */}
       <FbxProp url={FBX_MODELS.electricalBox.url} textureUrl={FBX_MODELS.electricalBox.tex} position={[-5.6, 1.25, -11.85]} physics="none" collide={false} />
@@ -358,16 +370,10 @@ export function Room() {
         <CuboidCollider key={`p${x},${z}`} args={[0.35, H / 2, 0.35]} position={[x, H / 2, z]} />
       ))}
 
-      {/* ---- trash corner, SE — cans flank a big debris mound ---- */}
+      {/* ---- trash corner, SE — THE trash zone: one can, one mound ---- */}
       <Prop url={MODELS.trashCan} position={[18.6, 0, 7.5]} rotationY={0.6} physics="trimesh" />
-      <Prop url={MODELS.trashCan} position={[17.5, 0, 10.7]} rotationY={2.3} physics="trimesh" />
       <Prop url={MODELS.trashbag} position={[17.8, 0, 6.3]} rotationY={1.7} collide={false} grabbable />
-      <SplitProp url={MODELS.foodCans} position={[15.4, 0, 10.4]} rotationY={2.8} />
       <TrashPile position={[16.8, 9]} radius={1.5} height={0.42} seed={900} items={8} />
-
-      {/* ---- smaller trash heaps ---- */}
-      <TrashPile position={[-6.7, -8.1]} radius={1.05} height={0.32} seed={901} items={5} />
-      <TrashPile position={[-0.6, 10.2]} radius={1.3} height={0.38} seed={902} items={6} />
 
       {/* ---- west wall storage, tucked against the office's south side ---- */}
       <Prop url={MODELS.barrel} position={[-18.5, 0, 3.7]} rotationY={0.4} />
@@ -377,13 +383,9 @@ export function Room() {
       {/* ---- hazard cue by the hallway mouth ---- */}
       <Prop url={MODELS.barrelExplosive} position={[-13.6, 0, -10.8]} rotationY={2.1} />
 
-      {/* ---- pillar-base dressing ---- */}
+      {/* ---- pillar-base dressing, one quiet touch ---- */}
       <Prop url={MODELS.cardboardBox} position={[12.8, 0, -6.3]} rotationY={0.7} grabbable />
       <PaperWad position={[11.4, 0, -7.4]} seed={43} size={0.08} />
-      <Prop url={MODELS.canRusted} position={[0.75, 0, 6.3]} rotationY={3.9} collide={false} grabbable />
-      <PaperWad position={[-0.7, 0, 7.4]} seed={47} size={0.09} />
-      <Prop url={MODELS.trashbag} position={[-12.7, 0, 6.2]} rotationY={2.8} collide={false} grabbable />
-      <PaperWad position={[-11.2, 0, 7.3]} seed={59} size={0.08} />
 
       {/* rats */}
       <Rat seed={101} spawn={[10, -10.5]} />

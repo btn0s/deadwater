@@ -33,7 +33,7 @@ export default function App() {
           <div className="crosshair" />
         ) : (
           <div className="overlay">
-            <div className="title">STORAGE — SUBLEVEL 2</div>
+            <div className="title">DEADWATER</div>
             <div className="hint">CLICK TO ENTER</div>
             <div className="keys">WASD MOVE&ensp;·&ensp;SHIFT RUN&ensp;·&ensp;SPACE JUMP&ensp;·&ensp;ESC RELEASE</div>
           </div>
