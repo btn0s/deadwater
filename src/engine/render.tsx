@@ -1,0 +1,474 @@
+import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
+import { useGLTF, useFBX, useTexture } from '@react-three/drei'
+import { RigidBody, CuboidCollider, type RapierRigidBody } from '@react-three/rapier'
+import * as THREE from 'three'
+import {
+  createPS2Material,
+  prepTexture,
+  rawColor,
+  rawColorFromString,
+  ambientColor,
+  fogSettings,
+  lightPositions,
+  lightColors,
+  lightRadii,
+  lightSpots,
+} from '../ps2/PS2Material'
+import { applyPS2Materials } from '../game/Prop'
+import { addCollider } from '../game/collision'
+import { registerGrabbable } from '../game/grabbables'
+import { mulberry32 } from '../game/rand'
+import { Rat } from '../game/Rat'
+import { Rack } from '../game/Rack'
+import { useWorldTexture } from './textures'
+import { acquireLightSlot, releaseLightSlot } from './lights'
+import type {
+  SceneNode,
+  Component,
+  ModelComponent,
+  LightComponent,
+  PhysicsComponent,
+  SurfaceComponent,
+  PrimitiveComponent,
+  GeneratorComponent,
+  InstanceComponent,
+  EnvironmentComponent,
+} from './types'
+
+/** 'game' runs physics/behaviors; 'editor' renders visuals + lights only. */
+export type EngineMode = 'game' | 'editor'
+export const EngineContext = createContext<EngineMode>('game')
+export const useEngineMode = () => useContext(EngineContext)
+
+/** three.js group of the node currently being rendered (for cross-component
+ * effects like a light syncing its fixture's glass glow). */
+const NodeGroupContext = createContext<React.RefObject<THREE.Group | null> | null>(null)
+
+// ---------------------------------------------------------------- transforms
+
+function eulerOf(node: SceneNode): [number, number, number] {
+  const r = node.transform.rot
+  if (r === undefined) return [0, 0, 0]
+  return typeof r === 'number' ? [0, r, 0] : r
+}
+
+// ------------------------------------------------------------------ visuals
+
+function ModelVisual({ c }: { c: ModelComponent }) {
+  // both loaders suspend; called conditionally is fine because source is stable per component
+  const object = c.source === 'gltf' ? <GltfVisual c={c} /> : <FbxVisual c={c} />
+  return object
+}
+
+function GltfVisual({ c }: { c: ModelComponent }) {
+  const { scene } = useGLTF(c.url)
+  const cloned = useMemo(() => {
+    const g = scene.clone(true)
+    applyPS2Materials(g)
+    return g
+  }, [scene])
+  return <primitive object={cloned} />
+}
+
+function FbxVisual({ c }: { c: ModelComponent }) {
+  const fbx = useFBX(c.url)
+  const map = useTexture(c.texture ?? '')
+  const cloned = useMemo(() => {
+    const g = fbx.clone(true)
+    const box = new THREE.Box3().setFromObject(g)
+    const size = box.getSize(new THREE.Vector3())
+    const unit = Math.max(size.x, size.y, size.z) > 8 ? 0.01 : 1
+    g.scale.setScalar(unit)
+    g.updateMatrixWorld(true)
+    const scaled = new THREE.Box3().setFromObject(g)
+    g.position.y -= scaled.min.y
+    const material = createPS2Material({ map: prepTexture(map) })
+    g.traverse((o) => {
+      if (o instanceof THREE.Mesh) o.material = material
+    })
+    return g
+  }, [fbx, map])
+  return <primitive object={cloned} />
+}
+
+/** split models: each piece is its own dynamic body (game) or visual (editor) */
+function SplitModel({ c, physics }: { c: ModelComponent; physics?: PhysicsComponent }) {
+  const { scene } = useGLTF(c.url)
+  const mode = useEngineMode()
+  const pieces = useMemo(() => {
+    const g = scene.clone(true)
+    applyPS2Materials(g)
+    g.updateMatrixWorld(true)
+    const buckets = new Map<string, THREE.Mesh[]>()
+    const keyOf = (name: string) => (c.split === 'suffix-ab' ? (name.endsWith('_a') ? 'a' : 'b') : name)
+    g.traverse((o) => {
+      if (o instanceof THREE.Mesh) {
+        const m = new THREE.Mesh(o.geometry, o.material)
+        m.applyMatrix4(o.matrixWorld)
+        const k = keyOf(o.name)
+        buckets.get(k)?.push(m) ?? buckets.set(k, [m])
+      }
+    })
+    return [...buckets.values()].map((meshes) => {
+      const container = new THREE.Group()
+      meshes.forEach((m) => container.add(m))
+      const box = new THREE.Box3().setFromObject(container)
+      const center = box.getCenter(new THREE.Vector3())
+      const offset = new THREE.Vector3(center.x, 0, center.z)
+      meshes.forEach((m) => m.position.sub(offset))
+      return { container, offset }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scene])
+
+  return (
+    <>
+      {pieces.map((p, i) =>
+        mode === 'game' && physics?.grabbable ? (
+          <GrabbableBody key={i} position={[p.offset.x, 0, p.offset.z]}>
+            <primitive object={p.container} />
+          </GrabbableBody>
+        ) : (
+          <group key={i} position={[p.offset.x, 0, p.offset.z]}>
+            <primitive object={p.container} />
+          </group>
+        ),
+      )}
+    </>
+  )
+}
+
+function SurfaceVisual({ c }: { c: SurfaceComponent }) {
+  const map = useWorldTexture(c.texture)
+  const material = useMemo(
+    () => createPS2Material({ map, repeat: c.repeat, color: c.tint, bombing: c.bombing ?? 0 }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [map, c.repeat[0], c.repeat[1], c.tint, c.bombing],
+  )
+  useEffect(() => () => material.dispose(), [material])
+  const segs = c.segments ?? [Math.max(1, Math.round(c.width)), Math.max(1, Math.round(c.height))]
+  return (
+    <mesh material={material}>
+      <planeGeometry args={[c.width, c.height, segs[0], segs[1]]} />
+    </mesh>
+  )
+}
+
+function PrimitiveVisual({ c }: { c: PrimitiveComponent }) {
+  const map = useWorldTexture(c.texture ?? 'Concrete031')
+  const material = useMemo(
+    () => createPS2Material({ map: c.texture ? map : null, repeat: c.repeat ?? [1, 1], color: c.tint, fullbright: c.fullbright }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [map, c.texture, c.repeat?.[0], c.repeat?.[1], c.tint, c.fullbright],
+  )
+  useEffect(() => () => material.dispose(), [material])
+  const d = c.dims
+  return (
+    <mesh material={material}>
+      {c.shape === 'box' && <boxGeometry args={[d[0], d[1], d[2], 2, Math.max(2, Math.round(d[1] * 1.5)), 2]} />}
+      {c.shape === 'cylinder' && <cylinderGeometry args={[d[0], d[1], d[2], d[3] ?? 8]} />}
+      {c.shape === 'torus' && <torusGeometry args={[d[0], d[1], d[2] ?? 6, d[3] ?? 10]} />}
+      {c.shape === 'plane' && <planeGeometry args={[d[0], d[1]]} />}
+    </mesh>
+  )
+}
+
+function GeneratorVisual({ c }: { c: GeneratorComponent }) {
+  if (c.generator === 'rack') return <Rack position={[0, 0]} inert />
+  if (c.generator === 'paperWad') return <PaperWadVisual seed={c.seed ?? 1} size={c.params?.[0] ?? 0.09} />
+  if (c.generator === 'trashPile') return <TrashMoundVisual seed={c.seed ?? 1} radius={c.params?.[0] ?? 1.4} height={c.params?.[1] ?? 0.4} />
+  return null
+}
+
+function PaperWadVisual({ seed, size }: { seed: number; size: number }) {
+  const { geometry, material } = useMemo(() => {
+    const rand = mulberry32(seed)
+    const geo = new THREE.IcosahedronGeometry(size, 1)
+    const pos = geo.attributes.position
+    for (let i = 0; i < pos.count; i++) {
+      const s = 0.72 + rand() * 0.55
+      pos.setXYZ(i, pos.getX(i) * s, pos.getY(i) * s, pos.getZ(i) * s)
+    }
+    const flat = geo.toNonIndexed()
+    flat.computeVertexNormals()
+    geo.dispose()
+    return { geometry: flat, material: createPS2Material({ color: 0xd9d5c9 }) }
+  }, [seed, size])
+  return <mesh geometry={geometry} material={material} position={[0, size * 0.8, 0]} />
+}
+
+function TrashMoundVisual({ seed, radius, height }: { seed: number; radius: number; height: number }) {
+  const map = useWorldTexture('TrashPile')
+  const { geometry, material, rotation } = useMemo(() => {
+    const rand = mulberry32(seed)
+    const geo = new THREE.PlaneGeometry(radius * 2, radius * 2, 4, 4)
+    const pos = geo.attributes.position
+    const cell = (radius * 2) / 4
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i)
+      const y = pos.getY(i)
+      const isEdge = Math.max(Math.abs(x), Math.abs(y)) > radius * 0.99
+      const jx = x + (rand() - 0.5) * cell * 0.7
+      const jy = y + (rand() - 0.5) * cell * 0.7
+      if (isEdge) {
+        pos.setXYZ(i, jx, jy, -(0.05 + rand() * 0.14))
+        continue
+      }
+      const falloff = 1 - Math.hypot(jx, jy) / (radius * 1.35)
+      pos.setXYZ(i, jx, jy, Math.max(0.04, height * falloff * (0.5 + rand())))
+    }
+    geo.rotateX(-Math.PI / 2)
+    const flat = geo.toNonIndexed()
+    flat.computeVertexNormals()
+    geo.dispose()
+    const m = map.clone()
+    m.wrapS = THREE.MirroredRepeatWrapping
+    m.wrapT = THREE.MirroredRepeatWrapping
+    m.needsUpdate = true
+    return { geometry: flat, material: createPS2Material({ map: m, repeat: [1.5, 1.5] }), rotation: rand() * Math.PI * 2 }
+  }, [seed, radius, height, map])
+  return <mesh geometry={geometry} material={material} rotation-y={rotation} />
+}
+
+// ------------------------------------------------------------------ physics
+
+function GrabbableBody({ children, position = [0, 0, 0] }: { children: React.ReactNode; position?: [number, number, number] }) {
+  const body = useRef<RapierRigidBody>(null)
+  const inner = useRef<THREE.Group>(null)
+  useEffect(() => {
+    if (!body.current || !inner.current) return
+    const box = new THREE.Box3().setFromObject(inner.current)
+    const radius = Math.max(box.max.x - box.min.x, box.max.z - box.min.z) / 2
+    return registerGrabbable({ root: inner.current, body: body.current, radius })
+  }, [])
+  return (
+    <RigidBody ref={body} colliders="hull" position={position} linearDamping={0.2} angularDamping={0.8} ccd>
+      <group ref={inner}>{children}</group>
+    </RigidBody>
+  )
+}
+
+/** blockPlayer: player-movement AABB from the cuboid size when given,
+ * else from the node's rendered world bounds */
+function BlockPlayer({ size }: { size?: [number, number, number] }) {
+  const group = useContext(NodeGroupContext)
+  useEffect(() => {
+    const g = group?.current
+    if (!g) return
+    let box: THREE.Box3
+    if (size) {
+      g.updateWorldMatrix(true, false)
+      const p = new THREE.Vector3()
+      g.getWorldPosition(p)
+      box = new THREE.Box3(
+        new THREE.Vector3(p.x - size[0], p.y - size[1], p.z - size[2]),
+        new THREE.Vector3(p.x + size[0], p.y + size[1], p.z + size[2]),
+      )
+    } else {
+      box = new THREE.Box3().setFromObject(g)
+      if (box.isEmpty()) return
+    }
+    return addCollider({ minX: box.min.x, maxX: box.max.x, minZ: box.min.z, maxZ: box.max.z })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [group, size?.[0], size?.[1], size?.[2]])
+  return null
+}
+
+// -------------------------------------------------------------- environment
+
+function EnvironmentEffect({ c }: { c: EnvironmentComponent }) {
+  useEffect(() => {
+    ambientColor.copy(rawColorFromString(c.ambient))
+    fogSettings.color.copy(rawColorFromString(c.fog.color))
+    fogSettings.near.value = c.fog.near
+    fogSettings.far.value = c.fog.far
+  }, [c.ambient, c.fog.color, c.fog.near, c.fog.far])
+  return null
+}
+
+// -------------------------------------------------------------------- light
+
+const GLASS_WARM = rawColor(0xf3f0da)
+const GLASS_FLOOR = 0.12
+
+function LightEffect({ c, nodeGroup, transform }: { c: LightComponent; nodeGroup: React.RefObject<THREE.Group | null> | null; transform: SceneNode['transform'] }) {
+  const slot = useRef(-1)
+  const flickerState = useRef({ on: true, nextToggle: 0.5 })
+  const lastLevel = useRef(-1)
+  const glass = useRef<THREE.Color[]>([])
+  const settings = useRef(c)
+  settings.current = c
+
+  useEffect(() => {
+    slot.current = acquireLightSlot()
+    return () => releaseLightSlot(slot.current)
+  }, [])
+
+  // position the light at this node's world position; find fixture glass on
+  // the parent fixture (if any) to sync its glow
+  useEffect(() => {
+    const i = slot.current
+    if (i < 0) return
+    const g = nodeGroup?.current
+    if (g) {
+      g.updateWorldMatrix(true, false)
+      const p = new THREE.Vector3()
+      g.getWorldPosition(p)
+      lightPositions[i].copy(p)
+      glass.current = []
+      // fixture = parent node's group (light nodes are children of fixtures)
+      const fixture = g.parent
+      fixture?.traverse((o) => {
+        if (o instanceof THREE.Mesh && o.material instanceof THREE.ShaderMaterial && o.material.uniforms.uFullbright?.value === 1) {
+          glass.current.push(o.material.uniforms.uColor.value as THREE.Color)
+        }
+      })
+    }
+    lightColors[i].copy(rawColorFromString(c.color)).multiplyScalar(c.intensity)
+    lightRadii[i] = c.radius
+    lightSpots[i] = c.spot ?? 1
+    lastLevel.current = -1
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [c.color, c.intensity, c.radius, c.spot, nodeGroup, JSON.stringify(transform)])
+
+  useFrame(({ clock }) => {
+    const i = slot.current
+    if (i < 0) return
+    const s = settings.current
+    let level = 1
+    if (s.flicker) {
+      const f = flickerState.current
+      const t = clock.elapsedTime
+      if (t > f.nextToggle) {
+        f.on = !f.on
+        f.nextToggle = t + (f.on ? 0.4 + Math.random() * 2.5 : 0.04 + Math.random() * 0.18)
+      }
+      level = f.on ? 1 : 0.07
+    }
+    if (level !== lastLevel.current) {
+      lastLevel.current = level
+      lightColors[i].copy(rawColorFromString(s.color)).multiplyScalar(s.intensity * level)
+      const glow = Math.max(level, GLASS_FLOOR)
+      for (const col of glass.current) col.copy(GLASS_WARM).multiplyScalar(glow)
+    }
+  })
+
+  return null
+}
+
+// ----------------------------------------------------------------- renderer
+
+interface SceneIndex {
+  byId: Map<string, SceneNode>
+  childrenOf: Map<string | null, SceneNode[]>
+}
+
+export function indexScene(nodes: SceneNode[]): SceneIndex {
+  const byId = new Map(nodes.map((n) => [n.id, n]))
+  const childrenOf = new Map<string | null, SceneNode[]>()
+  for (const n of nodes) {
+    const list = childrenOf.get(n.parent) ?? []
+    list.push(n)
+    childrenOf.set(n.parent, list)
+  }
+  return { byId, childrenOf }
+}
+
+function componentOf<T extends Component['type']>(node: SceneNode, type: T) {
+  return node.components?.find((c) => c.type === type) as Extract<Component, { type: T }> | undefined
+}
+
+export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode; index: SceneIndex; instancePrefix?: string }) {
+  const mode = useEngineMode()
+  const group = useRef<THREE.Group>(null)
+
+  const model = componentOf(node, 'model')
+  const physics = componentOf(node, 'physics')
+  const surface = componentOf(node, 'surface')
+  const primitive = componentOf(node, 'primitive')
+  const generator = componentOf(node, 'generator')
+  const behavior = componentOf(node, 'behavior')
+  const instance = componentOf(node, 'instance')
+  const light = componentOf(node, 'light')
+  const environment = componentOf(node, 'environment')
+
+  const children = index.childrenOf.get(node.id) ?? []
+
+  // pure visual stack for this node
+  const visuals = (
+    <>
+      {model && !model.split && <ModelVisual c={model} />}
+      {surface && <SurfaceVisual c={surface} />}
+      {primitive && <PrimitiveVisual c={primitive} />}
+      {generator && <GeneratorVisual c={generator} />}
+    </>
+  )
+  const hasVisuals = !!(model && !model.split) || !!surface || !!primitive || !!generator
+
+  let body: React.ReactNode = visuals
+  if (mode === 'game' && physics && hasVisuals) {
+    if (physics.body === 'dynamic' && physics.grabbable) {
+      body = <GrabbableBody>{visuals}</GrabbableBody>
+    } else if (physics.body === 'fixed' && physics.collider !== 'cuboid') {
+      body = (
+        <RigidBody type="fixed" colliders={physics.collider}>
+          {visuals}
+        </RigidBody>
+      )
+    }
+  }
+
+  return (
+    <NodeGroupContext.Provider value={group}>
+      <group ref={group} name={instancePrefix + node.id} position={node.transform.pos} rotation={eulerOf(node)} scale={node.transform.scale ?? 1}>
+        {body}
+        {model?.split && <SplitModel c={model} physics={physics} />}
+        {mode === 'game' && physics?.collider === 'cuboid' && physics.size && (
+          <RigidBody type="fixed" colliders={false}>
+            <CuboidCollider args={physics.size} />
+          </RigidBody>
+        )}
+        {mode === 'game' && physics?.blockPlayer && <BlockPlayer size={physics.size} />}
+        {light && <LightEffect c={light} nodeGroup={group} transform={node.transform} />}
+        {environment && <EnvironmentEffect c={environment} />}
+        {instance && <InstanceView c={instance} index={index} prefix={`${instancePrefix}${node.id}::`} />}
+        {children.map((child) => (
+          <NodeView key={child.id} node={child} index={index} instancePrefix={instancePrefix} />
+        ))}
+      </group>
+      {/* rats manage absolute positions themselves — outside the transform */}
+      {mode === 'game' && behavior?.behavior === 'rat' && (
+        <Rat seed={behavior.seed ?? 1} spawn={[node.transform.pos[0], node.transform.pos[2]]} />
+      )}
+    </NodeGroupContext.Provider>
+  )
+}
+
+function InstanceView({ c, index, prefix }: { c: InstanceComponent; index: SceneIndex; prefix: string }) {
+  const def = index.byId.get(c.of)
+  if (!def) return null
+  const children = index.childrenOf.get(def.id) ?? []
+  return (
+    <>
+      {children.map((child) => (
+        <NodeView key={child.id} node={child} index={index} instancePrefix={prefix} />
+      ))}
+    </>
+  )
+}
+
+/** Render a whole scene: root-level nodes except the library. */
+export function SceneRoot({ nodes, mode }: { nodes: SceneNode[]; mode: EngineMode }) {
+  const index = useMemo(() => indexScene(nodes), [nodes])
+  const roots = (index.childrenOf.get(null) ?? []).filter((n) => !n.library)
+  return (
+    <EngineContext.Provider value={mode}>
+      <group name="level">
+        {roots.map((n) => (
+          <NodeView key={n.id} node={n} index={index} />
+        ))}
+      </group>
+    </EngineContext.Provider>
+  )
+}

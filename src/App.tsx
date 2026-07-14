@@ -5,9 +5,13 @@ import { PS2Pipeline } from './ps2/PS2Pipeline'
 import { PlayerController } from './game/PlayerController'
 import { PlayerBody } from './game/PlayerBody'
 import { Telekinesis } from './game/Telekinesis'
-import { Room } from './game/Room'
+import { SewerWing } from './game/SewerWing'
+import { LoadingDock } from './game/LoadingDock'
+import { Office } from './game/Office'
 import { DevViews } from './game/DevViews'
 import { editorStore } from './game/editorStore'
+import { SceneRoot } from './engine/render'
+import { sceneNodes } from './engine/scene'
 
 export default function App() {
   const [locked, setLocked] = useState(false)
@@ -30,7 +34,11 @@ export default function App() {
         <Canvas gl={{ antialias: false, powerPreference: 'high-performance' }} dpr={1}>
           <Suspense fallback={null}>
             <Physics gravity={[0, -12, 0]}>
-              <Room />
+              <SceneRoot nodes={sceneNodes} mode="game" />
+              {/* structure not yet migrated to nodes (#88) */}
+              <SewerWing />
+              <LoadingDock />
+              <Office />
               <PlayerBody />
             </Physics>
           </Suspense>
