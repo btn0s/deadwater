@@ -193,6 +193,7 @@ export const MODELS = {
   chair: '/models/painted_wooden_chair_01/painted_wooden_chair_01_1k.gltf',
   cabinet: '/models/drawer_cabinet/drawer_cabinet_1k.gltf',
   binder: '/models/binder_notebook/binder_notebook_1k.gltf',
+  toolbox: '/models/metal_toolbox/metal_toolbox_1k.gltf',
 }
 
 Object.values(MODELS).forEach((url) => useGLTF.preload(url))
