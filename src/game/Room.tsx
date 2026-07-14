@@ -66,13 +66,14 @@ interface SurfaceProps {
   map: THREE.Texture
   repeat: [number, number]
   color?: number | string
+  bombing?: number
 }
 
-function Surface({ size, segments, position, rotation = [0, 0, 0], map, repeat, color }: SurfaceProps) {
+function Surface({ size, segments, position, rotation = [0, 0, 0], map, repeat, color, bombing = 0 }: SurfaceProps) {
   const material = useMemo(
-    () => createPS2Material({ map, repeat, color }),
+    () => createPS2Material({ map, repeat, color, bombing }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [map, repeat[0], repeat[1], color],
+    [map, repeat[0], repeat[1], color, bombing],
   )
   useEffect(() => () => material.dispose(), [material])
   return (
@@ -127,6 +128,8 @@ export function Room() {
     repeatX: { value: 16, min: 1, max: 40, step: 0.5 },
     repeatY: { value: 2, min: 0.5, max: 10, step: 0.1 },
     tint: '#ffffff',
+    breakupTiling: true,
+    breakupScale: { value: 1, min: 0.25, max: 4, step: 0.25 },
   })
 
   const floor = useControls('Floor', {
@@ -134,13 +137,17 @@ export function Room() {
     repeatX: { value: 13, min: 1, max: 40, step: 0.5 },
     repeatY: { value: 8, min: 1, max: 30, step: 0.5 },
     tint: '#6e6e6e',
+    breakupTiling: false,
+    breakupScale: { value: 1, min: 0.25, max: 4, step: 0.25 },
   })
 
   const ceiling = useControls('Ceiling', {
     texture: { value: 'CorrugatedSteel005', options: TEXTURE_OPTIONS },
-    repeatX: { value: 20, min: 1, max: 40, step: 0.5 },
+    repeatX: { value: 20, min: 1, max: 30, step: 0.5 },
     repeatY: { value: 12, min: 1, max: 30, step: 0.5 },
     tint: '#b4b4b4',
+    breakupTiling: true,
+    breakupScale: { value: 1, min: 0.25, max: 4, step: 0.25 },
   })
 
   const lighting = useControls('Lighting', {

@@ -96,6 +96,7 @@ const fragmentShader = /* glsl */ `
   uniform vec3 fogColor;
   uniform float fogNear;
   uniform float fogFar;
+  uniform float uBomb; // 0 = plain tiling; >0 = stochastic lattice density (cells per tile)
 
   varying vec2 vUv;
   varying vec3 vLight;
@@ -105,8 +106,37 @@ const fragmentShader = /* glsl */ `
   float bayer2(vec2 a) { a = floor(a); return fract(a.x * 0.5 + a.y * a.y * 0.75); }
   float bayer4(vec2 a) { return bayer2(0.5 * a) * 0.25 + bayer2(a); }
 
+  vec2 hash22(vec2 p) {
+    return fract(sin(vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)))) * 43758.5453);
+  }
+
+  // texture bombing: sample at 3 nearby triangular-lattice points, each with
+  // its own random UV offset, and blend — breaks up visible tiling
+  vec4 sampleBombed(vec2 uv) {
+    vec2 skewed = mat2(1.0, 0.0, -0.57735027, 1.15470054) * (uv * uBomb);
+    vec2 base = floor(skewed);
+    vec2 f = fract(skewed);
+    float t3 = 1.0 - f.x - f.y;
+
+    vec2 v1; vec2 v2; vec2 v3; vec3 w;
+    if (t3 > 0.0) {
+      v1 = base; v2 = base + vec2(0.0, 1.0); v3 = base + vec2(1.0, 0.0);
+      w = vec3(t3, f.y, f.x);
+    } else {
+      v1 = base + vec2(1.0, 1.0); v2 = base + vec2(1.0, 0.0); v3 = base + vec2(0.0, 1.0);
+      w = vec3(-t3, 1.0 - f.y, 1.0 - f.x);
+    }
+    // sharpen the blend to cut ghosting in the transition zones
+    w = pow(w, vec3(4.0));
+    w /= (w.x + w.y + w.z);
+
+    return texture2D(map, uv + hash22(v1)) * w.x +
+           texture2D(map, uv + hash22(v2)) * w.y +
+           texture2D(map, uv + hash22(v3)) * w.z;
+  }
+
   void main() {
-    vec4 texel = texture2D(map, vUv);
+    vec4 texel = uBomb > 0.0 ? sampleBombed(vUv) : texture2D(map, vUv);
     vec3 color = texel.rgb * uColor * vLight;
 
     float fogFactor = clamp((vFogDepth - fogNear) / (fogFar - fogNear), 0.0, 1.0);
@@ -126,6 +156,8 @@ export interface PS2MaterialOptions {
   repeat?: [number, number]
   color?: number | string | THREE.Color
   fullbright?: boolean
+  /** stochastic anti-tiling: lattice cells per texture tile (0 = off) */
+  bombing?: number
 }
 
 function resolveColor(color: PS2MaterialOptions['color']): THREE.Color {
@@ -144,6 +176,7 @@ export function createPS2Material(opts: PS2MaterialOptions = {}): THREE.ShaderMa
       uColor: { value: resolveColor(opts.color) },
       uUvRepeat: { value: new THREE.Vector2(...(opts.repeat ?? [1, 1])) },
       uFullbright: { value: opts.fullbright ? 1 : 0 },
+      uBomb: { value: opts.bombing ?? 0 },
     },
   })
 }
