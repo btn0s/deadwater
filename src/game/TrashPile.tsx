@@ -44,24 +44,26 @@ export function TrashPile({ position, radius = 1.4, height = 0.4, seed, items = 
 
   const { geometry, material, rotation } = useMemo(() => {
     const rand = mulberry32(seed)
-    // top half-sphere, jittered into an irregular heap; rim stays on the floor
-    const geo = new THREE.SphereGeometry(1, 10, 5, 0, Math.PI * 2, 0, Math.PI / 2)
-    const stretchX = 0.85 + rand() * 0.4
-    const stretchZ = 0.85 + rand() * 0.4
+    // a low displaced grid: plane, semi-random subdivision, interior raised a little
+    const geo = new THREE.PlaneGeometry(radius * 2, radius * 2, 4, 4)
     const pos = geo.attributes.position
     for (let i = 0; i < pos.count; i++) {
-      const jitter = 0.75 + rand() * 0.5
-      pos.setXYZ(
-        i,
-        pos.getX(i) * radius * stretchX * jitter,
-        pos.getY(i) * height * (0.7 + rand() * 0.6),
-        pos.getZ(i) * radius * stretchZ * jitter,
-      )
+      const x = pos.getX(i)
+      const y = pos.getY(i)
+      const isEdge = Math.max(Math.abs(x), Math.abs(y)) > radius * 0.99
+      if (isEdge) continue
+      const cell = (radius * 2) / 4
+      const jx = x + (rand() - 0.5) * cell * 0.7
+      const jy = y + (rand() - 0.5) * cell * 0.7
+      const falloff = 1 - Math.hypot(jx, jy) / (radius * 1.35)
+      const elevation = Math.max(0, height * falloff * (0.5 + rand()))
+      pos.setXYZ(i, jx, jy, elevation)
     }
+    geo.rotateX(-Math.PI / 2)
     const flat = geo.toNonIndexed()
     flat.computeVertexNormals()
     geo.dispose()
-    const material = createPS2Material({ map: trashMap, repeat: [2, 1.2] })
+    const material = createPS2Material({ map: trashMap, repeat: [1.5, 1.5] })
     return { geometry: flat, material, rotation: rand() * Math.PI * 2 }
   }, [seed, radius, height, trashMap])
 
