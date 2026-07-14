@@ -355,7 +355,6 @@ export function SewerWing() {
       <FbxProp url={FBX_MODELS.workLight2.url} textureUrl={FBX_MODELS.workLight2.tex} position={[-13.8, 0, -22.6]} rotationY={3.5} collide={false} />
       <FbxProp url={FBX_MODELS.gasCylinder.url} textureUrl={FBX_MODELS.gasCylinder.tex} position={[-10.7, 0, -32.6]} rotationY={0.4} />
       <FbxProp url={FBX_MODELS.gasCylinder.url} textureUrl={FBX_MODELS.gasCylinder.tex} position={[-10.1, 0, -32.15]} rotationY={2.3} />
-      <FbxProp url={FBX_MODELS.cementMixer.url} textureUrl={FBX_MODELS.cementMixer.tex} position={[-0.6, 0, -31.9]} rotationY={2.6} />
       <FbxProp url={FBX_MODELS.generator2.url} textureUrl={FBX_MODELS.generator2.tex} position={[-17.5, 0, -21.4]} rotationY={1.2} />
 
       {/* south platform: small maintenance cache at the west end, route stays clear */}

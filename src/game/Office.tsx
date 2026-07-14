@@ -11,7 +11,7 @@ import {
   lightSpots,
 } from '../ps2/PS2Material'
 import { addCollider } from './collision'
-import { Prop, SplitProp, MODELS } from './Prop'
+import { Prop, FbxProp, MODELS, FBX_MODELS } from './Prop'
 import { PaperWad } from './PaperWad'
 
 /*
@@ -158,14 +158,12 @@ export function Office() {
       <Prop url={MODELS.chair} position={[-16.95, 0, 1.15]} rotationY={-0.8} collide={false} grabbable />
       <Prop url={MODELS.binder} position={[-16.25, 0.82, 1.15]} rotationY={0.35} collide={false} grabbable />
       <Prop url={MODELS.canRusted} position={[-17.5, 0.82, 2.45]} rotationY={2.2} collide={false} grabbable />
-      {/* battered storage in the north corner instead of anything domestic */}
-      <SplitProp
-        url={MODELS.militaryCrate}
-        position={[-19.25, 0, -1.6]}
-        rotationY={1.62}
-        groupBy={(n) => (n.endsWith('_a') ? 'a' : 'b')}
-      />
+      {/* worker lockers along the windowless back wall */}
+      <FbxProp url={FBX_MODELS.locker.url} textureUrl={FBX_MODELS.locker.tex} position={[-19.55, 0, -1.9]} rotationY={Math.PI / 2} />
+      <FbxProp url={FBX_MODELS.locker.url} textureUrl={FBX_MODELS.locker.tex} position={[-19.55, 0, -1.05]} rotationY={Math.PI / 2} />
+      <FbxProp url={FBX_MODELS.locker.url} textureUrl={FBX_MODELS.locker.tex} position={[-19.55, 0, -0.2]} rotationY={Math.PI / 2} />
       <Prop url={MODELS.toolbox} position={[-18.1, 0.82, 2.5]} rotationY={2.9} collide={false} grabbable />
+      <FbxProp url={FBX_MODELS.gasCan.url} textureUrl={FBX_MODELS.gasCan.tex} position={[-19.1, 0, -2.5]} rotationY={1.1} collide={false} grabbable />
       <PaperWad position={[-17.1, 0, -1.4]} seed={91} size={0.08} />
       <PaperWad position={[-18.9, 0, 2.2]} seed={97} size={0.09} />
 

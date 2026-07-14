@@ -65,6 +65,49 @@ const PILLARS: [number, number][] = [
   [12, 6.8],
 ]
 
+/**
+ * A shipment unit: wooden pallet with packages stacked on it. The medium
+ * blockout vocabulary of a receiving dock — placed in lanes, not scattered.
+ */
+function LoadedPallet({ position, rotationY = 0, variant = 0 }: {
+  position: [number, number]
+  rotationY?: number
+  variant?: 0 | 1 | 2
+}) {
+  const sin = Math.sin(rotationY)
+  const cos = Math.cos(rotationY)
+  const at = (ox: number, oy: number, oz: number): [number, number, number] => [
+    position[0] + ox * cos + oz * sin,
+    oy,
+    position[1] - ox * sin + oz * cos,
+  ]
+  return (
+    <group>
+      <FbxProp url={FBX_MODELS.pallet.url} textureUrl={FBX_MODELS.pallet.tex} position={[position[0], 0, position[1]]} rotationY={rotationY} grabbable />
+      {variant === 0 && (
+        <>
+          <Prop url={MODELS.cardboardBox} position={at(-0.25, 0.17, 0.2)} rotationY={rotationY + 0.05} collide={false} grabbable />
+          <Prop url={MODELS.cardboardBox} position={at(0.3, 0.17, -0.15)} rotationY={rotationY + 1.62} collide={false} grabbable />
+          <Prop url={MODELS.cardboardBox} position={at(0, 0.73, 0)} rotationY={rotationY + 0.9} collide={false} grabbable />
+        </>
+      )}
+      {variant === 1 && (
+        <>
+          <Prop url={MODELS.woodenCrate} position={at(0, 0.17, 0)} rotationY={rotationY + 0.03} grabbable />
+          <Prop url={MODELS.cardboardBox} position={at(-0.15, 0.8, 0.1)} rotationY={rotationY + 0.5} collide={false} grabbable />
+        </>
+      )}
+      {variant === 2 && (
+        <>
+          <Prop url={MODELS.plasticCrate} position={at(-0.3, 0.17, -0.2)} rotationY={rotationY + 0.08} grabbable />
+          <Prop url={MODELS.plasticCrate} position={at(0.35, 0.17, 0.15)} rotationY={rotationY + 1.55} grabbable />
+          <Prop url={MODELS.ammoBox} position={at(0, 0.78, 0)} rotationY={rotationY + 0.4} collide={false} grabbable />
+        </>
+      )}
+    </group>
+  )
+}
+
 interface LightSettings {
   lampColor: string
   intensity: number
@@ -272,28 +315,26 @@ export function Room() {
       <PaperWad position={[13, 0, 10.2]} seed={13} size={0.08} />
       <PaperWad position={[1.3, 0, 9.4]} seed={17} size={0.07} />
 
-      {/* ---- dock equipment ---- */}
-      <FbxProp url={FBX_MODELS.palletTruck.url} textureUrl={FBX_MODELS.palletTruck.tex} position={[13.2, 0, 3.6]} rotationY={2.45} />
-      <FbxProp url={FBX_MODELS.carJack.url} textureUrl={FBX_MODELS.carJack.tex} position={[12.3, 0, 2.4]} rotationY={0.8} collide={false} grabbable />
+      {/* ---- receiving lanes: loaded pallets staged in front of the bays,
+           pallet truck parked mid-job — the room's story is an interrupted
+           unload, not scattered junk ---- */}
+      <LoadedPallet position={[15.3, 1.3]} rotationY={0.06} variant={0} />
+      <LoadedPallet position={[15.5, -1.5]} rotationY={-0.09} variant={1} />
+      <LoadedPallet position={[12.6, 0.1]} rotationY={0.14} variant={2} />
+      <LoadedPallet position={[5, 9.5]} rotationY={1.55} variant={1} />
+      <FbxProp url={FBX_MODELS.palletTruck.url} textureUrl={FBX_MODELS.palletTruck.tex} position={[13.9, 0, 1.9]} rotationY={3.05} />
       <FbxProp url={FBX_MODELS.trolley.url} textureUrl={FBX_MODELS.trolley.tex} position={[15.8, 0, -5.6]} rotationY={1.15} scale={0.7} />
-      <FbxProp url={FBX_MODELS.pallet.url} textureUrl={FBX_MODELS.pallet.tex} position={[16.6, 0, -0.4]} rotationY={0.12} grabbable />
-      <FbxProp url={FBX_MODELS.pallet.url} textureUrl={FBX_MODELS.pallet.tex} position={[16.5, 0.16, -0.5]} rotationY={0.3} collide={false} grabbable />
-      <FbxProp url={FBX_MODELS.cautionSign.url} textureUrl={FBX_MODELS.cautionSign.tex} position={[14.2, 0, 7.4]} rotationY={-0.5} collide={false} grabbable />
+      {/* empty pallet stack against the wall between bays */}
+      <FbxProp url={FBX_MODELS.pallet.url} textureUrl={FBX_MODELS.pallet.tex} position={[18.4, 0, -3.8]} rotationY={0.05} grabbable />
+      <FbxProp url={FBX_MODELS.pallet.url} textureUrl={FBX_MODELS.pallet.tex} position={[18.35, 0.16, -3.85]} rotationY={0.16} collide={false} grabbable />
+      <FbxProp url={FBX_MODELS.pallet.url} textureUrl={FBX_MODELS.pallet.tex} position={[18.42, 0.32, -3.75]} rotationY={-0.06} collide={false} grabbable />
       <FbxProp url={FBX_MODELS.fireExtinguisher.url} textureUrl={FBX_MODELS.fireExtinguisher.tex} position={[19.5, 0, -4.4]} rotationY={3.6} scale={0.25} collide={false} grabbable />
-      <FbxProp url={FBX_MODELS.explosiveBarrel2.url} textureUrl={FBX_MODELS.explosiveBarrel2.tex} position={[18.6, 0, -9.7]} rotationY={1.9} />
+      {/* wet-floor sign at the sewer hallway mouth */}
+      <FbxProp url={FBX_MODELS.cautionSign.url} textureUrl={FBX_MODELS.cautionSign.tex} position={[-8.8, 0, -10.4]} rotationY={0.6} collide={false} grabbable />
 
-      {/* ---- center-west landmark + wall dressing ---- */}
-      <FbxProp url={FBX_MODELS.cableDrum.url} textureUrl={FBX_MODELS.cableDrum.tex} position={[-4.8, 0, 2.4]} rotationY={0.4} />
+      {/* ---- wall dressing by the hallway ---- */}
       <FbxProp url={FBX_MODELS.electricalBox.url} textureUrl={FBX_MODELS.electricalBox.tex} position={[-5.6, 1.25, -11.85]} physics="none" collide={false} />
       <FbxProp url={FBX_MODELS.electricalBox2.url} textureUrl={FBX_MODELS.electricalBox2.tex} position={[-4.2, 1.4, -11.85]} physics="none" collide={false} />
-      <FbxProp url={FBX_MODELS.workLight.url} textureUrl={FBX_MODELS.workLight.tex} position={[-12.6, 0, -9.2]} rotationY={0.7} collide={false} />
-      <FbxProp url={FBX_MODELS.motorOil.url} textureUrl={FBX_MODELS.motorOil.tex} position={[-8.7, 0, -9.1]} rotationY={2.2} collide={false} grabbable />
-      <FbxProp url={FBX_MODELS.sprayCan.url} textureUrl={FBX_MODELS.sprayCan.tex} position={[-9.3, 0, -8.6]} rotationY={4.4} collide={false} grabbable />
-
-      {/* ---- worker lockers along the west wall, north of the office ---- */}
-      <FbxProp url={FBX_MODELS.locker.url} textureUrl={FBX_MODELS.locker.tex} position={[-19.55, 0, -3.7]} rotationY={Math.PI / 2} />
-      <FbxProp url={FBX_MODELS.locker.url} textureUrl={FBX_MODELS.locker.tex} position={[-19.55, 0, -4.55]} rotationY={Math.PI / 2} />
-      <FbxProp url={FBX_MODELS.gasCan.url} textureUrl={FBX_MODELS.gasCan.tex} position={[-19, 0, -5.4]} rotationY={1.1} collide={false} grabbable />
       <FbxProp url={FBX_MODELS.waterBarrel.url} textureUrl={FBX_MODELS.waterBarrel.tex} position={[-17.3, 0, -7.4]} rotationY={2.8} />
 
       {/* ---- stock corner, NE ---- */}
