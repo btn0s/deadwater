@@ -1,7 +1,7 @@
-import { useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import * as THREE from 'three'
 import { createPS2Material } from '../ps2/PS2Material'
-import { useGrabbable } from './grabbables'
+import { GrabbablePiece } from './Prop'
 
 // deterministic PRNG so each wad crumples the same way every mount
 function mulberry32(a: number) {
@@ -22,9 +22,7 @@ interface PaperWadProps {
 
 /** Low-poly crumpled paper ball — a jittered icosahedron with flat facets. */
 export function PaperWad({ position, seed = 1, size = 0.09 }: PaperWadProps) {
-  const group = useRef<THREE.Group>(null)
-
-  const { geometry, material, rotation } = useMemo(() => {
+  const { object, rotation } = useMemo(() => {
     const rand = mulberry32(seed)
     const geo = new THREE.IcosahedronGeometry(size, 1)
     const pos = geo.attributes.position
@@ -36,14 +34,12 @@ export function PaperWad({ position, seed = 1, size = 0.09 }: PaperWadProps) {
     flat.computeVertexNormals()
     geo.dispose()
     const material = createPS2Material({ color: 0xd9d5c9 })
-    return { geometry: flat, material, rotation: rand() * Math.PI * 2 }
+    const object = new THREE.Group()
+    const mesh = new THREE.Mesh(flat, material)
+    mesh.position.y = size * 0.8
+    object.add(mesh)
+    return { object, rotation: rand() * Math.PI * 2 }
   }, [seed, size])
 
-  useGrabbable(group, { collide: false, grabbable: true })
-
-  return (
-    <group ref={group} position={position} rotation-y={rotation}>
-      <mesh geometry={geometry} material={material} position={[0, size * 0.8, 0]} />
-    </group>
-  )
+  return <GrabbablePiece object={object} position={position} rotationY={rotation} />
 }

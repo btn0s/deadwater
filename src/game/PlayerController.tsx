@@ -129,6 +129,8 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
     vel.current.z += (wishZ - vel.current.z) * blend
 
     moveWithCollision(pos.current, vel.current.x * dt, vel.current.z * dt, PLAYER_RADIUS)
+    player.x = pos.current.x
+    player.z = pos.current.z
 
     // jump / gravity
     if (grounded.current && locked.current && k.Space) {

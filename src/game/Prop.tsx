@@ -1,17 +1,10 @@
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
+import { RigidBody, type RapierRigidBody } from '@react-three/rapier'
 import * as THREE from 'three'
 import { createPS2Material, prepTexture } from '../ps2/PS2Material'
-import { useGrabbable } from './grabbables'
-
-interface PropProps {
-  url: string
-  position: [number, number, number]
-  rotationY?: number
-  scale?: number
-  collide?: boolean
-  grabbable?: boolean
-}
+import { addCollider } from './collision'
+import { registerGrabbable } from './grabbables'
 
 /** Swap every mesh's material for the PS2 vertex-lit equivalent, in place. */
 function applyPS2Materials(root: THREE.Object3D) {
@@ -28,7 +21,52 @@ function applyPS2Materials(root: THREE.Object3D) {
   })
 }
 
-export function Prop({ url, position, rotationY = 0, scale = 1, collide = true, grabbable = false }: PropProps) {
+/** Dynamic physics body that the telekinesis system can pick up. */
+export function GrabbablePiece({ object, position, rotationY = 0 }: {
+  object: THREE.Object3D
+  position: [number, number, number]
+  rotationY?: number
+}) {
+  const body = useRef<RapierRigidBody>(null)
+  const inner = useRef<THREE.Group>(null)
+
+  useEffect(() => {
+    if (!body.current || !inner.current) return
+    const box = new THREE.Box3().setFromObject(inner.current)
+    const radius = Math.max(box.max.x - box.min.x, box.max.z - box.min.z) / 2
+    return registerGrabbable({ root: inner.current, body: body.current, radius })
+  }, [])
+
+  return (
+    <RigidBody
+      ref={body}
+      colliders="hull"
+      position={position}
+      rotation={[0, rotationY, 0]}
+      linearDamping={0.2}
+      angularDamping={0.8}
+      ccd
+    >
+      <group ref={inner}>
+        <primitive object={object} />
+      </group>
+    </RigidBody>
+  )
+}
+
+interface PropProps {
+  url: string
+  position: [number, number, number]
+  rotationY?: number
+  scale?: number
+  /** static props only: block the player with an AABB */
+  collide?: boolean
+  grabbable?: boolean
+  /** static props only: fixed physics collider shape for junk to rest against */
+  physics?: 'hull' | 'trimesh' | 'none'
+}
+
+export function Prop({ url, position, rotationY = 0, scale = 1, collide = true, grabbable = false, physics = 'hull' }: PropProps) {
   const { scene } = useGLTF(url)
   const group = useRef<THREE.Group>(null)
 
@@ -38,12 +76,27 @@ export function Prop({ url, position, rotationY = 0, scale = 1, collide = true, 
     return c
   }, [scene])
 
-  useGrabbable(group, { collide, grabbable })
+  // static props register a player-blocking AABB once
+  useEffect(() => {
+    if (grabbable || !collide || !group.current) return
+    const box = new THREE.Box3().setFromObject(group.current)
+    return addCollider({ minX: box.min.x, maxX: box.max.x, minZ: box.min.z, maxZ: box.max.z })
+  }, [collide, grabbable])
 
-  return (
+  if (grabbable) {
+    return <GrabbablePiece object={cloned} position={position} rotationY={rotationY} />
+  }
+
+  const visual = (
     <group ref={group} position={position} rotation-y={rotationY} scale={scale}>
       <primitive object={cloned} />
     </group>
+  )
+  if (physics === 'none') return visual
+  return (
+    <RigidBody type="fixed" colliders={physics}>
+      {visual}
+    </RigidBody>
   )
 }
 
@@ -54,24 +107,6 @@ interface SplitPropProps {
   /** maps a mesh name to a piece key; meshes sharing a key move as one piece.
    * Default: every mesh is its own piece. */
   groupBy?: (meshName: string) => string
-}
-
-/** minimum horizontal extent before a piece blocks the player */
-const COLLIDE_EXTENT = 0.45
-
-function Piece({ object, position, rotationY, collide }: {
-  object: THREE.Group
-  position: [number, number, number]
-  rotationY: number
-  collide: boolean
-}) {
-  const group = useRef<THREE.Group>(null)
-  useGrabbable(group, { collide, grabbable: true })
-  return (
-    <group ref={group} position={position} rotation-y={rotationY}>
-      <primitive object={object} />
-    </group>
-  )
 }
 
 /**
@@ -97,7 +132,7 @@ export function SplitProp({ url, position, rotationY = 0, groupBy = (n) => n }: 
       }
     })
 
-    // recenter each piece's pivot on its horizontal bounds center
+    // recenter each piece's pivot on its bounds center so it spins in place
     return [...buckets.values()].map((meshes) => {
       const container = new THREE.Group()
       meshes.forEach((m) => container.add(m))
@@ -105,8 +140,7 @@ export function SplitProp({ url, position, rotationY = 0, groupBy = (n) => n }: 
       const center = box.getCenter(new THREE.Vector3())
       const offset = new THREE.Vector3(center.x, 0, center.z)
       meshes.forEach((m) => m.position.sub(offset))
-      const extent = Math.max(box.max.x - box.min.x, box.max.z - box.min.z)
-      return { container, offset, collide: extent > COLLIDE_EXTENT }
+      return { container, offset }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scene])
@@ -116,7 +150,7 @@ export function SplitProp({ url, position, rotationY = 0, groupBy = (n) => n }: 
   return (
     <>
       {pieces.map((p, i) => (
-        <Piece
+        <GrabbablePiece
           key={i}
           object={p.container}
           position={[
@@ -125,7 +159,6 @@ export function SplitProp({ url, position, rotationY = 0, groupBy = (n) => n }: 
             position[2] - p.offset.x * sin + p.offset.z * cos,
           ]}
           rotationY={rotationY}
-          collide={p.collide}
         />
       ))}
     </>

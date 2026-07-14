@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import { createPS2Material, prepTexture, rawColor, lightPositions, lightColors, lightRadii } from '../ps2/PS2Material'
+import { CuboidCollider } from '@react-three/rapier'
 import { addCollider } from './collision'
 import { Prop, SplitProp, MODELS } from './Prop'
 import { PaperWad } from './PaperWad'
@@ -143,7 +144,7 @@ export function Room() {
 
       {/* hanging fluorescents at each light position */}
       {LAMP_XZ.map(([x, z]) => (
-        <Prop key={`lamp${x},${z}`} url={MODELS.hangingLamp} position={[x, H, z]} collide={false} />
+        <Prop key={`lamp${x},${z}`} url={MODELS.hangingLamp} position={[x, H, z]} collide={false} physics="none" />
       ))}
 
       {/* clutter — barrels, crates, ammo boxes */}
@@ -165,6 +166,17 @@ export function Room() {
       <Prop url={MODELS.ammoBox} position={[4.7, 0, -1.9]} rotationY={1.8} grabbable />
       <Prop url={MODELS.ammoBox} position={[4.3, 0.34, -2.2]} rotationY={0.9} collide={false} grabbable />
 
+      {/* static physics shell for junk to rest against */}
+      <CuboidCollider args={[W / 2 + 1, 0.5, D / 2 + 1]} position={[0, -0.5, 0]} />
+      <CuboidCollider args={[W / 2 + 1, 0.5, D / 2 + 1]} position={[0, H + 0.5, 0]} />
+      <CuboidCollider args={[W / 2 + 1, H / 2, 0.5]} position={[0, H / 2, -D / 2 - 0.5]} />
+      <CuboidCollider args={[W / 2 + 1, H / 2, 0.5]} position={[0, H / 2, D / 2 + 0.5]} />
+      <CuboidCollider args={[0.5, H / 2, D / 2 + 1]} position={[-W / 2 - 0.5, H / 2, 0]} />
+      <CuboidCollider args={[0.5, H / 2, D / 2 + 1]} position={[W / 2 + 0.5, H / 2, 0]} />
+      {PILLARS.map(([x, z]) => (
+        <CuboidCollider key={`p${x},${z}`} args={[0.35, H / 2, 0.35]} position={[x, H / 2, z]} />
+      ))}
+
       {/* graspable junk — crates, cans, trash */}
       <Prop url={MODELS.woodenCrate} position={[-6.5, 0, -10]} rotationY={0.3} grabbable />
       <Prop url={MODELS.plasticCrate} position={[-5.4, 0, -10.3]} rotationY={1.1} grabbable />
@@ -175,7 +187,7 @@ export function Room() {
         rotationY={2.9}
         groupBy={(n) => (n.endsWith('_a') ? 'a' : 'b')}
       />
-      <Prop url={MODELS.trashCan} position={[18.6, 0, 7.5]} rotationY={0.6} />
+      <Prop url={MODELS.trashCan} position={[18.6, 0, 7.5]} rotationY={0.6} physics="trimesh" />
       <Prop url={MODELS.trashbag} position={[17.7, 0, 6.4]} rotationY={1.7} collide={false} grabbable />
       <Prop url={MODELS.trashbag} position={[18.3, 0, 5.6]} rotationY={4.2} collide={false} grabbable />
       <Prop url={MODELS.jerrycan} position={[-17.9, 0, 2.1]} rotationY={2.2} collide={false} grabbable />

@@ -1,7 +1,9 @@
 import { Suspense, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { PS2Pipeline } from './ps2/PS2Pipeline'
+import { Physics } from '@react-three/rapier'
 import { PlayerController } from './game/PlayerController'
+import { PlayerBody } from './game/PlayerBody'
 import { Telekinesis } from './game/Telekinesis'
 import { Room } from './game/Room'
 
@@ -13,7 +15,10 @@ export default function App() {
       <div className="viewport">
         <Canvas gl={{ antialias: false, powerPreference: 'high-performance' }} dpr={1}>
           <Suspense fallback={null}>
-            <Room />
+            <Physics gravity={[0, -12, 0]}>
+              <Room />
+              <PlayerBody />
+            </Physics>
           </Suspense>
           <PlayerController onLockChange={setLocked} spawn={[15, 8.5]} initialYaw={Math.PI / 3} />
           <Telekinesis />
