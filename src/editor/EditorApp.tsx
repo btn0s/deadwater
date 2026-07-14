@@ -59,7 +59,7 @@ function Toolbar() {
       )}
       <span className="ed-spacer" />
       <button className="save" onClick={() => editorStore.save()}>{saving ?? 'SAVE'}</button>
-      <button onClick={() => (window.location.href = '/')}>▶ play</button>
+      <button onClick={() => window.open('/', '_blank')}>▶ play</button>
     </div>
   )
 }
