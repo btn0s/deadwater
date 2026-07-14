@@ -12,9 +12,9 @@ function applyPS2Materials(root: THREE.Object3D) {
     if (obj instanceof THREE.Mesh) {
       const src = (Array.isArray(obj.material) ? obj.material[0] : obj.material) as THREE.MeshStandardMaterial
       const map = src.map ? prepTexture(src.map) : null
-      // emissive parts (lamp bulbs/glass) render fullbright, era-style
-      const fullbright = !!src.emissiveMap
-      obj.material = createPS2Material({ map, fullbright })
+      // emissive texels (lamp bulbs) glow additively; the housing stays lit normally
+      const emissiveMap = src.emissiveMap ? prepTexture(src.emissiveMap) : null
+      obj.material = createPS2Material({ map, emissiveMap })
       obj.castShadow = false
       obj.receiveShadow = false
     }

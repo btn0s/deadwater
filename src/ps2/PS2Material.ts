@@ -58,6 +58,16 @@ function getWhiteTexture() {
   return whiteTexture
 }
 
+let blackTexture: THREE.Texture | null = null
+function getBlackTexture() {
+  if (!blackTexture) {
+    const data = new Uint8Array([0, 0, 0, 255])
+    blackTexture = new THREE.DataTexture(data, 1, 1)
+    blackTexture.needsUpdate = true
+  }
+  return blackTexture
+}
+
 const vertexShader = /* glsl */ `
   uniform vec3 uLightPos[${MAX_LIGHTS}];
   uniform vec3 uLightColor[${MAX_LIGHTS}];
@@ -87,9 +97,9 @@ const vertexShader = /* glsl */ `
       // shaded fixtures throw a wide downward cone: fade out near horizontal,
       // nothing upward — the shade blocks it
       float cosDown = toLight.y / max(dist, 1e-4);
-      // 14% leaks past the shade (bounce light) so the ceiling above fades
-      // instead of snapping to black
-      float spot = mix(1.0, mix(0.14, 1.0, smoothstep(-0.12, 0.45, cosDown)), uLightSpot[i]);
+      // a little light leaks past the shade (bounce light) so the ceiling
+      // above fades instead of snapping to black
+      float spot = mix(1.0, mix(0.06, 1.0, smoothstep(-0.12, 0.45, cosDown)), uLightSpot[i]);
       light += uLightColor[i] * (ndl * atten * spot);
     }
     vLight = mix(light, vec3(1.0), uFullbright);
@@ -102,6 +112,7 @@ const vertexShader = /* glsl */ `
 
 const fragmentShader = /* glsl */ `
   uniform sampler2D map;
+  uniform sampler2D emissiveMap;
   uniform vec3 uColor;
   uniform vec3 fogColor;
   uniform float fogNear;
@@ -147,7 +158,7 @@ const fragmentShader = /* glsl */ `
 
   void main() {
     vec4 texel = uBomb > 0.0 ? sampleBombed(vUv) : texture2D(map, vUv);
-    vec3 color = texel.rgb * uColor * vLight;
+    vec3 color = texel.rgb * uColor * vLight + texture2D(emissiveMap, vUv).rgb;
 
     float fogFactor = clamp((vFogDepth - fogNear) / (fogFar - fogNear), 0.0, 1.0);
     color = mix(color, fogColor, fogFactor);
@@ -168,6 +179,8 @@ export interface PS2MaterialOptions {
   fullbright?: boolean
   /** stochastic anti-tiling: lattice cells per texture tile (0 = off) */
   bombing?: number
+  /** additive glow texture (bulbs, screens); the rest of the mesh stays lit normally */
+  emissiveMap?: THREE.Texture | null
 }
 
 function resolveColor(color: PS2MaterialOptions['color']): THREE.Color {
@@ -183,6 +196,7 @@ export function createPS2Material(opts: PS2MaterialOptions = {}): THREE.ShaderMa
     uniforms: {
       ...sharedLightUniforms,
       map: { value: opts.map ?? getWhiteTexture() },
+      emissiveMap: { value: opts.emissiveMap ?? getBlackTexture() },
       uColor: { value: resolveColor(opts.color) },
       uUvRepeat: { value: new THREE.Vector2(...(opts.repeat ?? [1, 1])) },
       uFullbright: { value: opts.fullbright ? 1 : 0 },
