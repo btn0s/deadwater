@@ -26,6 +26,8 @@ export function rawColorFromString(hex: string): THREE.Color {
 export const lightPositions = Array.from({ length: MAX_LIGHTS }, () => new THREE.Vector3(0, -1000, 0))
 export const lightColors = Array.from({ length: MAX_LIGHTS }, () => new THREE.Color(0, 0, 0))
 export const lightRadii: number[] = new Array(MAX_LIGHTS).fill(1)
+/** 0 = omnidirectional, 1 = shaded fixture casting a wide downward cone */
+export const lightSpots: number[] = new Array(MAX_LIGHTS).fill(0)
 export const ambientColor = rawColor(0x35383f)
 
 const fogColorUniform = { value: rawColor(0x07080a) }
@@ -39,6 +41,7 @@ const sharedLightUniforms = {
   uLightPos: { value: lightPositions },
   uLightColor: { value: lightColors },
   uLightRadius: { value: lightRadii },
+  uLightSpot: { value: lightSpots },
   uAmbient: { value: ambientColor },
   fogColor: fogColorUniform,
   fogNear: fogNearUniform,
@@ -59,6 +62,7 @@ const vertexShader = /* glsl */ `
   uniform vec3 uLightPos[${MAX_LIGHTS}];
   uniform vec3 uLightColor[${MAX_LIGHTS}];
   uniform float uLightRadius[${MAX_LIGHTS}];
+  uniform float uLightSpot[${MAX_LIGHTS}];
   uniform vec3 uAmbient;
   uniform vec2 uUvRepeat;
   uniform float uFullbright;
@@ -80,7 +84,13 @@ const vertexShader = /* glsl */ `
       float dist = length(toLight);
       float atten = clamp(1.0 - dist / uLightRadius[i], 0.0, 1.0);
       float ndl = max(dot(worldNormal, toLight / max(dist, 1e-4)), 0.0);
-      light += uLightColor[i] * (ndl * atten);
+      // shaded fixtures throw a wide downward cone: fade out near horizontal,
+      // nothing upward — the shade blocks it
+      float cosDown = toLight.y / max(dist, 1e-4);
+      // 14% leaks past the shade (bounce light) so the ceiling above fades
+      // instead of snapping to black
+      float spot = mix(1.0, mix(0.14, 1.0, smoothstep(-0.12, 0.45, cosDown)), uLightSpot[i]);
+      light += uLightColor[i] * (ndl * atten * spot);
     }
     vLight = mix(light, vec3(1.0), uFullbright);
 

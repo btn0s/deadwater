@@ -12,6 +12,7 @@ import {
   lightPositions,
   lightColors,
   lightRadii,
+  lightSpots,
 } from '../ps2/PS2Material'
 import { CuboidCollider } from '@react-three/rapier'
 import { addCollider } from './collision'
@@ -100,6 +101,7 @@ function Lights({ lampColor, intensity, radius, flicker }: LightSettings) {
       lightPositions[i].set(x, 4.6, z)
       lightColors[i].copy(rawColorFromString(lampColor)).multiplyScalar(intensity)
       lightRadii[i] = radius
+      lightSpots[i] = 1 // shaded fixtures: no upward spill
     })
   }, [lampColor, intensity, radius])
 
@@ -151,9 +153,9 @@ export function Room() {
   })
 
   const lighting = useControls('Lighting', {
-    ambient: '#24262c',
+    ambient: '#1a1c20',
     lampColor: '#d8e6c8',
-    intensity: { value: 1, min: 0, max: 2, step: 0.05 },
+    intensity: { value: 1.2, min: 0, max: 2, step: 0.05 },
     radius: { value: 18, min: 4, max: 40, step: 0.5 },
     flicker: true,
   })
@@ -200,20 +202,21 @@ export function Room() {
 
   const wallRepeat: [number, number] = [walls.repeatX, walls.repeatY]
   const wallRepeatSide: [number, number] = [walls.repeatX * (D / W), walls.repeatY]
+  const wallBombing = walls.breakupTiling ? walls.breakupScale : 0
 
   return (
     <group>
       <Lights lampColor={lighting.lampColor} intensity={lighting.intensity} radius={lighting.radius} flicker={lighting.flicker} />
 
       {/* floor / ceiling — floor tinted down so it sits darker than the walls */}
-      <Surface size={[W, D]} segments={[40, 24]} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} map={floorMap} repeat={[floor.repeatX, floor.repeatY]} color={floor.tint} />
-      <Surface size={[W, D]} segments={[40, 24]} position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]} map={ceilingMap} repeat={[ceiling.repeatX, ceiling.repeatY]} color={ceiling.tint} />
+      <Surface size={[W, D]} segments={[40, 24]} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} map={floorMap} repeat={[floor.repeatX, floor.repeatY]} color={floor.tint} bombing={floor.breakupTiling ? floor.breakupScale : 0} />
+      <Surface size={[W, D]} segments={[40, 24]} position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]} map={ceilingMap} repeat={[ceiling.repeatX, ceiling.repeatY]} color={ceiling.tint} bombing={ceiling.breakupTiling ? ceiling.breakupScale : 0} />
 
       {/* walls */}
-      <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, -D / 2]} map={wallMap} repeat={wallRepeat} color={walls.tint} />
-      <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, D / 2]} rotation={[0, Math.PI, 0]} map={wallMap} repeat={wallRepeat} color={walls.tint} />
-      <Surface size={[D, H]} segments={[24, 8]} position={[-W / 2, H / 2, 0]} rotation={[0, Math.PI / 2, 0]} map={wallMap} repeat={wallRepeatSide} color={walls.tint} />
-      <Surface size={[D, H]} segments={[24, 8]} position={[W / 2, H / 2, 0]} rotation={[0, -Math.PI / 2, 0]} map={wallMap} repeat={wallRepeatSide} color={walls.tint} />
+      <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, -D / 2]} map={wallMap} repeat={wallRepeat} color={walls.tint} bombing={wallBombing} />
+      <Surface size={[W, H]} segments={[40, 8]} position={[0, H / 2, D / 2]} rotation={[0, Math.PI, 0]} map={wallMap} repeat={wallRepeat} color={walls.tint} bombing={wallBombing} />
+      <Surface size={[D, H]} segments={[24, 8]} position={[-W / 2, H / 2, 0]} rotation={[0, Math.PI / 2, 0]} map={wallMap} repeat={wallRepeatSide} color={walls.tint} bombing={wallBombing} />
+      <Surface size={[D, H]} segments={[24, 8]} position={[W / 2, H / 2, 0]} rotation={[0, -Math.PI / 2, 0]} map={wallMap} repeat={wallRepeatSide} color={walls.tint} bombing={wallBombing} />
 
       {/* roller door on the north wall, with warning signage */}
       <Surface size={[5, 4.6]} segments={[6, 6]} position={[-10, 2.3, -D / 2 + 0.04]} map={textures.CorrugatedSteel005} repeat={[4, 2.2]} />
