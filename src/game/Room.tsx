@@ -18,6 +18,7 @@ import { CuboidCollider } from '@react-three/rapier'
 import { addCollider } from './collision'
 import { Prop, SplitProp, MODELS } from './Prop'
 import { PaperWad } from './PaperWad'
+import { Rat } from './Rat'
 
 // warehouse: 40m x 24m footprint, 6m ceiling
 const W = 40
@@ -236,24 +237,40 @@ export function Room() {
         <Prop key={`lamp${x},${z}`} url={MODELS.hangingLamp} position={[x, H, z]} collide={false} physics="none" />
       ))}
 
-      {/* clutter — barrels, crates, ammo boxes */}
+      {/* ---- barrel depot, NW corner ---- */}
       <Prop url={MODELS.barrel} position={[-16.5, 0, -9]} />
       <Prop url={MODELS.barrel} position={[-15.4, 0, -9.3]} rotationY={1.2} />
       <Prop url={MODELS.barrel} position={[-16, 0, -8.1]} rotationY={2.6} />
       <Prop url={MODELS.barrelExplosive} position={[-14.6, 0, -8.4]} rotationY={0.7} />
-      <Prop url={MODELS.barrelExplosive} position={[0.95, 0, 7.7]} rotationY={2.1} />
+      <Prop url={MODELS.jerrycan} position={[-14.8, 0, -7.1]} rotationY={2.2} collide={false} grabbable />
+      <Prop url={MODELS.oilTin} position={[-15.7, 0, -7]} rotationY={0.8} collide={false} grabbable />
+      <PaperWad position={[-13.9, 0, -7.6]} seed={67} size={0.11} />
       <Prop url={MODELS.barrel} position={[-18.5, 0, 3]} rotationY={0.4} />
       <Prop url={MODELS.barrel} position={[-18.2, 0, 4.3]} rotationY={4.1} />
 
-      <Prop url={MODELS.cardboardBox} position={[17.5, 0, -3]} grabbable />
-      <Prop url={MODELS.cardboardBox} position={[17.4, 0, -1.7]} rotationY={0.4} grabbable />
-      <Prop url={MODELS.cardboardBox} position={[17.45, 0.55, -2.4]} rotationY={0.9} collide={false} grabbable />
-      <Prop url={MODELS.cardboardBox} position={[8, 0, 10.6]} rotationY={1.9} grabbable />
-      <Prop url={MODELS.cardboardBox} position={[9.3, 0, 10.4]} rotationY={0.2} grabbable />
+      {/* ---- loading zone by the roller door ---- */}
+      <SplitProp
+        url={MODELS.militaryCrate}
+        position={[-11.6, 0, -10.1]}
+        rotationY={0.35}
+        groupBy={(n) => (n.endsWith('_a') ? 'a' : 'b')}
+      />
+      <Prop url={MODELS.woodenCrate} position={[-8.3, 0, -10.4]} rotationY={0.2} grabbable />
+      <Prop url={MODELS.plasticCrate} position={[-9.5, 0, -9.4]} rotationY={1.9} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[-7, 0, -9.7]} rotationY={0.5} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[-7.1, 0.56, -9.8] } rotationY={1.1} collide={false} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[-6.1, 0, -10.5]} rotationY={2.8} grabbable />
+      <PaperWad position={[-9.9, 0, -8.4]} seed={41} size={0.08} />
+      <PaperWad position={[-6.8, 0, -8.9]} seed={37} size={0.1} />
 
+      {/* ---- work area, center-east ---- */}
       <Prop url={MODELS.ammoBox} position={[4, 0, -2.5]} rotationY={0.3} grabbable />
       <Prop url={MODELS.ammoBox} position={[4.7, 0, -1.9]} rotationY={1.8} grabbable />
       <Prop url={MODELS.ammoBox} position={[4.3, 0.34, -2.2]} rotationY={0.9} collide={false} grabbable />
+      <Prop url={MODELS.barrelExplosive} position={[0.95, 0, 7.7]} rotationY={2.1} />
+      <Prop url={MODELS.cardboardBox} position={[17.5, 0, -3]} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[17.4, 0, -1.7]} rotationY={0.4} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[17.45, 0.55, -2.4]} rotationY={0.9} collide={false} grabbable />
 
       {/* static physics shell for junk to rest against */}
       <CuboidCollider args={[W / 2 + 1, 0.5, D / 2 + 1]} position={[0, -0.5, 0]} />
@@ -266,34 +283,37 @@ export function Room() {
         <CuboidCollider key={`p${x},${z}`} args={[0.35, H / 2, 0.35]} position={[x, H / 2, z]} />
       ))}
 
-      {/* graspable junk — crates, cans, trash */}
-      <Prop url={MODELS.woodenCrate} position={[-6.5, 0, -10]} rotationY={0.3} grabbable />
-      <Prop url={MODELS.plasticCrate} position={[-5.4, 0, -10.3]} rotationY={1.1} grabbable />
-      <Prop url={MODELS.plasticCrate} position={[-5.9, 0, -9.2]} rotationY={2.4} grabbable />
-      <SplitProp
-        url={MODELS.militaryCrate}
-        position={[12.8, 0, 9.8]}
-        rotationY={2.9}
-        groupBy={(n) => (n.endsWith('_a') ? 'a' : 'b')}
-      />
+      {/* ---- trash corner, SE — cans, bags, spilled junk ---- */}
       <Prop url={MODELS.trashCan} position={[18.6, 0, 7.5]} rotationY={0.6} physics="trimesh" />
-      <Prop url={MODELS.trashbag} position={[17.7, 0, 6.4]} rotationY={1.7} collide={false} grabbable />
-      <Prop url={MODELS.trashbag} position={[18.3, 0, 5.6]} rotationY={4.2} collide={false} grabbable />
-      <Prop url={MODELS.jerrycan} position={[-17.9, 0, 2.1]} rotationY={2.2} collide={false} grabbable />
-      <Prop url={MODELS.oilTin} position={[-15.9, 0, -7.4]} rotationY={0.8} collide={false} grabbable />
-      <Prop url={MODELS.canRusted} position={[6.2, 0, 3.4]} rotationY={1.2} collide={false} grabbable />
-      <Prop url={MODELS.canRusted} position={[-3.8, 0, 1.6]} rotationY={3.9} collide={false} grabbable />
-      <SplitProp url={MODELS.foodCans} position={[3.9, 0.68, -2.1]} rotationY={0.5} />
-      <SplitProp url={MODELS.foodCans} position={[13.4, 0, 9.1]} rotationY={2.8} />
+      <Prop url={MODELS.trashCan} position={[17.5, 0, 10.7]} rotationY={2.3} physics="trimesh" />
+      <Prop url={MODELS.trashbag} position={[17.8, 0, 6.3]} rotationY={1.7} collide={false} grabbable />
+      <Prop url={MODELS.trashbag} position={[18.5, 0, 5.4]} rotationY={4.2} collide={false} grabbable />
+      <Prop url={MODELS.trashbag} position={[16.4, 0, 10.9]} rotationY={0.9} collide={false} grabbable />
+      <Prop url={MODELS.canRusted} position={[17.2, 0, 8.6]} rotationY={1.2} collide={false} grabbable />
+      <Prop url={MODELS.canRusted} position={[18.1, 0, 9.4]} rotationY={3.9} collide={false} grabbable />
+      <Prop url={MODELS.canRusted} position={[16.6, 0, 7.9]} rotationY={5.1} collide={false} grabbable />
+      <Prop url={MODELS.oilTin} position={[17.9, 0, 10.2]} rotationY={2.6} collide={false} grabbable />
+      <SplitProp url={MODELS.foodCans} position={[16.9, 0, 9.9]} rotationY={2.8} />
+      <PaperWad position={[16.2, 0, 8.9]} seed={53} />
+      <PaperWad position={[17.6, 0, 8]} seed={11} size={0.08} />
+      <PaperWad position={[18.9, 0, 8.9]} seed={23} size={0.075} />
+      <PaperWad position={[15.8, 0, 10.1]} seed={71} size={0.1} />
 
-      {/* crumpled paper scattered on the floor */}
-      <PaperWad position={[2.2, 0, 4.8]} seed={11} />
-      <PaperWad position={[-1.4, 0, -3.2]} seed={23} size={0.075} />
-      <PaperWad position={[7.6, 0, -6.1]} seed={37} size={0.1} />
-      <PaperWad position={[-8.9, 0, 5.4]} seed={41} size={0.08} />
-      <PaperWad position={[16.2, 0, 1.2]} seed={53} />
-      <PaperWad position={[-13.6, 0, -2.7]} seed={67} size={0.11} />
-      <PaperWad position={[10.4, 0, 4.9]} seed={71} size={0.07} />
+      {/* ---- stray junk between zones ---- */}
+      <SplitProp url={MODELS.foodCans} position={[3.9, 0.68, -2.1]} rotationY={0.5} />
+      <Prop url={MODELS.plasticCrate} position={[-5.9, 0, 9.9]} rotationY={2.4} grabbable />
+      <Prop url={MODELS.cardboardBox} position={[8, 0, 10.6]} rotationY={1.9} grabbable />
+      <Prop url={MODELS.canRusted} position={[-3.8, 0, 1.6]} rotationY={3.9} collide={false} grabbable />
+      <PaperWad position={[2.2, 0, 4.8]} seed={13} />
+      <PaperWad position={[-9.1, 0, 5.4]} seed={43} size={0.08} />
+      <PaperWad position={[10.4, 0, 4.9]} seed={73} size={0.07} />
+
+      {/* rats */}
+      <Rat seed={101} spawn={[10, -10.5]} />
+      <Rat seed={211} spawn={[-15, 9]} />
+      <Rat seed={307} spawn={[18, -2]} />
+      <Rat seed={401} spawn={[-4, 11]} />
+      <Rat seed={503} spawn={[2, -10.5]} />
     </group>
   )
 }
