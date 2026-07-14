@@ -3248,12 +3248,12 @@
   },
   {
    "id": "trash-can",
-   "parent": "warehouse",
+   "parent": "yard",
    "transform": {
     "pos": [
-     18.6,
+     19.6,
      0,
-     7.5
+     -13.1
     ],
     "rot": 0.6
    },
@@ -3273,12 +3273,12 @@
   },
   {
    "id": "trash-bag",
-   "parent": "warehouse",
+   "parent": "yard",
    "transform": {
     "pos": [
-     17.8,
-     2.15,
-     9.4
+     19,
+     0.5,
+     -14.9
     ],
     "rot": 1.7
    },
@@ -3298,12 +3298,12 @@
   },
   {
    "id": "trash-pile",
-   "parent": "warehouse",
+   "parent": "yard",
    "transform": {
     "pos": [
-     16.8,
+     19.3,
      0,
-     9
+     -14.3
     ]
    },
    "components": [
@@ -3326,12 +3326,12 @@
   },
   {
    "id": "trash-pile-junk-1",
-   "parent": "warehouse",
+   "parent": "yard",
    "transform": {
     "pos": [
-     16.6054,
-     1.4171,
-     8.6471
+     19.05,
+     0.9,
+     -14.05
     ],
     "rot": 3.0998
    },
@@ -3351,12 +3351,12 @@
   },
   {
    "id": "trash-pile-junk-2",
-   "parent": "warehouse",
+   "parent": "yard",
    "transform": {
     "pos": [
-     16.7247,
-     0.9756,
-     8.9336
+     19.5,
+     0.7,
+     -14.5
     ],
     "rot": 1.0039
    },
@@ -3376,12 +3376,12 @@
   },
   {
    "id": "trash-pile-junk-3",
-   "parent": "warehouse",
+   "parent": "yard",
    "transform": {
     "pos": [
-     17.0741,
-     1.1228,
-     8.9045
+     19.2,
+     1.1,
+     -14.4
     ],
     "rot": 5.8007
    },
@@ -3401,12 +3401,12 @@
   },
   {
    "id": "trash-pile-junk-4",
-   "parent": "warehouse",
+   "parent": "yard",
    "transform": {
     "pos": [
-     16.6917,
-     1.061,
-     8.2477
+     18.8,
+     0.8,
+     -13.9
     ],
     "rot": 0.2154
    },
@@ -3426,12 +3426,12 @@
   },
   {
    "id": "trash-pile-junk-5",
-   "parent": "warehouse",
+   "parent": "yard",
    "transform": {
     "pos": [
-     17.5531,
-     1.2647,
-     8.728
+     19.6,
+     0.9,
+     -14.15
     ],
     "rot": 1.6202
    },
@@ -3451,12 +3451,12 @@
   },
   {
    "id": "trash-pile-junk-6",
-   "parent": "warehouse",
+   "parent": "yard",
    "transform": {
     "pos": [
-     17.1193,
-     1.3542,
-     9.0109
+     19.35,
+     1.2,
+     -13.85
     ],
     "rot": 5.3736
    },
@@ -3479,12 +3479,12 @@
   },
   {
    "id": "trash-pile-junk-7",
-   "parent": "warehouse",
+   "parent": "yard",
    "transform": {
     "pos": [
-     16.8045,
-     1.2912,
-     8.9626
+     19,
+     1,
+     -14.55
     ],
     "rot": 0.0166
    },
@@ -3504,12 +3504,12 @@
   },
   {
    "id": "trash-pile-junk-8",
-   "parent": "warehouse",
+   "parent": "yard",
    "transform": {
     "pos": [
-     16.3608,
-     0.8931,
-     9.294
+     18.7,
+     0.7,
+     -14.3
     ],
     "rot": 1.9128
    },
@@ -8977,6 +8977,208 @@
      "label": "LOCKED",
      "locked": true,
      "radius": 1.6
+    }
+   ]
+  },
+  {
+   "id": "dumpster",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "dumpster/body",
+   "parent": "dumpster",
+   "transform": {
+    "pos": [
+     0,
+     0.62,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      2,
+      1.05,
+      1
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      2,
+      1
+     ],
+     "tint": "#42503f"
+    }
+   ]
+  },
+  {
+   "id": "dumpster/lid",
+   "parent": "dumpster",
+   "transform": {
+    "pos": [
+     0,
+     1.2,
+     -0.1
+    ],
+    "rot": [
+     -0.22,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      2.02,
+      0.06,
+      1.06
+     ],
+     "tint": "#343d33"
+    }
+   ]
+  },
+  {
+   "id": "dumpster/skid-1",
+   "parent": "dumpster",
+   "transform": {
+    "pos": [
+     0,
+     0.06,
+     0.36
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      1.9,
+      0.12,
+      0.12
+     ],
+     "tint": "#26292b"
+    }
+   ]
+  },
+  {
+   "id": "dumpster/skid-2",
+   "parent": "dumpster",
+   "transform": {
+    "pos": [
+     0,
+     0.06,
+     -0.36
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      1.9,
+      0.12,
+      0.12
+     ],
+     "tint": "#26292b"
+    }
+   ]
+  },
+  {
+   "id": "yard/alley-dumpster",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     17.7,
+     0,
+     -14.65
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "dumpster"
+    }
+   ]
+  },
+  {
+   "id": "trash-can-2",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     17.2,
+     0,
+     -13.4
+    ],
+    "rot": 2.2
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/metal_trash_can/metal_trash_can_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "trimesh",
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "trash-pile-2",
+   "parent": "yard",
+   "transform": {
+    "pos": [
+     20.6,
+     0,
+     -13.3
+    ]
+   },
+   "components": [
+    {
+     "type": "generator",
+     "generator": "trashPile",
+     "seed": 481,
+     "params": [
+      0.9,
+      0.3
+     ]
+    }
+   ]
+  },
+  {
+   "id": "yard/alley-dumpster/body",
+   "parent": "yard/alley-dumpster",
+   "transform": {
+    "pos": [
+     0,
+     0.62,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      1.0,
+      0.62,
+      0.5
+     ],
+     "blockPlayer": true
     }
    ]
   }

@@ -355,7 +355,7 @@ function BlockPlayer({ size }: { size?: [number, number, number] }) {
       box = new THREE.Box3().setFromObject(g)
       if (box.isEmpty()) return
     }
-    return addCollider({ minX: box.min.x, maxX: box.max.x, minZ: box.min.z, maxZ: box.max.z })
+    return addCollider({ minX: box.min.x, maxX: box.max.x, minZ: box.min.z, maxZ: box.max.z, maxY: box.max.y })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group, size?.[0], size?.[1], size?.[2]])
   return null
