@@ -25,6 +25,7 @@ import { SewerWater } from '../game/SewerWater'
 import { registerInteractable } from '../game/interactions'
 import { isGroupOn, toggleGroup } from '../game/lightGroups'
 import { inventory, ITEM_DEFS } from '../game/inventory'
+import { play } from '../game/audio'
 import { player } from '../game/playerState'
 import { useWorldTexture } from './textures'
 import { MODEL_REGISTRY } from './models'
@@ -332,6 +333,7 @@ function PickupEffect({ c }: { c: PickupComponent }) {
       action: () => {
         const def = ITEM_DEFS[c.item as keyof typeof ITEM_DEFS]
         if (def && inventory.add(def)) {
+          play('pickup', 0.8)
           g.visible = false
           setTaken(true)
         }
@@ -358,7 +360,10 @@ function SwitchEffect({ c }: { c: SwitchComponent }) {
       object: g,
       label: c.label ?? 'LIGHTS',
       fade: false,
-      action: () => toggleGroup(c.group),
+      action: () => {
+        play('clunk', 0.8)
+        toggleGroup(c.group)
+      },
     })
   }, [group, c.group, c.label])
   return null
@@ -374,7 +379,12 @@ function DoorEffect({ c }: { c: DoorComponent }) {
       object: g,
       label: c.label ?? 'USE',
       maxDist: c.radius,
-      action: c.locked ? undefined : () => player.teleport(c.target[0], c.target[1], c.targetYaw),
+      action: c.locked
+        ? undefined
+        : () => {
+            play('door', 0.9)
+            player.teleport(c.target[0], c.target[1], c.targetYaw)
+          },
     })
   }, [group, c.target[0], c.target[1], c.targetYaw, c.label, c.radius, c.locked]) // eslint-disable-line react-hooks/exhaustive-deps
   return null

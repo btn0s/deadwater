@@ -5,6 +5,7 @@ import { RigidBodyType } from '@dimforge/rapier3d-compat'
 import { allGrabbables, findGrabbable, type Grabbable } from './grabbables'
 import { player } from './playerState'
 import { clampHeldTarget } from './worldBounds'
+import { play } from './audio'
 
 /**
  * Two ways to hold a prop:
@@ -51,7 +52,10 @@ function release(toss: THREE.Vector3 | null) {
 export const carry = {
   /** E on a grabbable: into the hands */
   pickUp(grab: Grabbable) {
-    if (!held) take(grab, 'hands')
+    if (!held) {
+      play('pickup', 0.7)
+      take(grab, 'hands')
+    }
   },
   isHolding: () => held !== null,
 }
@@ -91,6 +95,7 @@ export function CarrySystem() {
         camera.getWorldDirection(FWD)
         const toss = heldVel.current.clone().multiplyScalar(0.8).addScaledVector(FWD, held.mode === 'hands' ? 5 : 1.6)
         if (toss.length() > TOSS_CAP) toss.setLength(TOSS_CAP)
+        play('swing', 0.5, 1.2)
         release(toss)
       } else if (e.button === 2 && !held) {
         // telekinesis: float while the button is down

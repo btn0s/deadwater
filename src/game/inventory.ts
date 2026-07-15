@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import { useEffect } from 'react'
 import { player } from './playerState'
+import { play } from './audio'
 
 /**
  * Player inventory: a 4-slot hotbar, Minecraft-style. Digit keys 1-4 pick
@@ -50,11 +51,17 @@ export const inventory = {
   /** selecting a slot always draws it */
   setActive(i: number) {
     if (i < 0 || i >= SLOT_COUNT) return
-    if (i !== state.active || state.stowed) emit({ active: i, stowed: false })
+    if (i !== state.active || state.stowed) {
+      play('click', 0.4)
+      emit({ active: i, stowed: false })
+    }
   },
   /** F: put the item in hand away / take it back out */
   toggleStowed() {
-    if (state.slots[state.active]) emit({ stowed: !state.stowed })
+    if (state.slots[state.active]) {
+      play('torch', 0.6)
+      emit({ stowed: !state.stowed })
+    }
   },
   /** world pickups land in the first empty slot and are drawn immediately */
   add(item: InvItem): boolean {

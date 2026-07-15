@@ -6,6 +6,7 @@ import { allGrabbables } from './grabbables'
 import { carry } from './Carry'
 import { useInventory } from './inventory'
 import { player } from './playerState'
+import { play } from './audio'
 
 /**
  * Equipped crowbar: rides at the right shoulder; LMB swings it in an arc
@@ -48,6 +49,7 @@ export function Crowbar() {
       if (swing.current < 0) {
         swing.current = 0
         hitDone.current = false
+        play('swing', 0.8)
       }
     }
     window.addEventListener('pointerdown', onPointerDown)
@@ -72,6 +74,7 @@ export function Crowbar() {
         a.rotation.x = -0.5 - arc
         if (!hitDone.current && t >= HIT_AT) {
           hitDone.current = true
+          play('thunk', 0.9)
           // shove every dynamic body in front of the face
           camera.getWorldDirection(FWD)
           HIT_POINT.copy(camera.position).addScaledVector(FWD, HIT_RANGE * 0.8)

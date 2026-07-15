@@ -91,3 +91,12 @@ Note: some "zips" are actually RAR5 — extract with `bsdtar -xf`. FBX packs
 load at runtime via FbxProp (drei useFBX + explicit base-color texture);
 scale is auto-normalized (cm heuristic) with a manual `scale` prop override.
 Alternative: [itch-dl](https://github.com/DragoonAethis/itch-dl) (needs API key).
+
+## Audio
+
+All sound is **synthesized in-engine** (`src/game/audio.ts`): filtered-noise
+foley (clicks, clunks, whooshes, thunks, footsteps), FM rat chirps, and
+looped noise beds for ambience (interior hum / harbor wash). No sample
+files, no licenses. To swap in sourced samples later, replace the baked
+AudioBuffers — good CC0 sources: Kenney (kenney.nl/assets, audio packs),
+OpenGameArt (CC0 filter), Sonniss GDC bundles (royalty-free).
