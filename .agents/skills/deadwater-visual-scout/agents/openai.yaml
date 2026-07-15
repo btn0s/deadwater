@@ -1,0 +1,4 @@
+interface:
+  display_name: "DEADWATER Visual Scout"
+  short_description: "Create repeatable fixed-camera visual coverage"
+  default_prompt: "Use $deadwater-visual-scout to create a named fixed-camera contact sheet for this DEADWATER area."

@@ -16,6 +16,7 @@ const expected = [
   'deadwater-image-generator',
   'deadwater-ps2-graphics-builder',
   'deadwater-qa-release',
+  'deadwater-visual-scout',
 ]
 
 const forbidden = [

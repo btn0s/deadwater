@@ -1,6 +1,6 @@
 ---
 name: deadwater-game-director
-description: "Direct broad development of the DEADWATER Three.js game and its PS2-style engine. Use for complete features, major upgrades, gameplay-plus-art work, visual polish, release preparation, or requests spanning multiple game systems. Route work through the repo-local gameplay, PS2 graphics, UI, debug, QA, 3D asset, image, and audio specialists."
+description: "Direct broad development of the DEADWATER Three.js game and its PS2-style engine. Use for complete features, major upgrades, gameplay-plus-art work, visual polish, release preparation, or requests spanning multiple game systems. Route work through the repo-local gameplay, PS2 graphics, UI, debug, QA, visual-scout, 3D asset, image, and audio specialists."
 ---
 
 # DEADWATER game director
@@ -35,6 +35,7 @@ For broad features or release work, load all five phase specialists before imple
 
 Load production specialists when their outputs are in scope:
 
+- `deadwater-visual-scout`: named fixed-camera reconnaissance, repeatable contact sheets, and before-and-after visual coverage. It does not prove gameplay or input behavior.
 - `deadwater-3d-asset-pipeline`: models, props, textures tied to models, licensing, conversion, registration, collision, or placement.
 - `deadwater-image-generator`: concepts, diffuse or emissive textures, signs, decals, icons, interface art, or image edits.
 - `deadwater-audio-generator`: procedural cues, imported samples, ambience, interface feedback, or audio-system changes.
@@ -86,6 +87,8 @@ Use `deadwater-debug-profiler` for failures and measured performance work. Repro
 ### 7. QA and release
 
 Use `deadwater-qa-release` after every meaningful phase. Exercise the real browser path, the game and editor where relevant, production build output, contact sheets, console/page errors, and recent risky interactions.
+
+Use `deadwater-visual-scout` when QA or graphics work needs a named, repeatable set of fixed angles. Pair it with a live player-height viewport for final presentation, and never report a fixed-camera sheet as proof of movement, collision, input, or interaction.
 
 ## Required ledgers
 

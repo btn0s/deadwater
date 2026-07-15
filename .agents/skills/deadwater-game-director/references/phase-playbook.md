@@ -12,6 +12,7 @@ Skill-loading ledger:
 - UI: loaded/not-needed, path or reason
 - Debug/profile: loaded/not-needed, path or reason
 - QA/release: loaded, path
+- Visual scout: loaded/not-needed, path or reason
 - 3D asset pipeline: loaded/not-needed, path or reason
 - Image generator: loaded/not-needed, path or reason
 - Audio generator: loaded/not-needed, path or reason
@@ -57,6 +58,7 @@ Load only references that apply, at phase entry:
 - Debug or profiling: `deadwater-debug-profiler/references/debug-profile-checklists.md`
 - QA or release: `deadwater-qa-release/references/qa-release-checklists.md`
 - Visual baselines: `deadwater-qa-release/references/visual-test-harness.md`
+- Named fixed-camera coverage: `deadwater-visual-scout/references/shot-design.md`
 - Automated play: `deadwater-qa-release/references/playtest-bot.md`
 - Models, textures, licensing, or placement: `deadwater-3d-asset-pipeline/references/threejs-integration.md`
 - Image-to-model or generated image inputs: `deadwater-3d-asset-pipeline/references/image-generator-workflows.md`
