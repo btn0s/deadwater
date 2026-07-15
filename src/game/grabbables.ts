@@ -8,6 +8,8 @@ export interface Grabbable {
   body: RapierRigidBody
   /** rough horizontal half-extent, for wall clamping while held */
   radius: number
+  /** largest AABB dimension — how bulky the thing is to carry */
+  size: number
 }
 
 const items = new Set<Grabbable>()

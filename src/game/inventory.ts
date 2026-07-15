@@ -28,13 +28,18 @@ interface InventoryState {
   active: number
   /** active item put away with F — slot stays selected, hands are empty */
   stowed: boolean
+  /** both hands full (big carried object): switching and drawing disabled */
+  carryLock: boolean
 }
 
 let state: InventoryState = {
   slots: [null, null, null, null],
   active: 0,
   stowed: false,
+  carryLock: false,
 }
+
+let stowedBeforeLock = false
 
 const subs = new Set<() => void>()
 function emit(next: Partial<InventoryState>) {
@@ -50,6 +55,7 @@ export const inventory = {
   },
   /** selecting a slot always draws it */
   setActive(i: number) {
+    if (state.carryLock) return
     if (i < 0 || i >= SLOT_COUNT) return
     if (i !== state.active || state.stowed) {
       play('click', 0.4)
@@ -58,9 +64,20 @@ export const inventory = {
   },
   /** F: put the item in hand away / take it back out */
   toggleStowed() {
+    if (state.carryLock) return
     if (state.slots[state.active]) {
       play('torch', 0.6)
       emit({ stowed: !state.stowed })
+    }
+  },
+  /** a two-handed carry holsters the active item until the object drops */
+  setCarryLock(on: boolean) {
+    if (on === state.carryLock) return
+    if (on) {
+      stowedBeforeLock = state.stowed
+      emit({ carryLock: true, stowed: true })
+    } else {
+      emit({ carryLock: false, stowed: stowedBeforeLock })
     }
   },
   /** world pickups land in the first empty slot and are drawn immediately */

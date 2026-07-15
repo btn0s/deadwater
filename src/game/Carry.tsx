@@ -5,13 +5,16 @@ import { RigidBodyType } from '@dimforge/rapier3d-compat'
 import { allGrabbables, findGrabbable, type Grabbable } from './grabbables'
 import { player } from './playerState'
 import { clampHeldTarget } from './worldBounds'
+import { inventory } from './inventory'
 import { play } from './audio'
 
 /**
  * Two ways to hold a prop:
  * - E (routed through the reticle interaction system) carries it IN HANDS,
- *   FPS-style: small items tuck into the lower-right, big ones sit centered
- *   and low. LMB throws.
+ *   FPS-style: small items ride in the LEFT hand so the torch or crowbar
+ *   can stay out in the right; big ones are a two-handed carry — centered,
+ *   active item holstered, hotbar locked until dropped. LMB puts it down
+ *   (with your movement's momentum, so a running flick still throws).
  * - HOLD right-click aims telekinesis: the object floats out at arm's
  *   length while the button is down and drops gently on release.
  */
@@ -22,9 +25,10 @@ const TOSS_CAP = 8
 const FLOAT_DIST = 1.9
 const SPIN_RATE = 0.6
 
-const ANCHOR_SMALL = new THREE.Vector3(0.42, -0.36, -0.62)
+const ANCHOR_SMALL = new THREE.Vector3(-0.42, -0.36, -0.62)
 const ANCHOR_BIG = new THREE.Vector3(0, -0.22, -0.95)
-const BIG_RADIUS = 0.42
+/** anything bulkier than this (largest dimension, m) is a two-handed carry */
+const BIG_SIZE = 0.7
 
 interface HeldState {
   grab: Grabbable
@@ -36,6 +40,7 @@ let held: HeldState | null = null
 function take(grab: Grabbable, mode: HeldState['mode']) {
   grab.body.setBodyType(RigidBodyType.KinematicPositionBased, true)
   held = { grab, mode }
+  if (mode === 'hands' && grab.size > BIG_SIZE) inventory.setCarryLock(true)
 }
 
 function release(toss: THREE.Vector3 | null) {
@@ -47,6 +52,7 @@ function release(toss: THREE.Vector3 | null) {
     body.setAngvel({ x: 0, y: SPIN_RATE, z: 0 }, true)
   }
   held = null
+  inventory.setCarryLock(false)
 }
 
 export const carry = {
@@ -81,6 +87,7 @@ export function CarrySystem() {
   const gl = useThree((s) => s.gl)
   const heldVel = useRef(new THREE.Vector3())
   const prevPos = useRef(new THREE.Vector3())
+  const lastHeld = useRef<HeldState | null>(null)
   const raycaster = useRef(new THREE.Raycaster())
   const crosshairTimer = useRef(0)
 
@@ -91,9 +98,9 @@ export function CarrySystem() {
     const onPointerDown = (e: PointerEvent) => {
       if (!player.locked) return
       if (e.button === 0 && held) {
-        // throw with carried momentum plus a shove
+        // put it down: carried momentum plus a nudge — sprint to throw
         camera.getWorldDirection(FWD)
-        const toss = heldVel.current.clone().multiplyScalar(0.8).addScaledVector(FWD, held.mode === 'hands' ? 5 : 1.6)
+        const toss = heldVel.current.clone().multiplyScalar(0.8).addScaledVector(FWD, held.mode === 'hands' ? 2.4 : 1.6)
         if (toss.length() > TOSS_CAP) toss.setLength(TOSS_CAP)
         play('swing', 0.5, 1.2)
         release(toss)
@@ -129,10 +136,10 @@ export function CarrySystem() {
     if (held) {
       const body = held.grab.body
       if (held.mode === 'hands') {
-        // welded to the view like a viewmodel, big things centered
-        const anchor = held.grab.radius > BIG_RADIUS ? ANCHOR_BIG : ANCHOR_SMALL
-        TARGET.copy(anchor)
-        if (held.grab.radius > BIG_RADIUS) TARGET.z -= held.grab.radius * 0.6
+        // welded to the view like a viewmodel, big things centered two-handed
+        const big = held.grab.size > BIG_SIZE
+        TARGET.copy(big ? ANCHOR_BIG : ANCHOR_SMALL)
+        TARGET.z -= Math.max(0, (held.grab.size - 0.4) * (big ? 0.5 : 0.3))
         TARGET.applyQuaternion(camera.quaternion).add(camera.position)
       } else {
         camera.getWorldDirection(FWD)
@@ -142,10 +149,15 @@ export function CarrySystem() {
         TARGET.y = THREE.MathUtils.clamp(TARGET.y, 0.25, 4.6)
       }
 
-      const t = body.translation()
-      POS.set(t.x, t.y, t.z)
-      const blend = 1 - Math.exp(-HOLD_STIFFNESS * dt)
-      POS.lerp(TARGET, blend)
+      if (held.mode === 'hands') {
+        // welded rigidly: zero lag, exactly like a viewmodel
+        POS.copy(TARGET)
+      } else {
+        const t = body.translation()
+        POS.set(t.x, t.y, t.z)
+        const blend = 1 - Math.exp(-HOLD_STIFFNESS * dt)
+        POS.lerp(TARGET, blend)
+      }
       body.setNextKinematicTranslation({ x: POS.x, y: POS.y, z: POS.z })
 
       if (held.mode === 'float') {
@@ -155,9 +167,14 @@ export function CarrySystem() {
         body.setNextKinematicRotation({ x: q.x, y: q.y, z: q.z, w: q.w })
       }
 
-      heldVel.current.copy(POS).sub(prevPos.current).divideScalar(Math.max(dt, 1e-4))
+      if (held === lastHeld.current) {
+        heldVel.current.copy(POS).sub(prevPos.current).divideScalar(Math.max(dt, 1e-4))
+      } else {
+        heldVel.current.set(0, 0, 0)
+      }
       prevPos.current.copy(POS)
     }
+    lastHeld.current = held
 
     crosshairTimer.current -= dt
     if (crosshairTimer.current <= 0) {

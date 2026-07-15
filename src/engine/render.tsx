@@ -449,7 +449,8 @@ function GrabbableBody({ children, position = [0, 0, 0] }: { children: React.Rea
     if (!body.current || !inner.current) return
     const box = new THREE.Box3().setFromObject(inner.current)
     const radius = Math.max(box.max.x - box.min.x, box.max.z - box.min.z) / 2
-    return registerGrabbable({ root: inner.current, body: body.current, radius })
+    const size = Math.max(box.max.x - box.min.x, box.max.y - box.min.y, box.max.z - box.min.z)
+    return registerGrabbable({ root: inner.current, body: body.current, radius, size })
   }, [])
   return (
     // heavy: high density + damping so a kicked stack settles instead of
