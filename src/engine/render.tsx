@@ -433,7 +433,9 @@ function GrabbableBody({ children, position = [0, 0, 0] }: { children: React.Rea
     return registerGrabbable({ root: inner.current, body: body.current, radius })
   }, [])
   return (
-    <RigidBody ref={body} colliders="hull" position={position} linearDamping={0.2} angularDamping={0.8} ccd>
+    // heavy: high density + damping so a kicked stack settles instead of
+    // exploding — cargo should feel like cargo
+    <RigidBody ref={body} colliders="hull" position={position} density={5} linearDamping={1.1} angularDamping={2.5} ccd>
       <group ref={inner}>{children}</group>
     </RigidBody>
   )
