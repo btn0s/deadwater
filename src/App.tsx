@@ -5,6 +5,7 @@ import { PS2Pipeline } from './ps2/PS2Pipeline'
 import { PlayerController } from './game/PlayerController'
 import { PlayerBody } from './game/PlayerBody'
 import { CarrySystem } from './game/Carry'
+import { ZoneCulling } from './game/zoneCulling'
 import { DevViews } from './game/DevViews'
 import { InteractionSystem, usePrompt, useFade } from './game/interactions'
 import { InventoryKeys, useInventory, SLOT_COUNT } from './game/inventory'
@@ -71,6 +72,7 @@ export default function App() {
           </Suspense>
           <PlayerController onLockChange={setLocked} spawn={[-18.3, 1.6]} initialYaw={-1.35} />
           <CarrySystem />
+          <ZoneCulling />
           <InteractionSystem />
           <InventoryKeys />
           <Flashlight />
