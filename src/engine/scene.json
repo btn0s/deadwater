@@ -11564,6 +11564,324 @@
      "grabbable": true
     }
    ]
+  },
+  {
+   "id": "office-shelf-low",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.62,
+     1.25,
+     1.0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.45,
+      0.05,
+      2.4
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      0.5,
+      2
+     ],
+     "tint": "#8d9294"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.225,
+      0.025,
+      1.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "office-shelf-high",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.62,
+     1.95,
+     1.0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.45,
+      0.05,
+      2.4
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      0.5,
+      2
+     ],
+     "tint": "#8d9294"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.225,
+      0.025,
+      1.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "office-shelf-brk-1",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.78,
+     1.105,
+     0.1
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.05,
+      0.24,
+      0.05
+     ],
+     "tint": "#5a5e60"
+    }
+   ]
+  },
+  {
+   "id": "office-shelf-brk-2",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.78,
+     1.105,
+     1.9
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.05,
+      0.24,
+      0.05
+     ],
+     "tint": "#5a5e60"
+    }
+   ]
+  },
+  {
+   "id": "office-shelf-brk-3",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.78,
+     1.805,
+     0.1
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.05,
+      0.24,
+      0.05
+     ],
+     "tint": "#5a5e60"
+    }
+   ]
+  },
+  {
+   "id": "office-shelf-brk-4",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.78,
+     1.805,
+     1.9
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.05,
+      0.24,
+      0.05
+     ],
+     "tint": "#5a5e60"
+    }
+   ]
+  },
+  {
+   "id": "office-shelf-binder-1",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.62,
+     1.42,
+     0.35
+    ],
+    "rot": 1.5708
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/binder_notebook/binder_notebook_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-shelf-box",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.62,
+     1.5,
+     1.05
+    ],
+    "rot": 0.05
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/cardboard_box_01/cardboard_box_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-shelf-oil",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.62,
+     1.42,
+     1.7
+    ],
+    "rot": 0.3
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/oil_tin/oil_tin_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-shelf-ammo",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.62,
+     2.12,
+     0.55
+    ],
+    "rot": 1.5708
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/ammo_box/ammo_box_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-shelf-cans",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.62,
+     2.12,
+     1.35
+    ],
+    "rot": 0.1
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/russian_food_cans_01/russian_food_cans_01_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "office-shelf-can",
+   "parent": "office-zone",
+   "transform": {
+    "pos": [
+     -19.62,
+     2.12,
+     1.85
+    ],
+    "rot": 1.2
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/can_rusted/can_rusted_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
   }
  ]
 }
