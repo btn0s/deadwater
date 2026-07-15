@@ -344,13 +344,14 @@ function BlockPlayer({ size }: { size?: [number, number, number] }) {
     if (!g) return
     let box: THREE.Box3
     if (size) {
+      // run the local half-extents through the world matrix so rotated
+      // bodies produce the right AABB (corner-expanded, not just offset)
       g.updateWorldMatrix(true, false)
-      const p = new THREE.Vector3()
-      g.getWorldPosition(p)
       box = new THREE.Box3(
-        new THREE.Vector3(p.x - size[0], p.y - size[1], p.z - size[2]),
-        new THREE.Vector3(p.x + size[0], p.y + size[1], p.z + size[2]),
+        new THREE.Vector3(-size[0], -size[1], -size[2]),
+        new THREE.Vector3(size[0], size[1], size[2]),
       )
+      box.applyMatrix4(g.matrixWorld)
     } else {
       box = new THREE.Box3().setFromObject(g)
       if (box.isEmpty()) return

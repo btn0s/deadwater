@@ -3251,9 +3251,9 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     19.6,
+     19.15,
      0,
-     -13.1
+     -15.15
     ],
     "rot": 0.6
    },
@@ -3276,11 +3276,11 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     19,
+     18.55,
      0.5,
-     -14.9
+     -14.85
     ],
-    "rot": 1.7
+    "rot": 1.1
    },
    "components": [
     {
@@ -3301,9 +3301,9 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     19.3,
+     18.3,
      0,
-     -14.3
+     -14.4
     ]
    },
    "components": [
@@ -3329,9 +3329,9 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     19.05,
-     0.9,
-     -14.05
+     18.2,
+     0.8,
+     -14.3
     ],
     "rot": 3.0998
    },
@@ -3354,9 +3354,9 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     19.5,
-     0.7,
-     -14.5
+     18.5,
+     0.9,
+     -13.8
     ],
     "rot": 1.0039
    },
@@ -3375,38 +3375,13 @@
    ]
   },
   {
-   "id": "trash-pile-junk-3",
-   "parent": "yard",
-   "transform": {
-    "pos": [
-     19.2,
-     1.1,
-     -14.4
-    ],
-    "rot": 5.8007
-   },
-   "components": [
-    {
-     "type": "model",
-     "source": "gltf",
-     "url": "/models/can_rusted/can_rusted_1k.gltf"
-    },
-    {
-     "type": "physics",
-     "body": "dynamic",
-     "collider": "hull",
-     "grabbable": true
-    }
-   ]
-  },
-  {
    "id": "trash-pile-junk-4",
    "parent": "yard",
    "transform": {
     "pos": [
-     18.8,
-     0.8,
-     -13.9
+     18,
+     0.7,
+     -14.7
     ],
     "rot": 0.2154
    },
@@ -3429,9 +3404,9 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     19.6,
-     0.9,
-     -14.15
+     18.6,
+     1,
+     -14.5
     ],
     "rot": 1.6202
    },
@@ -3454,9 +3429,9 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     19.35,
-     1.2,
-     -13.85
+     18.35,
+     1.1,
+     -13.6
     ],
     "rot": 5.3736
    },
@@ -3482,9 +3457,9 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     19,
-     1,
-     -14.55
+     18.75,
+     0.75,
+     -14.05
     ],
     "rot": 0.0166
    },
@@ -3493,31 +3468,6 @@
      "type": "model",
      "source": "gltf",
      "url": "/models/trashbag/trashbag_1k.gltf"
-    },
-    {
-     "type": "physics",
-     "body": "dynamic",
-     "collider": "hull",
-     "grabbable": true
-    }
-   ]
-  },
-  {
-   "id": "trash-pile-junk-8",
-   "parent": "yard",
-   "transform": {
-    "pos": [
-     18.7,
-     0.7,
-     -14.3
-    ],
-    "rot": 1.9128
-   },
-   "components": [
-    {
-     "type": "model",
-     "source": "gltf",
-     "url": "/models/can_rusted/can_rusted_1k.gltf"
     },
     {
      "type": "physics",
@@ -7860,10 +7810,11 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     21.2,
+     19.05,
      0,
-     -13.6
-    ]
+     -13.15
+    ],
+    "rot": 0
    },
    "components": [
     {
@@ -7884,9 +7835,9 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     21.9,
+     19.75,
      0,
-     -12.9
+     -13.0
     ],
     "rot": 0.9
    },
@@ -9099,10 +9050,11 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     17.7,
+     17,
      0,
-     -14.65
-    ]
+     -14.1
+    ],
+    "rot": 1.5707963267948966
    },
    "components": [
     {
@@ -9116,11 +9068,11 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     17.2,
+     19.85,
      0,
-     -13.4
+     -15.35
     ],
-    "rot": 2.2
+    "rot": 2.4
    },
    "components": [
     {
@@ -9141,9 +9093,9 @@
    "parent": "yard",
    "transform": {
     "pos": [
-     20.6,
+     18.15,
      0,
-     -13.3
+     -13.55
     ]
    },
    "components": [
@@ -9174,7 +9126,7 @@
      "body": "fixed",
      "collider": "cuboid",
      "size": [
-      1.0,
+      1,
       0.62,
       0.5
      ],
