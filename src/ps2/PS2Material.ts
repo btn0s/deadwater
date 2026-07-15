@@ -90,8 +90,8 @@ const vertexShader = /* glsl */ `
 
   varying vec2 vUv;
   varying vec3 vLight;
-  varying vec3 vTorch;
   varying vec3 vWorldPos;
+  varying vec3 vWorldNormal;
   varying float vFogDepth;
 
   void main() {
@@ -100,7 +100,7 @@ const vertexShader = /* glsl */ `
     vec4 worldPos = modelMatrix * vec4(position, 1.0);
     vWorldPos = worldPos.xyz;
     vec3 worldNormal = normalize(mat3(modelMatrix) * normal);
-    vec3 torch = vec3(0.0);
+    vWorldNormal = worldNormal;
 
     // ambient with a faint hemisphere tilt so unlit side/down faces keep shape
     vec3 light = uAmbient * (0.95 + 0.3 * worldNormal.y);
@@ -119,13 +119,13 @@ const vertexShader = /* glsl */ `
         float along = dot(normalize(-toLight), uLightDir[i]);
         spot *= smoothstep(uLightCone[i], uLightCone[i] + 0.06, along);
       }
-      vec3 contrib = uLightColor[i] * (ndl * atten * spot);
-      // the torch's share travels separately so the fragment can shadow it
-      if (float(i) == uShadowSlot) torch += contrib;
-      else light += contrib;
+      // the torch's slot is skipped here — it's evaluated per-fragment so
+      // its pool stays round instead of Gouraud-blobby
+      if (float(i) != uShadowSlot) {
+        light += uLightColor[i] * (ndl * atten * spot);
+      }
     }
     vLight = mix(light, vec3(1.0), uFullbright);
-    vTorch = torch * (1.0 - uFullbright);
 
     vec4 mvPos = viewMatrix * worldPos;
     vFogDepth = -mvPos.z;
@@ -139,6 +139,11 @@ const fragmentShader = /* glsl */ `
   uniform sampler2D uShadowMap;
   uniform mat4 uShadowMatrix;
   uniform float uShadowOn;
+  uniform vec3 uTorchPos;
+  uniform vec3 uTorchDir;
+  uniform vec3 uTorchColor;
+  uniform float uTorchRadius;
+  uniform float uTorchCone;
   uniform vec3 uColor;
   uniform vec3 fogColor;
   uniform float fogNear;
@@ -147,8 +152,8 @@ const fragmentShader = /* glsl */ `
 
   varying vec2 vUv;
   varying vec3 vLight;
-  varying vec3 vTorch;
   varying vec3 vWorldPos;
+  varying vec3 vWorldNormal;
   varying float vFogDepth;
 
   // compact recursive 4x4 Bayer matrix, range [0, 1)
@@ -187,20 +192,31 @@ const fragmentShader = /* glsl */ `
   void main() {
     vec4 texel = uBomb > 0.0 ? sampleBombed(vUv) : texture2D(map, vUv);
 
-    // torch shadow: one hard tap against the light's depth map — the beam
-    // stops at whatever it hits, aliased edges and all
-    float shadow = 1.0;
+    // the torch, per-fragment: round pool, hard shadow-map tap — the one
+    // light that gets modern treatment (SH2 did the same for its flashlight)
+    vec3 torch = vec3(0.0);
     if (uShadowOn > 0.5) {
-      vec4 sc = uShadowMatrix * vec4(vWorldPos, 1.0);
-      vec3 p = sc.xyz / max(sc.w, 1e-4);
-      if (p.x > 0.0 && p.x < 1.0 && p.y > 0.0 && p.y < 1.0 && p.z > 0.0 && p.z < 1.0) {
-        float d = texture2D(uShadowMap, p.xy).x;
-        if (p.z - 0.0035 > d) shadow = 0.0;
+      vec3 toL = uTorchPos - vWorldPos;
+      float dist = length(toL);
+      if (dist < uTorchRadius) {
+        vec3 L = toL / max(dist, 1e-4);
+        float ndl = max(dot(normalize(vWorldNormal), L), 0.0);
+        float cone = smoothstep(uTorchCone, uTorchCone + 0.06, dot(-L, uTorchDir));
+        if (ndl * cone > 0.001) {
+          float shadow = 1.0;
+          vec4 sc = uShadowMatrix * vec4(vWorldPos, 1.0);
+          vec3 p = sc.xyz / max(sc.w, 1e-4);
+          if (p.x > 0.0 && p.x < 1.0 && p.y > 0.0 && p.y < 1.0 && p.z > 0.0 && p.z < 1.0) {
+            float d = texture2D(uShadowMap, p.xy).x;
+            if (p.z - 0.0035 > d) shadow = 0.0;
+          }
+          float atten = 1.0 - dist / uTorchRadius;
+          torch = uTorchColor * (ndl * atten * cone * shadow);
+        }
       }
     }
 
-    // per-vertex light + the shadow-tested torch beam
-    vec3 light = vLight + vTorch * shadow;
+    vec3 light = vLight + torch;
     vec3 color = texel.rgb * uColor * light + texture2D(emissiveMap, vUv).rgb;
 
     float fogFactor = clamp((vFogDepth - fogNear) / (fogFar - fogNear), 0.0, 1.0);

@@ -38,6 +38,14 @@ export const torchShadowUniforms = {
   uShadowSlot: { value: -1 },
   /** raised by the pipeline only around its own scene render */
   uShadowOn: { value: 0 },
+  // the torch itself, evaluated PER-FRAGMENT in PS2Material (the one light
+  // that must pool round instead of Gouraud-blobby); the vertex loop skips
+  // its slot, water keeps the per-vertex version
+  uTorchPos: { value: new THREE.Vector3() },
+  uTorchDir: { value: new THREE.Vector3(0, 0, -1) },
+  uTorchColor: { value: new THREE.Color(0, 0, 0) },
+  uTorchRadius: { value: 1 },
+  uTorchCone: { value: 0.97 },
 }
 
 /** call after posing torchCamera (pipeline does, pre-render) */
