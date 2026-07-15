@@ -589,6 +589,12 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
   const mode = useEngineMode()
   const group = useRef<THREE.Group>(null)
 
+  // tag imperatively — a userData JSX prop would REPLACE the object on every
+  // re-render and wipe markers others store there (interactables, grabbables)
+  useEffect(() => {
+    if (group.current) group.current.userData.nodeId = instancePrefix + node.id
+  }, [node.id, instancePrefix])
+
   const model = componentOf(node, 'model')
   const physics = componentOf(node, 'physics')
   const surface = componentOf(node, 'surface')
@@ -632,7 +638,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
 
   return (
     <NodeGroupContext.Provider value={group}>
-      <group ref={group} name={instancePrefix + node.id} userData={{ nodeId: instancePrefix + node.id }} position={node.transform.pos} rotation={eulerOf(node)} scale={node.transform.scale ?? 1}>
+      <group ref={group} name={instancePrefix + node.id} position={node.transform.pos} rotation={eulerOf(node)} scale={node.transform.scale ?? 1}>
         {body}
         {model?.split && <SplitModel c={model} physics={physics} />}
         {mode === 'game' && physics?.collider === 'cuboid' && physics.size && (

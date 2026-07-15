@@ -589,38 +589,6 @@
    ]
   },
   {
-   "id": "sign-dock",
-   "parent": "shell",
-   "transform": {
-    "pos": [
-     19.94,
-     1.8,
-     2.5
-    ],
-    "rot": [
-     0,
-     -1.5708,
-     0
-    ]
-   },
-   "components": [
-    {
-     "type": "surface",
-     "width": 1.1,
-     "height": 1.1,
-     "segments": [
-      2,
-      2
-     ],
-     "texture": "DangerSign",
-     "repeat": [
-      1,
-      1
-     ]
-    }
-   ]
-  },
-  {
    "id": "pillar-1",
    "parent": "shell",
    "transform": {
