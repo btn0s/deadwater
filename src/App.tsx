@@ -69,7 +69,7 @@ export default function App() {
               <PlayerBody />
             </Physics>
           </Suspense>
-          <PlayerController onLockChange={setLocked} spawn={[0, 4]} initialYaw={0} />
+          <PlayerController onLockChange={setLocked} spawn={[-18.3, 1.6]} initialYaw={-1.35} />
           <Telekinesis />
           <InteractionSystem />
           <InventoryKeys />

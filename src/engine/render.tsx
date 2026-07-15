@@ -264,13 +264,8 @@ function PickupEffect({ c }: { c: PickupComponent }) {
   useEffect(() => {
     const g = group?.current
     if (!g || taken) return
-    g.updateWorldMatrix(true, false)
-    const p = new THREE.Vector3()
-    g.getWorldPosition(p)
     return registerInteractable({
-      x: p.x,
-      z: p.z,
-      radius: 1.4,
+      object: g,
       label: c.label ?? 'TAKE',
       fade: false,
       action: () => {
@@ -291,13 +286,8 @@ function SwitchEffect({ c }: { c: SwitchComponent }) {
   useEffect(() => {
     const g = group?.current
     if (!g) return
-    g.updateWorldMatrix(true, false)
-    const p = new THREE.Vector3()
-    g.getWorldPosition(p)
     return registerInteractable({
-      x: p.x,
-      z: p.z,
-      radius: 1.1,
+      object: g,
       label: c.label ?? 'LIGHTS',
       fade: false,
       action: () => toggleGroup(c.group),
@@ -312,14 +302,10 @@ function DoorEffect({ c }: { c: DoorComponent }) {
   useEffect(() => {
     const g = group?.current
     if (!g) return
-    g.updateWorldMatrix(true, false)
-    const p = new THREE.Vector3()
-    g.getWorldPosition(p)
     return registerInteractable({
-      x: p.x,
-      z: p.z,
-      radius: c.radius ?? 1.8,
+      object: g,
       label: c.label ?? 'USE',
+      maxDist: c.radius,
       action: c.locked ? undefined : () => player.teleport(c.target[0], c.target[1], c.targetYaw),
     })
   }, [group, c.target[0], c.target[1], c.targetYaw, c.label, c.radius, c.locked]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -465,11 +451,22 @@ function LightEffect({ c, nodeGroup, transform }: { c: LightComponent; nodeGroup
       glass.current = []
       // fixture = parent node's group (light nodes are children of fixtures)
       const fixture = g.parent
-      fixture?.traverse((o) => {
-        if (o instanceof THREE.Mesh && o.material instanceof THREE.ShaderMaterial && o.material.userData.lampGlass) {
-          glass.current.push(o.material.uniforms.uColor.value as THREE.Color)
+      // walk the fixture's OWN visuals only: prune sibling scene nodes so a
+      // fixtureless light parented to a zone can't grab the whole zone's
+      // fullbright surfaces (voids, signs); instance children of the
+      // fixture (its prefab visuals) stay in
+      if (fixture) {
+        const fixtureId = (fixture.userData.nodeId as string | undefined) ?? ''
+        const walk = (o: THREE.Object3D) => {
+          const nid = o.userData.nodeId as string | undefined
+          if (o !== fixture && nid && !nid.startsWith(`${fixtureId}::`)) return
+          if (o instanceof THREE.Mesh && o.material instanceof THREE.ShaderMaterial && o.material.userData.lampGlass) {
+            glass.current.push(o.material.uniforms.uColor.value as THREE.Color)
+          }
+          for (const child of o.children) walk(child)
         }
-      })
+        walk(fixture)
+      }
     }
     lightColors[i].copy(rawColorFromString(c.color)).multiplyScalar(c.intensity)
     lightRadii[i] = c.radius
@@ -574,7 +571,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
 
   return (
     <NodeGroupContext.Provider value={group}>
-      <group ref={group} name={instancePrefix + node.id} position={node.transform.pos} rotation={eulerOf(node)} scale={node.transform.scale ?? 1}>
+      <group ref={group} name={instancePrefix + node.id} userData={{ nodeId: instancePrefix + node.id }} position={node.transform.pos} rotation={eulerOf(node)} scale={node.transform.scale ?? 1}>
         {body}
         {model?.split && <SplitModel c={model} physics={physics} />}
         {mode === 'game' && physics?.collider === 'cuboid' && physics.size && (

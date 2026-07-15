@@ -1261,15 +1261,15 @@
    "transform": {
     "pos": [
      -13,
-     5.92,
+     6,
      -5.5
-    ],
-    "rot": 1.5707963267948966
+    ]
    },
    "components": [
     {
-     "type": "instance",
-     "of": "tube-light"
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
     }
    ]
   },
@@ -1279,14 +1279,14 @@
    "transform": {
     "pos": [
      0,
-     -0.3,
+     -1.4,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#dae6d4",
+     "color": "#d8e6c8",
      "intensity": 1.2,
      "radius": 18,
      "spot": 1,
@@ -1300,15 +1300,15 @@
    "transform": {
     "pos": [
      0,
-     5.92,
+     6,
      -5.5
-    ],
-    "rot": 1.5707963267948966
+    ]
    },
    "components": [
     {
-     "type": "instance",
-     "of": "tube-light"
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
     }
    ]
   },
@@ -1318,14 +1318,14 @@
    "transform": {
     "pos": [
      0,
-     -0.3,
+     -1.4,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#dae6d4",
+     "color": "#d8e6c8",
      "intensity": 1.2,
      "radius": 18,
      "spot": 1,
@@ -1339,15 +1339,15 @@
    "transform": {
     "pos": [
      13,
-     5.92,
+     6,
      -5.5
-    ],
-    "rot": 1.5707963267948966
+    ]
    },
    "components": [
     {
-     "type": "instance",
-     "of": "tube-light"
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
     }
    ]
   },
@@ -1357,14 +1357,14 @@
    "transform": {
     "pos": [
      0,
-     -0.3,
+     -1.4,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#dae6d4",
+     "color": "#d8e6c8",
      "intensity": 1.2,
      "radius": 18,
      "spot": 1,
@@ -1378,15 +1378,15 @@
    "transform": {
     "pos": [
      -13,
-     5.92,
+     6,
      5.5
-    ],
-    "rot": 1.5707963267948966
+    ]
    },
    "components": [
     {
-     "type": "instance",
-     "of": "tube-light"
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
     }
    ]
   },
@@ -1396,14 +1396,14 @@
    "transform": {
     "pos": [
      0,
-     -0.3,
+     -1.4,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#dae6d4",
+     "color": "#d8e6c8",
      "intensity": 1.2,
      "radius": 18,
      "spot": 1,
@@ -1417,15 +1417,15 @@
    "transform": {
     "pos": [
      0,
-     5.92,
+     6,
      5.5
-    ],
-    "rot": 1.5707963267948966
+    ]
    },
    "components": [
     {
-     "type": "instance",
-     "of": "tube-light"
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
     }
    ]
   },
@@ -1435,14 +1435,14 @@
    "transform": {
     "pos": [
      0,
-     -0.3,
+     -1.4,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#dae6d4",
+     "color": "#d8e6c8",
      "intensity": 1.2,
      "radius": 18,
      "spot": 1,
@@ -1457,15 +1457,15 @@
    "transform": {
     "pos": [
      13,
-     5.92,
+     6,
      5.5
-    ],
-    "rot": 1.5707963267948966
+    ]
    },
    "components": [
     {
-     "type": "instance",
-     "of": "tube-light"
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
     }
    ]
   },
@@ -1475,14 +1475,14 @@
    "transform": {
     "pos": [
      0,
-     -0.3,
+     -1.4,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#dae6d4",
+     "color": "#d8e6c8",
      "intensity": 1.2,
      "radius": 18,
      "spot": 1,
@@ -4051,7 +4051,7 @@
      0,
      -1.9
     ],
-    "rot": -1.5708
+    "rot": 0
    },
    "components": [
     {
@@ -4075,9 +4075,9 @@
     "pos": [
      -19.55,
      0,
-     -1.05
+     -1.51
     ],
-    "rot": -1.5708
+    "rot": 0
    },
    "components": [
     {
@@ -4101,9 +4101,9 @@
     "pos": [
      -19.55,
      0,
-     -0.2
+     -1.12
     ],
-    "rot": -1.5708
+    "rot": 0
    },
    "components": [
     {
@@ -5243,7 +5243,7 @@
    "transform": {
     "pos": [
      -11.5,
-     0,
+     0.55,
      -25.05
     ]
    },
@@ -5254,7 +5254,7 @@
      "collider": "none",
      "size": [
       10.5,
-      0.3,
+      0.55,
       0.1
      ],
      "blockPlayer": true
@@ -5267,7 +5267,7 @@
    "transform": {
     "pos": [
      1.5,
-     0,
+     0.55,
      -25.05
     ]
    },
@@ -5278,7 +5278,7 @@
      "collider": "none",
      "size": [
       0.5,
-      0.3,
+      0.55,
       0.1
      ],
      "blockPlayer": true
@@ -5291,7 +5291,7 @@
    "transform": {
     "pos": [
      -11.5,
-     0,
+     0.55,
      -28.95
     ]
    },
@@ -5302,7 +5302,7 @@
      "collider": "none",
      "size": [
       10.5,
-      0.3,
+      0.55,
       0.1
      ],
      "blockPlayer": true
@@ -5315,7 +5315,7 @@
    "transform": {
     "pos": [
      1.5,
-     0,
+     0.55,
      -28.95
     ]
    },
@@ -5326,7 +5326,7 @@
      "collider": "none",
      "size": [
       0.5,
-      0.3,
+      0.55,
       0.1
      ],
      "blockPlayer": true
@@ -7707,8 +7707,8 @@
     {
      "type": "light",
      "color": "#e8c07a",
-     "intensity": 1.1,
-     "radius": 14,
+     "intensity": 1.0,
+     "radius": 8,
      "spot": 1
     }
    ]
@@ -7750,8 +7750,8 @@
     {
      "type": "light",
      "color": "#e8c07a",
-     "intensity": 1.1,
-     "radius": 14,
+     "intensity": 1.0,
+     "radius": 8,
      "spot": 1
     }
    ]
@@ -9335,7 +9335,7 @@
     "pos": [
      19.86,
      1.25,
-     9.05
+     10.95
     ]
    },
    "components": [
@@ -9357,7 +9357,7 @@
     "pos": [
      -15.89,
      1.25,
-     -0.95
+     -0.81
     ]
    },
    "components": [
@@ -9379,7 +9379,7 @@
     "pos": [
      -15.89,
      1.25,
-     0.05
+     -0.72
     ]
    },
    "components": [

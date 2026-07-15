@@ -1,32 +1,45 @@
-import { useSyncExternalStore } from 'react'
-import { useFrame } from '@react-three/fiber'
-import { useEffect } from 'react'
+import { useSyncExternalStore, useEffect, useRef } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
+import * as THREE from 'three'
 import { player } from './playerState'
 
 /**
- * Usable things in the world (doors, later switches/pickups). Each has a
- * spot, a radius, a HUD prompt, and an action. The InteractionSystem finds
- * the nearest one in range each frame and fires it on E.
+ * Usable things in the world (doors, switches, pickups). Interaction is
+ * RETICLE-driven: a ray from the crosshair against the scene — the prompt
+ * appears and E fires only when you're actually looking at the thing, and
+ * geometry in between blocks it (no using switches through walls).
  */
 
 export interface Interactable {
-  x: number
-  z: number
-  radius: number
+  /** the node's visual root; the ray must hit one of its meshes */
+  object: THREE.Object3D
   label: string
   /** absent = inert (a locked door): the prompt shows but E does nothing */
   action?: () => void
   /** doors fade to black around their action; switches etc. fire instantly */
   fade?: boolean
+  /** reach in meters (default 2.4) */
+  maxDist?: number
 }
 
 const items = new Set<Interactable>()
 
 export function registerInteractable(entry: Interactable): () => void {
+  entry.object.userData.interactable = entry
   items.add(entry)
   return () => {
     items.delete(entry)
+    delete entry.object.userData.interactable
   }
+}
+
+function findInteractable(hit: THREE.Object3D): Interactable | null {
+  let o: THREE.Object3D | null = hit
+  while (o) {
+    if (o.userData.interactable) return o.userData.interactable as Interactable
+    o = o.parent
+  }
+  return null
 }
 
 // ---- HUD prompt (subscribed by the App overlay) ----
@@ -76,29 +89,43 @@ export function fadeThrough(fn: () => void, holdMs = 280) {
   }, holdMs)
 }
 
-function nearest(): Interactable | null {
-  let best: Interactable | null = null
-  let bestD = Infinity
-  for (const it of items) {
-    const d = Math.hypot(player.x - it.x, player.z - it.z)
-    if (d <= it.radius && d < bestD) {
-      bestD = d
-      best = it
-    }
-  }
-  return best
-}
+const MAX_REACH = 2.4
+const CENTER = new THREE.Vector2(0, 0)
 
 /** Mount once inside the Canvas (game mode). */
 export function InteractionSystem() {
+  const camera = useThree((s) => s.camera)
+  const scene = useThree((s) => s.scene)
+  const raycaster = useRef(new THREE.Raycaster())
+  const aimed = useRef<Interactable | null>(null)
+
   useFrame(() => {
-    setPrompt(player.locked && !transitioning ? (nearest()?.label ?? null) : null)
+    let target: Interactable | null = null
+    if (player.locked && !transitioning && items.size > 0) {
+      const rc = raycaster.current
+      rc.setFromCamera(CENTER, camera)
+      rc.far = MAX_REACH
+      const level = scene.getObjectByName('level')
+      if (level) {
+        // first solid thing the reticle touches — occluders naturally block
+        const hits = rc.intersectObject(level, true)
+        for (const h of hits) {
+          const it = findInteractable(h.object)
+          if (it) {
+            if (h.distance <= (it.maxDist ?? MAX_REACH)) target = it
+            break // whatever is hit first decides: interactable or occluder
+          }
+        }
+      }
+    }
+    aimed.current = target
+    setPrompt(target?.label ?? null)
   })
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code !== 'KeyE' || !player.locked || transitioning) return
-      const it = nearest()
+      const it = aimed.current
       if (it) {
         e.stopImmediatePropagation()
         if (!it.action) return
