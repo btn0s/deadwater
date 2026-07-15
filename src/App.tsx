@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Physics } from '@react-three/rapier'
+import { Physics, useRapier } from '@react-three/rapier'
 import * as THREE from 'three'
 import { PS2Pipeline } from './ps2/PS2Pipeline'
 import { PlayerController } from './game/PlayerController'
@@ -69,6 +69,32 @@ function ShareButton() {
   )
 }
 
+/** Props are authored slightly above their rest poses, so a fresh world
+ * visibly rains junk everywhere. Whenever new bodies mount during the boot
+ * window, fast-forward the simulation so they're already settled by the
+ * time anything is on screen. */
+const BOOT_SETTLE_SECONDS = 5
+function SettleSim() {
+  const { world } = useRapier()
+  const age = useRef(0)
+  const lastCount = useRef(-1)
+  useFrame((_, dt) => {
+    age.current += dt
+    if (age.current > BOOT_SETTLE_SECONDS) return
+    const n = world.bodies.len()
+    if (n !== lastCount.current) {
+      lastCount.current = n
+      // pin the timestep: in vary mode it holds the last frame's dt, and
+      // huge steps make the settle burst explode instead of settle
+      const prev = world.timestep
+      world.timestep = 1 / 60
+      for (let i = 0; i < 90; i++) world.step()
+      world.timestep = prev
+    }
+  })
+  return null
+}
+
 /** Attract camera: adrift in the harbor, looking back at the lit dock.
  * Runs in the real level — it just stands the "player" out on the water so
  * zone culling keeps the yard visible. */
@@ -102,7 +128,13 @@ export default function App() {
   const [phase, setPhase] = useState<'menu' | 'game'>('menu')
   const [locked, setLocked] = useState(false)
   const [cover, setCover] = useState(false)
+  const [boot, setBoot] = useState(true) // hides first-load pop-in while SettleSim works
   const canvasHolder = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const t = setTimeout(() => setBoot(false), 1600)
+    return () => clearTimeout(t)
+  }, [])
 
   const resume = () => {
     // Chrome enforces a short cooldown after an ESC exit — if the request
@@ -149,6 +181,7 @@ export default function App() {
               <SceneRoot nodes={sceneNodes} mode="game" />
               <Cctv />
               <PlayerBody />
+              <SettleSim />
             </Physics>
           </Suspense>
           {phase === 'menu' ? (
@@ -195,7 +228,7 @@ export default function App() {
             <div className="keys">E PICK UP / USE&ensp;·&ensp;CLICK PUT DOWN / SWING&ensp;·&ensp;HOLD RMB FLOAT&ensp;·&ensp;F STOW&ensp;·&ensp;1-4 ITEMS</div>
           </div>
         )}
-        <div className={`fade${cover ? ' on' : ''}`} />
+        <div className={`fade${cover || boot ? ' on' : ''}`} />
       </div>
       {isMobile && (
         <div className="menu-card">
