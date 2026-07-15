@@ -149,7 +149,9 @@ export function AudioSystem() {
       if (!wasGrounded.current) play('land', 0.7) // touchdown
       const d = Math.hypot(dx, dz)
       if (d < 1) travelled.current += d // teleports don't clomp
-      if (travelled.current > 0.78) {
+      // one step per stride — ~2/sec at walk speed; sprint cadence falls
+      // out naturally from covering ground faster
+      if (travelled.current > 2.0) {
         travelled.current = 0
         play('step', 0.5)
       }

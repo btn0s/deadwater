@@ -109,6 +109,7 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('pointerlockchange', onLock)
     canvas.addEventListener('click', onClick)
+    onLock() // the menu's CLOCK IN locks before this controller mounts
     return () => {
       window.removeEventListener('keydown', keyDown)
       window.removeEventListener('keyup', keyUp)
