@@ -10,6 +10,7 @@ import { DevViews } from './game/DevViews'
 import { InteractionSystem, usePrompt, useFade } from './game/interactions'
 import { InventoryKeys, useInventory, SLOT_COUNT } from './game/inventory'
 import { Flashlight } from './game/Flashlight'
+import { Crowbar } from './game/Crowbar'
 import { player } from './game/playerState'
 import { SceneRoot } from './engine/render'
 import { sceneNodes } from './engine/scene'
@@ -76,6 +77,7 @@ export default function App() {
           <InteractionSystem />
           <InventoryKeys />
           <Flashlight />
+          <Crowbar />
           <PS2Pipeline />
           {import.meta.env.DEV && <DevViews />}
         </Canvas>
