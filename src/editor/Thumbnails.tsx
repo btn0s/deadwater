@@ -10,12 +10,14 @@ import { sceneStore } from '../engine/sceneStore'
  * once, the first time the editor opens. Uses its own tiny staging scene so
  * the live scene is untouched.
  */
-export function ThumbnailFactory() {
+export function ThumbnailFactory({ enabled = true }: { enabled?: boolean }) {
   const gl = useThree((s) => s.gl)
   const started = useRef(false)
 
   useEffect(() => {
-    if (started.current || Object.keys(sceneStore.get().thumbs).length > 0) return
+    const thumbs = sceneStore.get().thumbs
+    const complete = Object.keys(MODEL_REGISTRY).every((key) => Boolean(thumbs[key]))
+    if (!enabled || started.current || complete) return
     started.current = true
     let cancelled = false
 
@@ -68,7 +70,11 @@ export function ThumbnailFactory() {
       }
 
       for (const [key, def] of Object.entries(MODEL_REGISTRY)) {
-        if (cancelled) return
+        if (sceneStore.get().thumbs[key]) continue
+        if (cancelled) {
+          target.dispose()
+          return
+        }
         try {
           if (def.source === 'gltf') {
             const gltf = await gltfLoader.loadAsync(def.url)
@@ -93,8 +99,9 @@ export function ThumbnailFactory() {
     run()
     return () => {
       cancelled = true
+      started.current = false
     }
-  }, [gl])
+  }, [enabled, gl])
 
   return null
 }

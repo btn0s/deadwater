@@ -323,7 +323,7 @@ try {
   // The authored carry style remains visible and editable in the real editor.
   const editor = await browser.newPage({ viewport: { width: 1280, height: 960 } })
   captureErrors(editor)
-  await editor.goto(new URL('/editor.html', url).href, { waitUntil: 'domcontentloaded' })
+  await editor.goto(new URL('/editor.html?classic', url).href, { waitUntil: 'domcontentloaded' })
   await editor.waitForFunction(() => typeof window.__sceneStore === 'object')
   await editor.evaluate(() => window.__sceneStore.select('stage-can'))
   await editor.waitForFunction(() => document.querySelector('.ed-id')?.textContent?.includes('stage-can'))

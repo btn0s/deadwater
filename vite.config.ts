@@ -101,10 +101,9 @@ export default defineConfig({
   plugins: [react(), sheetWriter(), layoutWriter(), sceneWriter()],
   build: {
     rollupOptions: {
-      input: {
-        game: path.resolve(__dirname, 'index.html'),
-        editor: path.resolve(__dirname, 'editor.html'),
-      },
+      // The build editor is a private dev-server tool. Production only ships
+      // the player-facing game entry.
+      input: path.resolve(__dirname, 'index.html'),
     },
   },
 })

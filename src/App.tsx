@@ -185,8 +185,8 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement)?.tagName === 'INPUT') return
-      // E from the main menu opens the editor; the editor lives at /editor.html
-      if (e.code === 'KeyE' && phase === 'menu' && !document.pointerLockElement && !player.locked) {
+      // The private build editor is available from the menu in dev only.
+      if (import.meta.env.DEV && e.code === 'KeyE' && phase === 'menu' && !document.pointerLockElement && !player.locked) {
         window.location.href = '/editor.html'
       }
       // ESC while paused resumes (ESC while playing exits pointer lock —
