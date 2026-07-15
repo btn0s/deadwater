@@ -113,7 +113,9 @@ export function Crowbar() {
     <group ref={rig}>
       <group ref={arm} position={[0, -0.05, 0]}>
         {/* real crowbar, gripped low, length angled forward-up, hook out front */}
-        <primitive object={model} position={[0, 0.02, -0.3]} rotation={[2.7, 0, -0.25]} />
+        <group position={[0, 0.02, -0.3]} rotation={[-0.44, 0, -0.25]}>
+          <primitive object={model} rotation={[0, Math.PI, 0]} />
+        </group>
       </group>
     </group>
   )
