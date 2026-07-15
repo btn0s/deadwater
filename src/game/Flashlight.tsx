@@ -11,12 +11,13 @@ import {
   lightCones,
 } from '../ps2/PS2Material'
 import { acquireLightSlot, releaseLightSlot } from '../engine/lights'
+import { torchCamera, torchShadowUniforms } from '../ps2/torchShadow'
 import { useInventory } from './inventory'
 
 const COLOR = '#e8e2c8'
-const INTENSITY = 1.5
-const RADIUS = 17
-const CONE = Math.cos(0.38) // ~22° half-angle
+const INTENSITY = 2.3
+const RADIUS = 24
+const CONE = Math.cos(0.36) // ~21° hot cone (+0.12 soft halo in the shader)
 
 /**
  * Equippable flashlight: while the TORCH slot is active, an aimed per-vertex
@@ -38,10 +39,14 @@ export function Flashlight() {
       lightRadii[i] = RADIUS
       lightSpots[i] = 0
       lightCones[i] = CONE
+      torchShadowUniforms.uShadowSlot.value = i
+      torchCamera.far = RADIUS
+      torchCamera.updateProjectionMatrix()
     }
     return () => {
       releaseLightSlot(slot.current)
       slot.current = -1
+      torchShadowUniforms.uShadowSlot.value = -1
     }
   }, [equipped])
 
@@ -56,6 +61,13 @@ export function Flashlight() {
       .addScaledVector(right, 0.22)
       .addScaledVector(dir, 0.2)
     lightPositions[i].y -= 0.25
+    // the shadow camera looks down the beam
+    torchCamera.position.copy(lightPositions[i])
+    torchCamera.lookAt(
+      lightPositions[i].x + dir.x,
+      lightPositions[i].y + dir.y,
+      lightPositions[i].z + dir.z,
+    )
   })
 
   return null

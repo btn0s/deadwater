@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { torchShadowUniforms } from './torchShadow'
 
 /**
  * PS2-era material: Gouraud (per-vertex) lighting like the Graphics Synthesizer
@@ -91,10 +92,13 @@ const vertexShader = /* glsl */ `
   uniform vec2 uUvOffset;
   uniform float uFullbright;
   uniform float uHasLightmap;
+  uniform float uShadowSlot;
 
   varying vec2 vUv;
   varying vec2 vUvRaw;
   varying vec3 vLight;
+  varying vec3 vTorch;
+  varying vec3 vWorldPos;
   varying float vFogDepth;
 
   void main() {
@@ -102,7 +106,9 @@ const vertexShader = /* glsl */ `
     vUvRaw = uv;
 
     vec4 worldPos = modelMatrix * vec4(position, 1.0);
+    vWorldPos = worldPos.xyz;
     vec3 worldNormal = normalize(mat3(modelMatrix) * normal);
+    vec3 torch = vec3(0.0);
 
     // ambient with a faint hemisphere tilt so unlit side/down faces keep
     // shape; lightmapped surfaces carry ambient in the map instead
@@ -124,9 +130,13 @@ const vertexShader = /* glsl */ `
       }
       // baked lights already live in the lightmap on mapped surfaces
       float live = mix(1.0, 1.0 - uLightBaked[i], uHasLightmap);
-      light += uLightColor[i] * (ndl * atten * spot * live);
+      vec3 contrib = uLightColor[i] * (ndl * atten * spot * live);
+      // the torch's share travels separately so the fragment can shadow it
+      if (float(i) == uShadowSlot) torch += contrib;
+      else light += contrib;
     }
     vLight = mix(light, vec3(1.0), uFullbright);
+    vTorch = torch * (1.0 - uFullbright);
 
     vec4 mvPos = viewMatrix * worldPos;
     vFogDepth = -mvPos.z;
@@ -139,6 +149,9 @@ const fragmentShader = /* glsl */ `
   uniform sampler2D emissiveMap;
   uniform sampler2D uLightmap;
   uniform float uHasLightmap;
+  uniform sampler2D uShadowMap;
+  uniform mat4 uShadowMatrix;
+  uniform float uShadowOn;
   uniform vec3 uColor;
   uniform vec3 fogColor;
   uniform float fogNear;
@@ -148,6 +161,8 @@ const fragmentShader = /* glsl */ `
   varying vec2 vUv;
   varying vec2 vUvRaw;
   varying vec3 vLight;
+  varying vec3 vTorch;
+  varying vec3 vWorldPos;
   varying float vFogDepth;
 
   // compact recursive 4x4 Bayer matrix, range [0, 1)
@@ -185,9 +200,22 @@ const fragmentShader = /* glsl */ `
 
   void main() {
     vec4 texel = uBomb > 0.0 ? sampleBombed(vUv) : texture2D(map, vUv);
-    // baked light (Quake-style x2 overbright) + whatever is still live
-    // per-vertex (dynamic lights like the flashlight)
-    vec3 light = vLight + texture2D(uLightmap, vUvRaw).rgb * 2.0 * uHasLightmap;
+
+    // torch shadow: one hard tap against the light's depth map — the beam
+    // stops at whatever it hits, aliased edges and all
+    float shadow = 1.0;
+    if (uShadowOn > 0.5) {
+      vec4 sc = uShadowMatrix * vec4(vWorldPos, 1.0);
+      vec3 p = sc.xyz / max(sc.w, 1e-4);
+      if (p.x > 0.0 && p.x < 1.0 && p.y > 0.0 && p.y < 1.0 && p.z > 0.0 && p.z < 1.0) {
+        float d = texture2D(uShadowMap, p.xy).x;
+        if (p.z - 0.0035 > d) shadow = 0.0;
+      }
+    }
+
+    // baked light (Quake-style x2 overbright) + live per-vertex light +
+    // the shadow-tested torch beam
+    vec3 light = vLight + vTorch * shadow + texture2D(uLightmap, vUvRaw).rgb * 2.0 * uHasLightmap;
     vec3 color = texel.rgb * uColor * light + texture2D(emissiveMap, vUv).rgb;
 
     float fogFactor = clamp((vFogDepth - fogNear) / (fogFar - fogNear), 0.0, 1.0);
@@ -228,6 +256,7 @@ export function createPS2Material(opts: PS2MaterialOptions = {}): THREE.ShaderMa
     fragmentShader,
     uniforms: {
       ...sharedLightUniforms,
+      ...torchShadowUniforms,
       map: { value: opts.map ?? getWhiteTexture() },
       emissiveMap: { value: opts.emissiveMap ?? getBlackTexture() },
       uLightmap: { value: opts.lightmap ?? getBlackTexture() },

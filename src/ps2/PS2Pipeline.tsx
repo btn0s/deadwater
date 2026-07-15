@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { sceneDepthUniforms, waterMeshes } from './sceneDepth'
+import { torchShadowTarget, torchCamera, torchShadowUniforms, updateTorchShadowMatrix } from './torchShadow'
 
 // NTSC PS2 framebuffer: 512x448, stretched to 4:3 on the CRT
 export const INTERNAL_WIDTH = 512
@@ -86,6 +87,14 @@ export function PS2Pipeline() {
     scene.overrideMaterial = depthOverride
     renderer.setRenderTarget(depthTarget)
     renderer.render(scene, camera)
+
+    // 1b) torch shadow map: depth from the light's own viewpoint
+    const torchOn = torchShadowUniforms.uShadowSlot.value >= 0
+    if (torchOn) {
+      updateTorchShadowMatrix()
+      renderer.setRenderTarget(torchShadowTarget)
+      renderer.render(scene, torchCamera)
+    }
     scene.overrideMaterial = null
     for (const w of waterMeshes) w.visible = true
 
@@ -93,11 +102,14 @@ export function PS2Pipeline() {
     sceneDepthUniforms.uCamNear.value = cam.near
     sceneDepthUniforms.uCamFar.value = cam.far
 
-    // 2) main pass — foam enabled only here, where the depth matches the camera
+    // 2) main pass — foam + torch shadows only here, where the buffers
+    // match this camera and this frame
     sceneDepthUniforms.uFoamOn.value = 1
+    torchShadowUniforms.uShadowOn.value = torchOn ? 1 : 0
     renderer.setRenderTarget(target)
     renderer.render(scene, camera)
     sceneDepthUniforms.uFoamOn.value = 0
+    torchShadowUniforms.uShadowOn.value = 0
 
     renderer.setRenderTarget(null)
     renderer.render(postScene, postCamera)
