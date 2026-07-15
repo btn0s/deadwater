@@ -139,7 +139,11 @@ const isMobile =
     !('requestPointerLock' in document.documentElement) ||
     new URLSearchParams(window.location.search).has('mobile')) // preview on desktop
 
-export default function App() {
+interface AppProps {
+  notFound?: boolean
+}
+
+export default function App({ notFound = false }: AppProps) {
   const [phase, setPhase] = useState<'menu' | 'game'>('menu')
   const [locked, setLocked] = useState(false)
   const [cover, setCover] = useState(false)
@@ -186,7 +190,7 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement)?.tagName === 'INPUT') return
       // The private build editor is available from the menu in dev only.
-      if (import.meta.env.DEV && e.code === 'KeyE' && phase === 'menu' && !document.pointerLockElement && !player.locked) {
+      if (!notFound && import.meta.env.DEV && e.code === 'KeyE' && phase === 'menu' && !document.pointerLockElement && !player.locked) {
         window.location.href = '/editor.html'
       }
       // ESC while paused resumes (ESC while playing exits pointer lock —
@@ -197,7 +201,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [phase])
+  }, [notFound, phase])
 
   return (
     <div className={`frame${isMobile ? ' mobile-menu' : ''}`}>
@@ -243,28 +247,47 @@ export default function App() {
           </div>
         )}
         {phase === 'menu' && !isMobile && (
-          <div className="overlay menu">
-            <div className="title">DEADWATER</div>
-            <div className="menu-blurb">
-              A freight depot on dead water. Everyone else went home hours ago.
+          notFound ? (
+            <div className="overlay not-found">
+              <div className="not-found-code">404</div>
+              <div className="title">DEADWATER</div>
+              <div className="menu-blurb">This channel ends in open water.</div>
+              <a className="clock-in not-found-home" href="/">RETURN TO DEPOT</a>
             </div>
-            <button className="clock-in" onClick={clockIn}>
-              CLOCK IN
-            </button>
-          </div>
+          ) : (
+            <div className="overlay menu">
+              <div className="title">DEADWATER</div>
+              <div className="menu-blurb">
+                A freight depot on dead water. Everyone else went home hours ago.
+              </div>
+              <button className="clock-in" onClick={clockIn}>
+                CLOCK IN
+              </button>
+            </div>
+          )
         )}
         <div className={`fade${cover || boot ? ' on' : ''}`} />
       </div>
       {isMobile && (
         <div className="menu-card">
           <div className="title">DEADWATER</div>
-          <p>
-            A playable vignette: the night shift at a freight depot on dead water — a warehouse to
-            wander, breakers to flip, a torch to find, junk with real weight, and the harbor lapping
-            at the dock.
-          </p>
-          <p className="menu-card-note">DEADWATER is best on desktop — it needs a mouse and keyboard.</p>
-          <ShareButton />
+          {notFound ? (
+            <>
+              <div className="not-found-code">404</div>
+              <p>This channel ends in open water.</p>
+              <a className="share-button not-found-home" href="/">RETURN TO DEPOT</a>
+            </>
+          ) : (
+            <>
+              <p>
+                A playable vignette: the night shift at a freight depot on dead water — a warehouse to
+                wander, breakers to flip, a torch to find, junk with real weight, and the harbor lapping
+                at the dock.
+              </p>
+              <p className="menu-card-note">DEADWATER is best on desktop — it needs a mouse and keyboard.</p>
+              <ShareButton />
+            </>
+          )}
         </div>
       )}
     </div>

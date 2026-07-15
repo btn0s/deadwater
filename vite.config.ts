@@ -101,9 +101,13 @@ export default defineConfig({
   plugins: [react(), sheetWriter(), layoutWriter(), sceneWriter()],
   build: {
     rollupOptions: {
-      // The build editor is a private dev-server tool. Production only ships
-      // the player-facing game entry.
-      input: path.resolve(__dirname, 'index.html'),
+      input: {
+        game: path.resolve(__dirname, 'index.html'),
+        notFound: path.resolve(__dirname, '404.html'),
+        // The production editor exists for explicit ?editor share links; it
+        // is not linked or rendered without that query gate.
+        editor: path.resolve(__dirname, 'editor.html'),
+      },
     },
   },
 })

@@ -186,6 +186,8 @@ function promptFor(state: ReturnType<typeof sceneStore.get>): string {
 export function BuildEditorApp() {
   const state = useSceneEditor()
   const canvasHolder = useRef<HTMLDivElement>(null)
+  const classicQuery = new URLSearchParams(window.location.search)
+  classicQuery.set('classic', '')
 
   const requestLock = () => {
     const canvas = canvasHolder.current?.querySelector('canvas')
@@ -257,7 +259,7 @@ export function BuildEditorApp() {
           {selected ? <><span>selected</span>{selected.name ?? selected.id}</> : <span>nothing selected</span>}
         </div>
         <div className="build-toolbar-spacer" />
-        <a className="build-classic-link" href="?classic" onClick={() => buildInteractionActions.commit()}>classic</a>
+        <a className="build-classic-link" href={`?${classicQuery}`} onClick={() => buildInteractionActions.commit()}>classic</a>
         <button className={`build-save${state.dirty ? ' dirty' : ''}`} disabled={state.saving === 'saving…'} onClick={save}>
           {state.saving ?? (state.dirty ? 'SAVE *' : 'SAVE')}
         </button>

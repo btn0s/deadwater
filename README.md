@@ -12,6 +12,10 @@ npm run dev          # game:   http://localhost:5173
                      # editor: http://localhost:5173/editor.html
 ```
 
+Production keeps the editor out of the default experience. An explicit
+`?editor` query opens the shareable build editor (for example,
+`https://example.com/?editor`); this is a discoverability gate, not authentication.
+
 In game: **WASD** move · **Shift** run · **Space** jump · **E** interact,
 pick up, or put down · **LMB** use the selected item · **H** holster / draw ·
 **1–4** select items · **Esc** release mouse. **RMB** is reserved and **F** is
@@ -58,15 +62,13 @@ one- and two-hand carrying; `Rat` AI that hugs walls and avoids the player; GLTF
 loading with PS2 material swap, cm-scale normalization, and per-piece grab
 splitting (all driven by components).
 
-**Editor** (`src/editor/`, its own vite entry — never ships with the game) —
-Unity-style chrome: toolbar, scene-graph hierarchy (expand/collapse,
-drag-to-reparent), a generic component inspector generated from the schema
-in `src/engine/inspector.ts` (plus add/remove component), thumbnail asset
-palette, orbit + fly cameras, translate/rotate gizmos (**W/E**), grid +
-view-cube, click-to-place (shift = stamp), duplicate / delete / → prefab,
-undo/redo (**⌘Z**), and an assets tab for composing library prefabs that
-place as instances. SAVE writes `src/engine/scene.json` through a dev
-middleware.
+**Editor** (`src/editor/`, its own gated vite entry) — first-person Dress,
+Build, and Tune layers for moving through the real level, repositioning nodes,
+spawning registered models and prefabs, and editing the generic component
+inspector generated from `src/engine/inspector.ts`. The previous hierarchy,
+gizmo, and prefab workspace remains available through the classic editor.
+Undo/redo and SAVE operate on the same `scene.json`; source-file persistence
+is provided by the local dev middleware.
 
 **Agent tooling** — `docs/ASSETS.md` (vetted CC0/CC-BY sources + scripted
 download recipes), `.claude/skills/asset-search` (the search → license →
