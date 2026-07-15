@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useGLTF, useFBX, useTexture } from '@react-three/drei'
 import { RigidBody, CuboidCollider, type RapierRigidBody } from '@react-three/rapier'
@@ -14,6 +14,7 @@ import {
   lightColors,
   lightRadii,
   lightSpots,
+  lightBaked,
 } from '../ps2/PS2Material'
 import { addCollider } from '../game/collision'
 import { registerGrabbable } from '../game/grabbables'
@@ -26,6 +27,7 @@ import { player } from '../game/playerState'
 import { useWorldTexture } from './textures'
 import { MODEL_REGISTRY } from './models'
 import { acquireLightSlot, releaseLightSlot } from './lights'
+import { getLightmapManifest, loadLightmap } from './lightmaps'
 import type {
   SceneNode,
   Component,
@@ -177,15 +179,40 @@ function SplitModel({ c, physics }: { c: ModelComponent; physics?: PhysicsCompon
 
 function SurfaceVisual({ c }: { c: SurfaceComponent }) {
   const map = useWorldTexture(c.texture)
+  const group = useContext(NodeGroupContext)
+  const [lightmap, setLightmap] = useState<THREE.Texture | null>(null)
+
+  // pick up this surface's baked lightmap if one exists (keyed by node id,
+  // including instance-prefixed ids — every instance bakes its own map)
+  useEffect(() => {
+    let live = true
+    const g = group?.current
+    if (!g) return
+    let p: THREE.Object3D | null = g
+    while (p && !p.name) p = p.parent
+    const id = p?.name
+    if (!id) return
+    getLightmapManifest().then((set) => {
+      if (!live || !set.has(id)) return
+      loadLightmap(id).then((tex) => {
+        if (live) setLightmap(tex)
+        else tex.dispose()
+      }).catch(() => {})
+    })
+    return () => {
+      live = false
+    }
+  }, [group])
+
   const material = useMemo(
-    () => createPS2Material({ map, repeat: c.repeat, color: c.tint, bombing: c.bombing ?? 0 }),
+    () => createPS2Material({ map, repeat: c.repeat, color: c.tint, bombing: c.bombing ?? 0, lightmap }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [map, c.repeat[0], c.repeat[1], c.tint, c.bombing],
+    [map, c.repeat[0], c.repeat[1], c.tint, c.bombing, lightmap],
   )
   useEffect(() => () => material.dispose(), [material])
   const segs = c.segments ?? [Math.max(1, Math.round(c.width)), Math.max(1, Math.round(c.height))]
   return (
-    <mesh material={material}>
+    <mesh material={material} userData={{ bakeSurface: true }}>
       <planeGeometry args={[c.width, c.height, segs[0], segs[1]]} />
     </mesh>
   )
@@ -415,6 +442,8 @@ function LightEffect({ c, nodeGroup, transform }: { c: LightComponent; nodeGroup
     lightColors[i].copy(rawColorFromString(c.color)).multiplyScalar(c.intensity)
     lightRadii[i] = c.radius
     lightSpots[i] = c.spot ?? 1
+    // scene lights are baked into lightmaps; mapped surfaces skip them live
+    lightBaked[i] = 1
     lastLevel.current = -1
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [c.color, c.intensity, c.radius, c.spot, nodeGroup, JSON.stringify(transform)])

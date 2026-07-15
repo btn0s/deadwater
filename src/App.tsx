@@ -6,6 +6,7 @@ import { PlayerController } from './game/PlayerController'
 import { PlayerBody } from './game/PlayerBody'
 import { Telekinesis } from './game/Telekinesis'
 import { DevViews } from './game/DevViews'
+import { LightmapBaker } from './game/lightmapBaker'
 import { InteractionSystem, usePrompt, useFade } from './game/interactions'
 import { InventoryKeys, useInventory, SLOT_COUNT } from './game/inventory'
 import { Flashlight } from './game/Flashlight'
@@ -76,6 +77,7 @@ export default function App() {
           <Flashlight />
           <PS2Pipeline />
           {import.meta.env.DEV && <DevViews />}
+          {import.meta.env.DEV && <LightmapBaker />}
         </Canvas>
 
         <Hud locked={locked} />
