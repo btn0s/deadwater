@@ -2,6 +2,8 @@ import { useSyncExternalStore, useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { player } from './playerState'
+import { findGrabbable, type Grabbable } from './grabbables'
+import { carry } from './Carry'
 
 /**
  * Usable things in the world (doors, switches, pickups). Interaction is
@@ -98,10 +100,12 @@ export function InteractionSystem() {
   const scene = useThree((s) => s.scene)
   const raycaster = useRef(new THREE.Raycaster())
   const aimed = useRef<Interactable | null>(null)
+  const aimedGrab = useRef<Grabbable | null>(null)
 
   useFrame(() => {
     let target: Interactable | null = null
-    if (player.locked && !transitioning && items.size > 0) {
+    let grab: Grabbable | null = null
+    if (player.locked && !transitioning) {
       const rc = raycaster.current
       rc.setFromCamera(CENTER, camera)
       rc.far = MAX_REACH
@@ -113,13 +117,21 @@ export function InteractionSystem() {
           const it = findInteractable(h.object)
           if (it) {
             if (h.distance <= (it.maxDist ?? MAX_REACH)) target = it
-            break // whatever is hit first decides: interactable or occluder
+            break
           }
+          // no interactable: maybe it's a prop you can pick up with E
+          const g = findGrabbable(h.object)
+          if (g) {
+            if (!carry.isHolding()) grab = g
+            break
+          }
+          break // solid occluder
         }
       }
     }
     aimed.current = target
-    setPrompt(target?.label ?? null)
+    aimedGrab.current = grab
+    setPrompt(target?.label ?? (grab ? 'PICK UP' : null))
   })
 
   useEffect(() => {
@@ -131,6 +143,12 @@ export function InteractionSystem() {
         if (!it.action) return
         if (it.fade === false) it.action()
         else fadeThrough(it.action)
+        return
+      }
+      const g = aimedGrab.current
+      if (g) {
+        e.stopImmediatePropagation()
+        carry.pickUp(g)
       }
     }
     // capture phase so the door wins over the E-opens-editor shortcut
