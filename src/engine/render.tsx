@@ -53,14 +53,17 @@ import type {
   CarryStyle,
 } from './types'
 
-/** 'game' runs physics/behaviors; 'editor' renders visuals + lights only. */
-export type EngineMode = 'game' | 'editor'
+/** 'game' runs simulation; authoring modes render visuals without gameplay side effects. */
+export type EngineMode = 'game' | 'editor' | 'build'
 export const EngineContext = createContext<EngineMode>('game')
 export const useEngineMode = () => useContext(EngineContext)
 
 /** three.js group of the node currently being rendered (for cross-component
  * effects like a light syncing its fixture's glass glow). */
 const NodeGroupContext = createContext<React.RefObject<THREE.Group | null> | null>(null)
+/** Re-register authored movement colliders when any scene transform changes;
+ * a parent's transform also changes every descendant's world-space bounds. */
+const SceneRevisionContext = createContext<SceneNode[] | null>(null)
 
 /** Swap every mesh's material for the PS2 vertex-lit equivalent, in place. */
 export function applyPS2Materials(root: THREE.Object3D) {
@@ -529,6 +532,7 @@ function GrabbableBody({
  * else from the node's rendered world bounds */
 function BlockPlayer({ size }: { size?: [number, number, number] }) {
   const group = useContext(NodeGroupContext)
+  const sceneRevision = useContext(SceneRevisionContext)
   useEffect(() => {
     const g = group?.current
     if (!g) return
@@ -548,7 +552,7 @@ function BlockPlayer({ size }: { size?: [number, number, number] }) {
     }
     return addCollider({ minX: box.min.x, maxX: box.max.x, minZ: box.min.z, maxZ: box.max.z, maxY: box.max.y })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [group, size?.[0], size?.[1], size?.[2]])
+  }, [group, sceneRevision, size?.[0], size?.[1], size?.[2]])
   return null
 }
 
@@ -604,7 +608,8 @@ function AcousticsEffect({ c, nodeGroup }: { c: AcousticsComponent; nodeGroup: R
 const GLASS_WARM = rawColor(0xf3f0da)
 const GLASS_FLOOR = 0.12
 
-function LightEffect({ c, nodeGroup, transform }: { c: LightComponent; nodeGroup: React.RefObject<THREE.Group | null> | null; transform: SceneNode['transform'] }) {
+function LightEffect({ c, nodeGroup }: { c: LightComponent; nodeGroup: React.RefObject<THREE.Group | null> | null }) {
+  const sceneRevision = useContext(SceneRevisionContext)
   const slot = useRef(-1)
   const flickerState = useRef({ on: true, nextToggle: 0.5 })
   const lastLevel = useRef(-1)
@@ -653,7 +658,7 @@ function LightEffect({ c, nodeGroup, transform }: { c: LightComponent; nodeGroup
     lightSpots[i] = c.spot ?? 1
     lastLevel.current = -1
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [c.color, c.intensity, c.radius, c.spot, nodeGroup, JSON.stringify(transform)])
+  }, [c.color, c.intensity, c.radius, c.spot, nodeGroup, sceneRevision])
 
   useFrame(({ clock }) => {
     const i = slot.current
@@ -766,8 +771,10 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
             <CuboidCollider args={physics.size} />
           </RigidBody>
         )}
-        {mode === 'game' && physics?.blockPlayer && <BlockPlayer size={physics.size} />}
-        {light && <LightEffect c={light} nodeGroup={group} transform={node.transform} />}
+        {(mode === 'game' || mode === 'build') && physics?.blockPlayer && (
+          <BlockPlayer size={physics.size} />
+        )}
+        {light && <LightEffect c={light} nodeGroup={group} />}
         {environment && <EnvironmentEffect c={environment} />}
         {mode === 'game' && door && <DoorEffect c={door} />}
         {mode === 'game' && switchC && <SwitchEffect c={switchC} />}
@@ -805,11 +812,13 @@ export function SceneRoot({ nodes, mode }: { nodes: SceneNode[]; mode: EngineMod
   const roots = (index.childrenOf.get(null) ?? []).filter((n) => !n.library)
   return (
     <EngineContext.Provider value={mode}>
-      <group name="level">
-        {roots.map((n) => (
-          <NodeView key={n.id} node={n} index={index} />
-        ))}
-      </group>
+      <SceneRevisionContext.Provider value={nodes}>
+        <group name="level">
+          {roots.map((n) => (
+            <NodeView key={n.id} node={n} index={index} />
+          ))}
+        </group>
+      </SceneRevisionContext.Provider>
     </EngineContext.Provider>
   )
 }

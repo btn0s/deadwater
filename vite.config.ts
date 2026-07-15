@@ -103,6 +103,9 @@ export default defineConfig({
     rollupOptions: {
       input: {
         game: path.resolve(__dirname, 'index.html'),
+        notFound: path.resolve(__dirname, '404.html'),
+        // The production editor exists for explicit ?editor share links; it
+        // is not linked or rendered without that query gate.
         editor: path.resolve(__dirname, 'editor.html'),
       },
     },

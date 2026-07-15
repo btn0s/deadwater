@@ -4143,11 +4143,11 @@
    "parent": "office-zone",
    "transform": {
     "pos": [
-     -16.95,
+     -17,
      0,
-     1.15
+     1.25
     ],
-    "rot": -0.8
+    "rot": 0.771
    },
    "components": [
     {
@@ -4226,10 +4226,11 @@
    "parent": "office-zone",
    "transform": {
     "pos": [
-     -17.1,
+     -18.75,
      0,
-     -1.4
-    ]
+     2.5
+    ],
+    "rot": 0
    },
    "components": [
     {
@@ -10188,7 +10189,7 @@
    "id": "cargo-tall/box-2",
    "parent": "cargo-tall",
    "transform": {
-   "pos": [
+    "pos": [
      0.06,
      1.64,
      -0.04
@@ -10218,7 +10219,7 @@
    "id": "cargo-tall/box-3",
    "parent": "cargo-tall",
    "transform": {
-   "pos": [
+    "pos": [
      -0.08,
      2.37,
      0.05
@@ -10309,7 +10310,7 @@
    "id": "cargo-low/box-2",
    "parent": "cargo-low",
    "transform": {
-   "pos": [
+    "pos": [
      0.05,
      1.26,
      0.03
@@ -11908,9 +11909,9 @@
    "parent": "office-zone",
    "transform": {
     "pos": [
-     -19.62,
-     1.5,
-     1.05
+     -19.75,
+     1.25,
+     1
     ],
     "rot": 0.05
    },

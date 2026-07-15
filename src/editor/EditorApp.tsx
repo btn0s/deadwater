@@ -14,13 +14,7 @@ import { EditorFlyControls } from './EditorFlyControls'
 import { ScenePlacer } from './ScenePlacer'
 import { AssetsView } from './AssetsView'
 import { ThumbnailFactory } from './Thumbnails'
-
-const SPECIAL_KINDS = [
-  { kind: 'lamp', label: '💡 lamp' },
-  { kind: 'paperWad', label: '📄 wad' },
-  { kind: 'trashPile', label: '🗑 pile' },
-  { kind: 'rack', label: '🗄 rack' },
-] as const
+import { SPECIAL_KINDS } from './catalog'
 
 function EditorCamera() {
   const { camMode } = useSceneEditor()
@@ -308,7 +302,7 @@ function ComponentSection({ nodeId, component, index }: { nodeId: string; compon
   )
 }
 
-function Details({ node }: { node: SceneNode }) {
+export function Details({ node }: { node: SceneNode }) {
   const t = node.transform
   const setT = (patch: Partial<SceneNode['transform']>) => sceneStore.updateTransform(node.id, { ...t, ...patch })
   const setPos = (axis: 0 | 1 | 2, v: number) => {

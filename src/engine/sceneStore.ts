@@ -17,10 +17,15 @@ export interface PlacingSpec {
   prefab?: string
 }
 
-interface SceneEditorState {
+export type BuildPanel = 'catalog' | 'inspector' | null
+export type BuildMoveMode = 'walk' | 'fly'
+
+export interface SceneEditorState {
   nodes: SceneNode[]
   selectedId: string | null
   saving: string | null
+  /** authored nodes differ from the last successful save */
+  dirty: boolean
   gizmoMode: 'translate' | 'rotate'
   camMode: 'orbit' | 'fly'
   placing: PlacingSpec | null
@@ -33,12 +38,20 @@ interface SceneEditorState {
   viewMode: 'scene' | 'assets'
   /** RMB fly-look active — movement keys are captured, gizmo hotkeys off */
   flying: boolean
+  /** first-person authoring state; kept out of scene.json */
+  buildPanel: BuildPanel
+  buildMoveMode: BuildMoveMode
+  buildSnap: boolean
+  buildAimedId: string | null
+  buildHoldingId: string | null
+  buildLocked: boolean
 }
 
 let state: SceneEditorState = {
   nodes: sceneNodes.map((n) => structuredClone(n)),
   selectedId: null,
   saving: null,
+  dirty: false,
   gizmoMode: 'translate',
   camMode: 'fly',
   placing: null,
@@ -48,6 +61,12 @@ let state: SceneEditorState = {
   expanded: {},
   viewMode: 'scene',
   flying: false,
+  buildPanel: null,
+  buildMoveMode: 'walk',
+  buildSnap: true,
+  buildAimedId: null,
+  buildHoldingId: null,
+  buildLocked: false,
 }
 
 const subs = new Set<() => void>()
@@ -140,6 +159,24 @@ export const sceneStore = {
   setViewMode(viewMode: 'scene' | 'assets') {
     emit({ viewMode })
   },
+  setBuildPanel(buildPanel: BuildPanel) {
+    emit({ buildPanel })
+  },
+  setBuildMoveMode(buildMoveMode: BuildMoveMode) {
+    emit({ buildMoveMode })
+  },
+  setBuildSnap(buildSnap: boolean) {
+    emit({ buildSnap })
+  },
+  setBuildAimedId(buildAimedId: string | null) {
+    if (buildAimedId !== state.buildAimedId) emit({ buildAimedId })
+  },
+  setBuildHoldingId(buildHoldingId: string | null) {
+    if (buildHoldingId !== state.buildHoldingId) emit({ buildHoldingId })
+  },
+  setBuildLocked(buildLocked: boolean) {
+    if (buildLocked !== state.buildLocked) emit({ buildLocked })
+  },
 
   // ---- node CRUD ----
 
@@ -147,12 +184,13 @@ export const sceneStore = {
     record()
     emit({
       nodes: state.nodes.map((n) => (n.id === id ? { ...n, transform } : n)),
+      dirty: true,
       ...historyFlags(),
     })
   },
   rename(id: string, name: string) {
     record()
-    emit({ nodes: state.nodes.map((n) => (n.id === id ? { ...n, name } : n)), ...historyFlags() })
+    emit({ nodes: state.nodes.map((n) => (n.id === id ? { ...n, name } : n)), dirty: true, ...historyFlags() })
   },
   updateComponent(id: string, index: number, patch: Partial<Component>) {
     record()
@@ -162,6 +200,7 @@ export const sceneStore = {
         const components = n.components.map((c, i) => (i === index ? ({ ...c, ...patch } as Component) : c))
         return { ...n, components }
       }),
+      dirty: true,
       ...historyFlags(),
     })
   },
@@ -169,6 +208,7 @@ export const sceneStore = {
     record()
     emit({
       nodes: state.nodes.map((n) => (n.id === id ? { ...n, components: [...(n.components ?? []), component] } : n)),
+      dirty: true,
       ...historyFlags(),
     })
   },
@@ -178,6 +218,7 @@ export const sceneStore = {
       nodes: state.nodes.map((n) =>
         n.id === id ? { ...n, components: (n.components ?? []).filter((_, i) => i !== index) } : n,
       ),
+      dirty: true,
       ...historyFlags(),
     })
   },
@@ -185,7 +226,8 @@ export const sceneStore = {
   /** add a node (and optional pre-built children) */
   add(node: SceneNode, children: SceneNode[] = []) {
     record()
-    emit({ nodes: [...state.nodes, node, ...children], selectedId: node.id, ...historyFlags() })
+    emit({ nodes: [...state.nodes, node, ...children], selectedId: node.id, dirty: true, ...historyFlags() })
+    return node.id
   },
 
   /** remove a node and its whole subtree */
@@ -195,14 +237,15 @@ export const sceneStore = {
     emit({
       nodes: state.nodes.filter((n) => !doomed.has(n.id)),
       selectedId: state.selectedId && doomed.has(state.selectedId) ? null : state.selectedId,
+      dirty: true,
       ...historyFlags(),
     })
   },
 
   /** deep-copy a subtree with fresh ids, offset slightly */
-  duplicate(id: string) {
+  duplicate(id: string): string | null {
     const src = state.nodes.find((n) => n.id === id)
-    if (!src) return
+    if (!src) return null
     record()
     const nodes = [...state.nodes]
     const idMap = new Map<string, string>()
@@ -219,7 +262,8 @@ export const sceneStore = {
       ...rootCopy.transform,
       pos: [rootCopy.transform.pos[0] + 0.8, rootCopy.transform.pos[1], rootCopy.transform.pos[2] + 0.8],
     }
-    emit({ nodes, selectedId: rootCopy.id, ...historyFlags() })
+    emit({ nodes, selectedId: rootCopy.id, dirty: true, ...historyFlags() })
+    return rootCopy.id
   },
 
   /** move a node under a new parent (null = scene root); cycle-safe */
@@ -229,6 +273,7 @@ export const sceneStore = {
     record()
     emit({
       nodes: state.nodes.map((n) => (n.id === id ? { ...n, parent: parentId } : n)),
+      dirty: true,
       ...historyFlags(),
     })
   },
@@ -257,32 +302,32 @@ export const sceneStore = {
     const own: SceneNode[] = src.components?.length
       ? [{ id: uniqueId(nodes, `${prefabId}/base`), parent: prefabId, transform: { pos: [0, 0, 0] }, components: src.components }]
       : []
-    emit({ nodes: [...nodes, ...own, instance], selectedId: id, ...historyFlags() })
+    emit({ nodes: [...nodes, ...own, instance], selectedId: id, dirty: true, ...historyFlags() })
   },
 
   undo() {
     const prev = past.pop()
     if (!prev) return
     future.push(state.nodes)
-    emit({ nodes: prev, selectedId: null, ...historyFlags() })
+    emit({ nodes: prev, selectedId: null, dirty: true, ...historyFlags() })
   },
   redo() {
     const next = future.pop()
     if (!next) return
     past.push(state.nodes)
-    emit({ nodes: next, selectedId: null, ...historyFlags() })
+    emit({ nodes: next, selectedId: null, dirty: true, ...historyFlags() })
   },
 
   /** click-to-place from the palette */
-  placeAt(x: number, y: number, z: number) {
+  placeAt(x: number, y: number, z: number): string | null {
     const p = state.placing
-    if (!p) return
+    if (!p) return null
     const pos: [number, number, number] = [+x.toFixed(2), +Math.max(0, y).toFixed(2), +z.toFixed(2)]
     if (p.model) {
       const def = MODEL_REGISTRY[p.model]
-      if (!def) return
+      if (!def) return null
       const id = uniqueId(state.nodes, p.model)
-      sceneStore.add({
+      return sceneStore.add({
         id,
         parent: null,
         transform: { pos, rot: 0 },
@@ -293,7 +338,7 @@ export const sceneStore = {
       })
     } else if (p.prefab) {
       const id = uniqueId(state.nodes, p.prefab.replace(/-prefab$/, ''))
-      sceneStore.add({
+      return sceneStore.add({
         id,
         parent: null,
         transform: { pos, rot: 0 },
@@ -301,7 +346,7 @@ export const sceneStore = {
       })
     } else if (p.kind === 'lamp') {
       const id = uniqueId(state.nodes, 'lamp')
-      sceneStore.add(
+      return sceneStore.add(
         {
           id,
           parent: null,
@@ -319,7 +364,7 @@ export const sceneStore = {
       )
     } else if (p.kind === 'paperWad') {
       const id = uniqueId(state.nodes, 'wad')
-      sceneStore.add({
+      return sceneStore.add({
         id,
         parent: null,
         transform: { pos },
@@ -330,7 +375,7 @@ export const sceneStore = {
       })
     } else if (p.kind === 'trashPile') {
       const id = uniqueId(state.nodes, 'trash-mound')
-      sceneStore.add({
+      return sceneStore.add({
         id,
         parent: null,
         transform: { pos },
@@ -338,7 +383,7 @@ export const sceneStore = {
       })
     } else if (p.kind === 'rack') {
       const id = uniqueId(state.nodes, 'rack')
-      sceneStore.add(
+      return sceneStore.add(
         {
           id,
           parent: null,
@@ -356,17 +401,23 @@ export const sceneStore = {
         })),
       )
     }
+    return null
   },
 
   async save() {
+    if (state.saving === 'saving…') return
+    const nodesAtSave = state.nodes
     emit({ saving: 'saving…' })
     try {
       const res = await fetch('/__scene', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nodes: state.nodes }, null, 1) + '\n',
+        body: JSON.stringify({ nodes: nodesAtSave }, null, 1) + '\n',
       })
-      emit({ saving: res.ok ? 'saved ✓' : `failed: ${res.status}` })
+      emit({
+        saving: res.ok ? 'saved ✓' : `failed: ${res.status}`,
+        ...(res.ok && state.nodes === nodesAtSave ? { dirty: false } : {}),
+      })
     } catch (e) {
       emit({ saving: `failed: ${(e as Error).message}` })
     }
