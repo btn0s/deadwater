@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { createPS2Material } from '../ps2/PS2Material'
+import { useGLTF } from '@react-three/drei'
+import { applyPS2Materials } from '../engine/render'
 import { allGrabbables } from './grabbables'
 import { carry } from './Carry'
 import { useInventory } from './inventory'
@@ -34,13 +35,12 @@ export function Crowbar() {
   const swing = useRef(-1) // -1 idle; else seconds into the swing
   const hitDone = useRef(false)
 
-  const { barMaterial, tipMaterial } = useMemo(
-    () => ({
-      barMaterial: createPS2Material({ color: 0x7a2a22 }),
-      tipMaterial: createPS2Material({ color: 0x5a1f1a }),
-    }),
-    [],
-  )
+  const { scene } = useGLTF('/models/crowbar_01/crowbar_01_1k.gltf')
+  const model = useMemo(() => {
+    const g = scene.clone(true)
+    applyPS2Materials(g)
+    return g
+  }, [scene])
 
   useEffect(() => {
     if (!equipped) return
@@ -101,14 +101,8 @@ export function Crowbar() {
   return (
     <group ref={rig}>
       <group ref={arm} position={[0, -0.05, 0]}>
-        {/* shaft angled forward from the grip */}
-        <mesh material={barMaterial} position={[0, 0.1, -0.18]} rotation={[Math.PI / 2 - 0.35, 0, 0]}>
-          <cylinderGeometry args={[0.012, 0.012, 0.5, 6]} />
-        </mesh>
-        {/* hook at the business end */}
-        <mesh material={tipMaterial} position={[0, 0.19, -0.42]} rotation={[0.4, 0, Math.PI / 2]}>
-          <torusGeometry args={[0.04, 0.012, 6, 8, 3.4]} />
-        </mesh>
+        {/* real crowbar, gripped low, length angled forward-up, hook out front */}
+        <primitive object={model} position={[0, 0.02, -0.3]} rotation={[2.7, 0, -0.25]} />
       </group>
     </group>
   )

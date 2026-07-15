@@ -26,6 +26,7 @@ export const MODEL_REGISTRY: Record<string, Pick<ModelComponent, 'source' | 'url
   cabinet: { source: 'gltf', url: '/models/drawer_cabinet/drawer_cabinet_1k.gltf' },
   binder: { source: 'gltf', url: '/models/binder_notebook/binder_notebook_1k.gltf' },
   toolbox: { source: 'gltf', url: '/models/metal_toolbox/metal_toolbox_1k.gltf' },
+  crowbar: { source: 'gltf', url: '/models/crowbar_01/crowbar_01_1k.gltf' },
   // itch industrial packs (FBX, cm scale — normalized at load)
   palletTruck: { source: 'fbx', url: '/models/industrial-pack/PalletTruck/PalletTruck.fbx', texture: '/models/industrial-pack/PalletTruck/PalletTruck_Base_Color.png' },
   trolley: { source: 'fbx', url: '/models/industrial-pack/Platform_Trolley/Platform_Trolley.fbx', texture: '/models/industrial-pack/Platform_Trolley/Platform_Trolley_Base_Color.png' },
