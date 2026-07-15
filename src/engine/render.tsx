@@ -31,6 +31,7 @@ import { player } from '../game/playerState'
 import { useWorldTexture } from './textures'
 import { MODEL_REGISTRY } from './models'
 import { acquireLightSlot, releaseLightSlot } from './lights'
+import { createCrushedBoxGeometry } from './crushedBoxGeometry'
 import type {
   SceneNode,
   Component,
@@ -288,9 +289,21 @@ function PrimitiveVisual({ c }: { c: PrimitiveComponent }) {
   )
   useEffect(() => () => material.dispose(), [material])
   const d = c.dims
+  const boxWidth = d[0]
+  const boxHeight = d[1]
+  const boxDepth = d[2]
+  const crushedBoxGeometry = useMemo(
+    () => c.shape === 'box' && (c.crush ?? 0) > 0
+      ? createCrushedBoxGeometry([boxWidth, boxHeight, boxDepth], c.seed ?? 1, c.crush ?? 0)
+      : null,
+    [c.shape, c.crush, c.seed, boxWidth, boxHeight, boxDepth],
+  )
+  useEffect(() => () => crushedBoxGeometry?.dispose(), [crushedBoxGeometry])
   return (
     <mesh material={material}>
-      {c.shape === 'box' && <boxGeometry args={[d[0], d[1], d[2], 2, Math.max(2, Math.round(d[1] * 1.5)), 2]} />}
+      {c.shape === 'box' && (crushedBoxGeometry
+        ? <primitive object={crushedBoxGeometry} attach="geometry" />
+        : <boxGeometry args={[d[0], d[1], d[2], 2, Math.max(2, Math.round(d[1] * 1.5)), 2]} />)}
       {c.shape === 'cylinder' && <cylinderGeometry args={[d[0], d[1], d[2], d[3] ?? 8]} />}
       {c.shape === 'torus' && <torusGeometry args={[d[0], d[1], d[2] ?? 6, d[3] ?? 10, d[4] ?? Math.PI * 2]} />}
       {c.shape === 'plane' && <planeGeometry args={[d[0], d[1]]} />}

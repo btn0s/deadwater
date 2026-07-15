@@ -9849,7 +9849,13 @@
       1.05,
       1.3
      ],
-     "tint": "#b3a385"
+     "texture": "Cardboard002",
+     "repeat": [
+      1,
+      1
+     ],
+     "crush": 0.42,
+     "seed": 11
     }
    ]
   },
@@ -9857,9 +9863,9 @@
    "id": "cargo-tall/box-2",
    "parent": "cargo-tall",
    "transform": {
-    "pos": [
+   "pos": [
      0.06,
-     1.68,
+     1.64,
      -0.04
     ],
     "rot": -0.06
@@ -9873,7 +9879,13 @@
       0.95,
       1.2
      ],
-     "tint": "#a89a7e"
+     "texture": "Cardboard004",
+     "repeat": [
+      1,
+      1
+     ],
+     "crush": 0.58,
+     "seed": 23
     }
    ]
   },
@@ -9881,9 +9893,9 @@
    "id": "cargo-tall/box-3",
    "parent": "cargo-tall",
    "transform": {
-    "pos": [
+   "pos": [
      -0.08,
-     2.45,
+     2.37,
      0.05
     ],
     "rot": 0.09
@@ -9897,161 +9909,13 @@
       0.6,
       1.05
      ],
-     "tint": "#b0a184"
-    }
-   ]
-  },
-  {
-   "id": "cargo-tall/wrap-n",
-   "parent": "cargo-tall",
-   "transform": {
-    "pos": [
-     0,
-     1.48,
-     -0.725
-    ],
-    "rot": 3.141592653589793
-   },
-   "components": [
-    {
-     "type": "surface",
-     "texture": "Plaster001",
-     "glass": true,
-     "tint": "#c9cdc4",
-     "width": 1.85,
-     "height": 2.68,
-     "segments": [
-      2,
-      2
-     ],
+     "texture": "Cardboard002",
      "repeat": [
-      1.5,
-      2.2
-     ]
-    }
-   ]
-  },
-  {
-   "id": "cargo-tall/wrap-s",
-   "parent": "cargo-tall",
-   "transform": {
-    "pos": [
-     0,
-     1.48,
-     0.725
-    ],
-    "rot": 0
-   },
-   "components": [
-    {
-     "type": "surface",
-     "texture": "Plaster001",
-     "glass": true,
-     "tint": "#c9cdc4",
-     "width": 1.85,
-     "height": 2.68,
-     "segments": [
-      2,
-      2
+      1,
+      1
      ],
-     "repeat": [
-      1.5,
-      2.2
-     ]
-    }
-   ]
-  },
-  {
-   "id": "cargo-tall/wrap-w",
-   "parent": "cargo-tall",
-   "transform": {
-    "pos": [
-     -0.925,
-     1.48,
-     0
-    ],
-    "rot": -1.5707963267948966
-   },
-   "components": [
-    {
-     "type": "surface",
-     "texture": "Plaster001",
-     "glass": true,
-     "tint": "#c9cdc4",
-     "width": 1.45,
-     "height": 2.68,
-     "segments": [
-      2,
-      2
-     ],
-     "repeat": [
-      1.5,
-      2.2
-     ]
-    }
-   ]
-  },
-  {
-   "id": "cargo-tall/wrap-e",
-   "parent": "cargo-tall",
-   "transform": {
-    "pos": [
-     0.925,
-     1.48,
-     0
-    ],
-    "rot": 1.5707963267948966
-   },
-   "components": [
-    {
-     "type": "surface",
-     "texture": "Plaster001",
-     "glass": true,
-     "tint": "#c9cdc4",
-     "width": 1.45,
-     "height": 2.68,
-     "segments": [
-      2,
-      2
-     ],
-     "repeat": [
-      1.5,
-      2.2
-     ]
-    }
-   ]
-  },
-  {
-   "id": "cargo-tall/wrap-top",
-   "parent": "cargo-tall",
-   "transform": {
-    "pos": [
-     0,
-     2.8200000000000003,
-     0
-    ],
-    "rot": [
-     -1.5707963267948966,
-     0,
-     0
-    ]
-   },
-   "components": [
-    {
-     "type": "surface",
-     "texture": "Plaster001",
-     "glass": true,
-     "tint": "#c9cdc4",
-     "width": 1.85,
-     "height": 1.45,
-     "segments": [
-      2,
-      2
-     ],
-     "repeat": [
-      1.5,
-      1.5
-     ]
+     "crush": 0.48,
+     "seed": 37
     }
    ]
   },
@@ -10106,7 +9970,13 @@
       0.9,
       1.25
      ],
-     "tint": "#ac9d80"
+     "texture": "Cardboard004",
+     "repeat": [
+      1,
+      1
+     ],
+     "crush": 0.54,
+     "seed": 47
     }
    ]
   },
@@ -10114,9 +9984,9 @@
    "id": "cargo-low/box-2",
    "parent": "cargo-low",
    "transform": {
-    "pos": [
+   "pos": [
      0.05,
-     1.3,
+     1.26,
      0.03
     ],
     "rot": 0.08
@@ -10130,161 +10000,13 @@
       0.55,
       1.1
      ],
-     "tint": "#b8a888"
-    }
-   ]
-  },
-  {
-   "id": "cargo-low/wrap-n",
-   "parent": "cargo-low",
-   "transform": {
-    "pos": [
-     0,
-     0.915,
-     -0.7
-    ],
-    "rot": 3.141592653589793
-   },
-   "components": [
-    {
-     "type": "surface",
-     "texture": "Plaster001",
-     "glass": true,
-     "tint": "#c9cdc4",
-     "width": 1.75,
-     "height": 1.55,
-     "segments": [
-      2,
-      2
-     ],
+     "texture": "Cardboard002",
      "repeat": [
-      1.5,
-      2.2
-     ]
-    }
-   ]
-  },
-  {
-   "id": "cargo-low/wrap-s",
-   "parent": "cargo-low",
-   "transform": {
-    "pos": [
-     0,
-     0.915,
-     0.7
-    ],
-    "rot": 0
-   },
-   "components": [
-    {
-     "type": "surface",
-     "texture": "Plaster001",
-     "glass": true,
-     "tint": "#c9cdc4",
-     "width": 1.75,
-     "height": 1.55,
-     "segments": [
-      2,
-      2
+      1,
+      1
      ],
-     "repeat": [
-      1.5,
-      2.2
-     ]
-    }
-   ]
-  },
-  {
-   "id": "cargo-low/wrap-w",
-   "parent": "cargo-low",
-   "transform": {
-    "pos": [
-     -0.875,
-     0.915,
-     0
-    ],
-    "rot": -1.5707963267948966
-   },
-   "components": [
-    {
-     "type": "surface",
-     "texture": "Plaster001",
-     "glass": true,
-     "tint": "#c9cdc4",
-     "width": 1.4,
-     "height": 1.55,
-     "segments": [
-      2,
-      2
-     ],
-     "repeat": [
-      1.5,
-      2.2
-     ]
-    }
-   ]
-  },
-  {
-   "id": "cargo-low/wrap-e",
-   "parent": "cargo-low",
-   "transform": {
-    "pos": [
-     0.875,
-     0.915,
-     0
-    ],
-    "rot": 1.5707963267948966
-   },
-   "components": [
-    {
-     "type": "surface",
-     "texture": "Plaster001",
-     "glass": true,
-     "tint": "#c9cdc4",
-     "width": 1.4,
-     "height": 1.55,
-     "segments": [
-      2,
-      2
-     ],
-     "repeat": [
-      1.5,
-      2.2
-     ]
-    }
-   ]
-  },
-  {
-   "id": "cargo-low/wrap-top",
-   "parent": "cargo-low",
-   "transform": {
-    "pos": [
-     0,
-     1.69,
-     0
-    ],
-    "rot": [
-     -1.5707963267948966,
-     0,
-     0
-    ]
-   },
-   "components": [
-    {
-     "type": "surface",
-     "texture": "Plaster001",
-     "glass": true,
-     "tint": "#c9cdc4",
-     "width": 1.75,
-     "height": 1.4,
-     "segments": [
-      2,
-      2
-     ],
-     "repeat": [
-      1.5,
-      1.5
-     ]
+     "crush": 0.44,
+     "seed": 59
     }
    ]
   },

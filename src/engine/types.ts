@@ -112,6 +112,9 @@ export interface PrimitiveComponent {
   repeat?: [number, number]
   tint?: string
   fullbright?: boolean
+  /** seeded visual deformation for battered cartons; collision stays cuboid */
+  crush?: number
+  seed?: number
 }
 
 /** Procedural set pieces with seeded generation. */

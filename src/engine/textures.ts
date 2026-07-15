@@ -13,6 +13,8 @@ export const TEXTURE_URLS: Record<string, string> = {
   Bricks084: '/textures/Bricks084.jpg',
   CorrugatedSteel005: '/textures/CorrugatedSteel005.jpg',
   MetalPlates006: '/textures/MetalPlates006.jpg',
+  Cardboard002: '/textures/Cardboard002.jpg',
+  Cardboard004: '/textures/Cardboard004.jpg',
   DangerSign: '/textures/PaintedMetal017.jpg',
   TrashPile: '/textures/TrashPile.jpg',
 }

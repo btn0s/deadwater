@@ -54,6 +54,8 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
     { key: 'repeat', kind: 'vec', dims: 2, step: 0.5 },
     { key: 'tint', kind: 'color' },
     { key: 'fullbright', kind: 'check' },
+    { key: 'crush', kind: 'number', step: 0.05 },
+    { key: 'seed', kind: 'number', step: 1 },
   ],
   generator: [
     { key: 'generator', kind: 'select', options: ['paperWad', 'trashPile', 'rack', 'railing'] },

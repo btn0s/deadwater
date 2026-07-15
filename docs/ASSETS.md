@@ -13,6 +13,12 @@ specific pack page before shipping. Attribution goes in
 | [ambientCG](https://ambientcg.com) | CC0 | All tileable textures (concrete, steel, plaster, brick) | Direct zip URLs (recipes below) |
 | [Wikimedia Commons](https://commons.wikimedia.org) | varies (CC BY 4.0 in use) | Trash-pile photo texture | API search + crop/downscale |
 
+### Cardboard cargo textures
+
+| Assets | Source | License | Runtime use | Retrieved |
+|---|---|---|---|---|
+| Cardboard002, Cardboard004 | [ambientCG](https://ambientcg.com/view?id=Cardboard002), [variant](https://ambientcg.com/view?id=Cardboard004) | [CC0](https://docs.ambientcg.com/license/) | Color maps downscaled from `1K-JPG` to 256px JPEG for cargo cartons | 2026-07-14 |
+
 ## Vetted industrial and low-poly itch.io packs
 
 | Pack | Creator | License | Contents |

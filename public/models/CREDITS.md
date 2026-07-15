@@ -16,7 +16,8 @@ All assets CC0 (public domain).
   synthesized in `src/game/audio.ts`
 
 ## Textures — [ambientCG](https://ambientcg.com) (CC0)
-- Concrete016, Concrete034, CorrugatedSteel005, MetalPlates006, PaintedMetal017, Plaster001
+- Cardboard002, Cardboard004, Concrete016, Concrete034, CorrugatedSteel005,
+  MetalPlates006, PaintedMetal017, Plaster001
 
 Textures downscaled to 256px for PS2-era authenticity.
 
