@@ -106,7 +106,7 @@ export interface PrimitiveComponent {
   type: 'primitive'
   shape: 'box' | 'cylinder' | 'torus' | 'plane'
   /** shape-specific dimensions: box [w,h,d]; cylinder [rTop,rBottom,h,segs];
-   * torus [r, tube, radialSegs, tubularSegs]; plane [w,h] */
+   * torus [r, tube, radialSegs, tubularSegs, arc]; plane [w,h] */
   dims: number[]
   texture?: string
   repeat?: [number, number]

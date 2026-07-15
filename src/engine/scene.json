@@ -9541,6 +9541,504 @@
      "glass": true
     }
    ]
+  },
+  {
+   "id": "wall-shelf",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "wall-shelf/board",
+   "parent": "wall-shelf",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      5.0,
+      0.05,
+      0.45
+     ],
+     "texture": "MetalPlates006",
+     "repeat": [
+      4,
+      0.5
+     ],
+     "tint": "#8d9294"
+    },
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      2.5,
+      0.025,
+      0.225
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wall-shelf/bracket-1",
+   "parent": "wall-shelf",
+   "transform": {
+    "pos": [
+     -2.2,
+     -0.14,
+     0.18
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.05,
+      0.24,
+      0.05
+     ],
+     "tint": "#3d4145"
+    }
+   ]
+  },
+  {
+   "id": "wall-shelf/bracket-2",
+   "parent": "wall-shelf",
+   "transform": {
+    "pos": [
+     -0.75,
+     -0.14,
+     0.18
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.05,
+      0.24,
+      0.05
+     ],
+     "tint": "#3d4145"
+    }
+   ]
+  },
+  {
+   "id": "wall-shelf/bracket-3",
+   "parent": "wall-shelf",
+   "transform": {
+    "pos": [
+     0.75,
+     -0.14,
+     0.18
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.05,
+      0.24,
+      0.05
+     ],
+     "tint": "#3d4145"
+    }
+   ]
+  },
+  {
+   "id": "wall-shelf/bracket-4",
+   "parent": "wall-shelf",
+   "transform": {
+    "pos": [
+     2.2,
+     -0.14,
+     0.18
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.05,
+      0.24,
+      0.05
+     ],
+     "tint": "#3d4145"
+    }
+   ]
+  },
+  {
+   "id": "north-shelf-low",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     2.5,
+     1.25,
+     -11.72
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "wall-shelf"
+    }
+   ]
+  },
+  {
+   "id": "north-shelf-high",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     2.5,
+     1.95,
+     -11.72
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "wall-shelf"
+    }
+   ]
+  },
+  {
+   "id": "shelf-junk-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     0.4,
+     1.4700000000000002,
+     -11.72
+    ],
+    "rot": 0.0
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/oil_tin/oil_tin_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-junk-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     5.4,
+     1.4700000000000002,
+     -11.72
+    ],
+    "rot": 1.7
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/can_rusted/can_rusted_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-junk-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     2.1,
+     2.17,
+     -11.72
+    ],
+    "rot": 3.4
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/metal_jerrycan/metal_jerrycan_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-junk-4",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     3.6,
+     2.17,
+     -11.72
+    ],
+    "rot": 5.1
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/binder_notebook/binder_notebook_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-junk-5",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     3.0,
+     1.4700000000000002,
+     -11.72
+    ],
+    "rot": 0.52
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/metal_toolbox/metal_toolbox_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-junk-6",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     0.9,
+     2.17,
+     -11.72
+    ],
+    "rot": 2.22
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/can_rusted/can_rusted_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-junk-7",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     4.5,
+     2.17,
+     -11.72
+    ],
+    "rot": 3.92
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/oil_tin/oil_tin_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "shelf-junk-8",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     1.9,
+     1.4700000000000002,
+     -11.72
+    ],
+    "rot": 5.62
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "gltf",
+     "url": "/models/can_rusted/can_rusted_1k.gltf"
+    },
+    {
+     "type": "physics",
+     "body": "dynamic",
+     "collider": "hull",
+     "grabbable": true
+    }
+   ]
+  },
+  {
+   "id": "crowbar-pickup",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "crowbar-pickup/shaft",
+   "parent": "crowbar-pickup",
+   "transform": {
+    "pos": [
+     0.05,
+     0.015,
+     0
+    ],
+    "rot": [
+     0,
+     0,
+     1.5707963267948966
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.011,
+      0.011,
+      0.48,
+      6
+     ],
+     "tint": "#7a2a22"
+    }
+   ]
+  },
+  {
+   "id": "crowbar-pickup/hook",
+   "parent": "crowbar-pickup",
+   "transform": {
+    "pos": [
+     -0.19,
+     0.045,
+     0
+    ],
+    "rot": [
+     1.5707963267948966,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "torus",
+     "dims": [
+      0.035,
+      0.011,
+      6,
+      8,
+      3.5
+     ],
+     "tint": "#7a2a22"
+    }
+   ]
+  },
+  {
+   "id": "crowbar-pickup/tip",
+   "parent": "crowbar-pickup",
+   "transform": {
+    "pos": [
+     0.295,
+     0.015,
+     0
+    ],
+    "rot": [
+     0,
+     0,
+     0.3
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.05,
+      0.006,
+      0.03
+     ],
+     "tint": "#6a241e"
+    }
+   ]
+  },
+  {
+   "id": "rack-crowbar",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     7.4,
+     1.04,
+     11.35
+    ],
+    "rot": 0.35
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "crowbar-pickup"
+    },
+    {
+     "type": "pickup",
+     "item": "crowbar",
+     "label": "TAKE CROWBAR"
+    }
+   ]
   }
  ]
 }

@@ -8,7 +8,7 @@ import { player } from './playerState'
  * Starts empty — items come from world pickups.
  */
 
-export type ItemId = 'flashlight'
+export type ItemId = 'flashlight' | 'crowbar'
 
 export interface InvItem {
   id: ItemId
@@ -17,6 +17,7 @@ export interface InvItem {
 
 export const ITEM_DEFS: Record<ItemId, InvItem> = {
   flashlight: { id: 'flashlight', label: 'TORCH' },
+  crowbar: { id: 'crowbar', label: 'CROWBAR' },
 }
 
 export const SLOT_COUNT = 4

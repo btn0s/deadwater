@@ -273,7 +273,7 @@ function PrimitiveVisual({ c }: { c: PrimitiveComponent }) {
     <mesh material={material}>
       {c.shape === 'box' && <boxGeometry args={[d[0], d[1], d[2], 2, Math.max(2, Math.round(d[1] * 1.5)), 2]} />}
       {c.shape === 'cylinder' && <cylinderGeometry args={[d[0], d[1], d[2], d[3] ?? 8]} />}
-      {c.shape === 'torus' && <torusGeometry args={[d[0], d[1], d[2] ?? 6, d[3] ?? 10]} />}
+      {c.shape === 'torus' && <torusGeometry args={[d[0], d[1], d[2] ?? 6, d[3] ?? 10, d[4] ?? Math.PI * 2]} />}
       {c.shape === 'plane' && <planeGeometry args={[d[0], d[1]]} />}
     </mesh>
   )
@@ -317,6 +317,8 @@ function WaterVisual({ c }: { c: WaterComponent }) {
 }
 
 /** world pickup: E takes the item; the node vanishes for the session */
+const hitProxyMaterial = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false })
+
 function PickupEffect({ c }: { c: PickupComponent }) {
   const group = useContext(NodeGroupContext)
   const [taken, setTaken] = useState(false)
@@ -336,7 +338,14 @@ function PickupEffect({ c }: { c: PickupComponent }) {
       },
     })
   }, [group, c.item, c.label, taken])
-  return null
+  if (taken) return null
+  // invisible hit proxy: small items (a crowbar shaft) are hopeless reticle
+  // targets — give the ray something honest to hit
+  return (
+    <mesh material={hitProxyMaterial} position={[0, 0.06, 0]}>
+      <sphereGeometry args={[0.24, 8, 6]} />
+    </mesh>
+  )
 }
 
 /** wall switch: E toggles a light group's circuit — instant, no fade */
