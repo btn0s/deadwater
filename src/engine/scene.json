@@ -10123,6 +10123,832 @@
      "fullbright": true
     }
    ]
+  },
+  {
+   "id": "cargo-tall",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "cargo-tall/pallet",
+   "parent": "cargo-tall",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
+     "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
+    }
+   ]
+  },
+  {
+   "id": "cargo-tall/box-1",
+   "parent": "cargo-tall",
+   "transform": {
+    "pos": [
+     0,
+     0.68,
+     0
+    ],
+    "rot": 0.04
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      1.7,
+      1.05,
+      1.3
+     ],
+     "tint": "#b3a385"
+    }
+   ]
+  },
+  {
+   "id": "cargo-tall/box-2",
+   "parent": "cargo-tall",
+   "transform": {
+    "pos": [
+     0.06,
+     1.68,
+     -0.04
+    ],
+    "rot": -0.06
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      1.5,
+      0.95,
+      1.2
+     ],
+     "tint": "#a89a7e"
+    }
+   ]
+  },
+  {
+   "id": "cargo-tall/box-3",
+   "parent": "cargo-tall",
+   "transform": {
+    "pos": [
+     -0.08,
+     2.45,
+     0.05
+    ],
+    "rot": 0.09
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      1.25,
+      0.6,
+      1.05
+     ],
+     "tint": "#b0a184"
+    }
+   ]
+  },
+  {
+   "id": "cargo-tall/wrap-n",
+   "parent": "cargo-tall",
+   "transform": {
+    "pos": [
+     0,
+     1.48,
+     -0.725
+    ],
+    "rot": 3.141592653589793
+   },
+   "components": [
+    {
+     "type": "surface",
+     "texture": "Plaster001",
+     "glass": true,
+     "tint": "#c9cdc4",
+     "width": 1.85,
+     "height": 2.68,
+     "segments": [
+      2,
+      2
+     ],
+     "repeat": [
+      1.5,
+      2.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cargo-tall/wrap-s",
+   "parent": "cargo-tall",
+   "transform": {
+    "pos": [
+     0,
+     1.48,
+     0.725
+    ],
+    "rot": 0
+   },
+   "components": [
+    {
+     "type": "surface",
+     "texture": "Plaster001",
+     "glass": true,
+     "tint": "#c9cdc4",
+     "width": 1.85,
+     "height": 2.68,
+     "segments": [
+      2,
+      2
+     ],
+     "repeat": [
+      1.5,
+      2.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cargo-tall/wrap-w",
+   "parent": "cargo-tall",
+   "transform": {
+    "pos": [
+     -0.925,
+     1.48,
+     0
+    ],
+    "rot": -1.5707963267948966
+   },
+   "components": [
+    {
+     "type": "surface",
+     "texture": "Plaster001",
+     "glass": true,
+     "tint": "#c9cdc4",
+     "width": 1.45,
+     "height": 2.68,
+     "segments": [
+      2,
+      2
+     ],
+     "repeat": [
+      1.5,
+      2.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cargo-tall/wrap-e",
+   "parent": "cargo-tall",
+   "transform": {
+    "pos": [
+     0.925,
+     1.48,
+     0
+    ],
+    "rot": 1.5707963267948966
+   },
+   "components": [
+    {
+     "type": "surface",
+     "texture": "Plaster001",
+     "glass": true,
+     "tint": "#c9cdc4",
+     "width": 1.45,
+     "height": 2.68,
+     "segments": [
+      2,
+      2
+     ],
+     "repeat": [
+      1.5,
+      2.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cargo-tall/wrap-top",
+   "parent": "cargo-tall",
+   "transform": {
+    "pos": [
+     0,
+     2.8200000000000003,
+     0
+    ],
+    "rot": [
+     -1.5707963267948966,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "texture": "Plaster001",
+     "glass": true,
+     "tint": "#c9cdc4",
+     "width": 1.85,
+     "height": 1.45,
+     "segments": [
+      2,
+      2
+     ],
+     "repeat": [
+      1.5,
+      1.5
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cargo-low",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "cargo-low/pallet",
+   "parent": "cargo-low",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "model",
+     "source": "fbx",
+     "url": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet.fbx",
+     "texture": "/models/industrial-pack2/Wood_Pallet/Wood_Pallet_Base_Color.png"
+    }
+   ]
+  },
+  {
+   "id": "cargo-low/box-1",
+   "parent": "cargo-low",
+   "transform": {
+    "pos": [
+     0,
+     0.6,
+     0
+    ],
+    "rot": -0.05
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      1.6,
+      0.9,
+      1.25
+     ],
+     "tint": "#ac9d80"
+    }
+   ]
+  },
+  {
+   "id": "cargo-low/box-2",
+   "parent": "cargo-low",
+   "transform": {
+    "pos": [
+     0.05,
+     1.3,
+     0.03
+    ],
+    "rot": 0.08
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      1.35,
+      0.55,
+      1.1
+     ],
+     "tint": "#b8a888"
+    }
+   ]
+  },
+  {
+   "id": "cargo-low/wrap-n",
+   "parent": "cargo-low",
+   "transform": {
+    "pos": [
+     0,
+     0.915,
+     -0.7
+    ],
+    "rot": 3.141592653589793
+   },
+   "components": [
+    {
+     "type": "surface",
+     "texture": "Plaster001",
+     "glass": true,
+     "tint": "#c9cdc4",
+     "width": 1.75,
+     "height": 1.55,
+     "segments": [
+      2,
+      2
+     ],
+     "repeat": [
+      1.5,
+      2.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cargo-low/wrap-s",
+   "parent": "cargo-low",
+   "transform": {
+    "pos": [
+     0,
+     0.915,
+     0.7
+    ],
+    "rot": 0
+   },
+   "components": [
+    {
+     "type": "surface",
+     "texture": "Plaster001",
+     "glass": true,
+     "tint": "#c9cdc4",
+     "width": 1.75,
+     "height": 1.55,
+     "segments": [
+      2,
+      2
+     ],
+     "repeat": [
+      1.5,
+      2.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cargo-low/wrap-w",
+   "parent": "cargo-low",
+   "transform": {
+    "pos": [
+     -0.875,
+     0.915,
+     0
+    ],
+    "rot": -1.5707963267948966
+   },
+   "components": [
+    {
+     "type": "surface",
+     "texture": "Plaster001",
+     "glass": true,
+     "tint": "#c9cdc4",
+     "width": 1.4,
+     "height": 1.55,
+     "segments": [
+      2,
+      2
+     ],
+     "repeat": [
+      1.5,
+      2.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cargo-low/wrap-e",
+   "parent": "cargo-low",
+   "transform": {
+    "pos": [
+     0.875,
+     0.915,
+     0
+    ],
+    "rot": 1.5707963267948966
+   },
+   "components": [
+    {
+     "type": "surface",
+     "texture": "Plaster001",
+     "glass": true,
+     "tint": "#c9cdc4",
+     "width": 1.4,
+     "height": 1.55,
+     "segments": [
+      2,
+      2
+     ],
+     "repeat": [
+      1.5,
+      2.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cargo-low/wrap-top",
+   "parent": "cargo-low",
+   "transform": {
+    "pos": [
+     0,
+     1.69,
+     0
+    ],
+    "rot": [
+     -1.5707963267948966,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "texture": "Plaster001",
+     "glass": true,
+     "tint": "#c9cdc4",
+     "width": 1.75,
+     "height": 1.4,
+     "segments": [
+      2,
+      2
+     ],
+     "repeat": [
+      1.5,
+      1.5
+     ]
+    }
+   ]
+  },
+  {
+   "id": "blockout-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     0.2,
+     0,
+     -5.0
+    ],
+    "rot": 0.1
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "cargo-tall"
+    }
+   ]
+  },
+  {
+   "id": "blockout-1/body",
+   "parent": "blockout-1",
+   "transform": {
+    "pos": [
+     0,
+     1.4,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      1.0,
+      1.4,
+      0.8
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "blockout-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     2.6,
+     0,
+     -5.3
+    ],
+    "rot": -0.06
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "cargo-tall"
+    }
+   ]
+  },
+  {
+   "id": "blockout-2/body",
+   "parent": "blockout-2",
+   "transform": {
+    "pos": [
+     0,
+     1.4,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      1.0,
+      1.4,
+      0.8
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "blockout-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -2.5,
+     0,
+     -4.7
+    ],
+    "rot": 0.18
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "cargo-tall"
+    }
+   ]
+  },
+  {
+   "id": "blockout-3/body",
+   "parent": "blockout-3",
+   "transform": {
+    "pos": [
+     0,
+     1.4,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      1.0,
+      1.4,
+      0.8
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "blockout-4",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     4.9,
+     0,
+     -4.6
+    ],
+    "rot": 0.32
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "cargo-low"
+    }
+   ]
+  },
+  {
+   "id": "blockout-4/body",
+   "parent": "blockout-4",
+   "transform": {
+    "pos": [
+     0,
+     0.85,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.95,
+      0.85,
+      0.8
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "blockout-5",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -8.2,
+     0,
+     2.2
+    ],
+    "rot": 0.06
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "cargo-tall"
+    }
+   ]
+  },
+  {
+   "id": "blockout-5/body",
+   "parent": "blockout-5",
+   "transform": {
+    "pos": [
+     0,
+     1.4,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      1.0,
+      1.4,
+      0.8
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "blockout-6",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     -6.0,
+     0,
+     -7.6
+    ],
+    "rot": -0.22
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "cargo-low"
+    }
+   ]
+  },
+  {
+   "id": "blockout-6/body",
+   "parent": "blockout-6",
+   "transform": {
+    "pos": [
+     0,
+     0.85,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.95,
+      0.85,
+      0.8
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "blockout-7",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     8.0,
+     0,
+     -0.8
+    ],
+    "rot": -0.12
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "cargo-tall"
+    }
+   ]
+  },
+  {
+   "id": "blockout-7/body",
+   "parent": "blockout-7",
+   "transform": {
+    "pos": [
+     0,
+     1.4,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      1.0,
+      1.4,
+      0.8
+     ],
+     "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "blockout-8",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     9.6,
+     0,
+     0.6
+    ],
+    "rot": 0.25
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "cargo-low"
+    }
+   ]
+  },
+  {
+   "id": "blockout-8/body",
+   "parent": "blockout-8",
+   "transform": {
+    "pos": [
+     0,
+     0.85,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "physics",
+     "body": "fixed",
+     "collider": "cuboid",
+     "size": [
+      0.95,
+      0.85,
+      0.8
+     ],
+     "blockPlayer": true
+    }
+   ]
   }
  ]
 }
