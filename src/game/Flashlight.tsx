@@ -32,6 +32,12 @@ const BEAM_RADIUS = Math.tan(0.23) * BEAM_LEN
 
 const FORWARD = new THREE.Vector3()
 const WORLD_ANCHOR = new THREE.Vector3()
+const AIM_POINT = new THREE.Vector3()
+const AIM_DIR = new THREE.Vector3()
+const DOWN = new THREE.Vector3(0, -1, 0)
+const CENTER = new THREE.Vector2(0, 0)
+const RIG_INV = new THREE.Quaternion()
+const BEAM_WORLD = new THREE.Quaternion()
 
 /** soft warm gradient along the shaft: bright at the hand, gone at the tip */
 function makeBeamTexture(): THREE.Texture {
@@ -57,10 +63,13 @@ function makeBeamTexture(): THREE.Texture {
  */
 export function Flashlight() {
   const camera = useThree((s) => s.camera)
+  const scene = useThree((s) => s.scene)
   const { slots, active, stowed } = useInventory()
   const equipped = !stowed && slots[active]?.id === 'flashlight'
   const slot = useRef(-1)
   const rig = useRef<THREE.Group>(null)
+  const beam = useRef<THREE.Mesh>(null)
+  const aimCaster = useRef(new THREE.Raycaster())
 
   const { beamGeometry, beamMaterial, bodyMaterial, lensMaterial } = useMemo(() => {
     // apex at the origin, opening down -y; the rig JSX rotates it to -z
@@ -149,13 +158,33 @@ export function Flashlight() {
     WORLD_ANCHOR.copy(ANCHOR).applyQuaternion(camera.quaternion).add(camera.position)
     r.position.copy(WORLD_ANCHOR)
 
+    // converge on the crosshair: aim at whatever the camera ray hits, so
+    // the offset hand-light lands exactly on the reticle
     const dir = camera.getWorldDirection(FORWARD)
+    AIM_POINT.copy(camera.position).addScaledVector(dir, 20)
+    const rc = aimCaster.current
+    rc.setFromCamera(CENTER, camera)
+    rc.far = 24
+    const level = scene.getObjectByName('level')
+    if (level) {
+      const hits = rc.intersectObject(level, true)
+      if (hits.length > 0) AIM_POINT.copy(hits[0].point)
+    }
+    AIM_DIR.copy(AIM_POINT).sub(WORLD_ANCHOR).normalize()
+
     lightPositions[i].copy(WORLD_ANCHOR)
-    lightDirs[i].copy(dir)
+    lightDirs[i].copy(AIM_DIR)
     torchShadowUniforms.uTorchPos.value.copy(WORLD_ANCHOR)
-    torchShadowUniforms.uTorchDir.value.copy(dir)
+    torchShadowUniforms.uTorchDir.value.copy(AIM_DIR)
     torchCamera.position.copy(WORLD_ANCHOR)
-    torchCamera.lookAt(WORLD_ANCHOR.x + dir.x, WORLD_ANCHOR.y + dir.y, WORLD_ANCHOR.z + dir.z)
+    torchCamera.lookAt(AIM_POINT)
+    // the visible shaft re-aims in rig-local space
+    const b = beam.current
+    if (b) {
+      BEAM_WORLD.setFromUnitVectors(DOWN, AIM_DIR)
+      RIG_INV.copy(r.quaternion).invert()
+      b.quaternion.copy(RIG_INV).multiply(BEAM_WORLD)
+    }
   })
 
   if (!equipped) return null
@@ -171,11 +200,11 @@ export function Flashlight() {
       <mesh material={lensMaterial} position={[0, 0, -0.018]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.038, 0.038, 0.004, 10]} />
       </mesh>
-      {/* beam shaft: cone authored down -y, rotated to -z */}
+      {/* beam shaft: authored down -y, re-aimed at the crosshair each frame */}
       <mesh
+        ref={beam}
         geometry={beamGeometry}
         material={beamMaterial}
-        rotation={[Math.PI / 2, 0, 0]}
         renderOrder={3}
         frustumCulled={false}
       />

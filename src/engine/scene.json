@@ -7676,7 +7676,7 @@
      "type": "light",
      "color": "#e8c07a",
      "intensity": 1.0,
-     "radius": 8,
+     "radius": 5.5,
      "spot": 1
     }
    ]
@@ -7719,7 +7719,7 @@
      "type": "light",
      "color": "#e8c07a",
      "intensity": 1.0,
-     "radius": 8,
+     "radius": 5.5,
      "spot": 1
     }
    ]
@@ -10037,6 +10037,90 @@
      "type": "pickup",
      "item": "crowbar",
      "label": "TAKE CROWBAR"
+    }
+   ]
+  },
+  {
+   "id": "bay-underglow-1",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     19.8,
+     0.012,
+     -7
+    ],
+    "rot": [
+     -1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "plane",
+     "dims": [
+      0.35,
+      4.4
+     ],
+     "tint": "#2e2a20",
+     "fullbright": true
+    }
+   ]
+  },
+  {
+   "id": "bay-underglow-2",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     19.8,
+     0.012,
+     0
+    ],
+    "rot": [
+     -1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "plane",
+     "dims": [
+      0.35,
+      4.4
+     ],
+     "tint": "#2e2a20",
+     "fullbright": true
+    }
+   ]
+  },
+  {
+   "id": "bay-underglow-3",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     19.8,
+     0.012,
+     7
+    ],
+    "rot": [
+     -1.5708,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "plane",
+     "dims": [
+      0.35,
+      4.4
+     ],
+     "tint": "#2e2a20",
+     "fullbright": true
     }
    ]
   }
