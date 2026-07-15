@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { moveWithCollision } from './collision'
 import { player } from './playerState'
+import { play } from './audio'
 
 const EYE_HEIGHT = 1.65
 const WALK_SPEED = 4.0
@@ -153,6 +154,7 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
     if (grounded.current && locked.current && k.Space) {
       yVel.current = JUMP_SPEED
       grounded.current = false
+      play('step', 0.35, 1.25) // takeoff scuff
     }
     if (!grounded.current) {
       yVel.current += GRAVITY * dt
@@ -163,6 +165,7 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
         grounded.current = true
       }
     }
+    player.grounded = grounded.current
 
     // head bob, scaled by ground speed
     const planarSpeed = Math.hypot(vel.current.x, vel.current.z)

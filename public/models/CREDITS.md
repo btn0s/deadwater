@@ -8,6 +8,13 @@ All assets CC0 (public domain).
   wooden_crate_01, old_military_crate, metal_trash_can, trashbag
 - old_military_compressor, portable_generator, propane_tank, crowbar_01
 
+## Sounds — [Kenney](https://kenney.nl) (CC0)
+- Impact Sounds pack: concrete footsteps, landing, pickup, relay clunk,
+  door, crowbar impact (`public/sounds/`)
+- Interface Sounds pack: switch click, torch click
+- The ambience beds (hum/wash), crowbar whoosh and rat squeak are
+  synthesized in `src/game/audio.ts`
+
 ## Textures — [ambientCG](https://ambientcg.com) (CC0)
 - Concrete016, Concrete034, CorrugatedSteel005, MetalPlates006, PaintedMetal017, Plaster001
 
