@@ -64,6 +64,15 @@ export interface SwitchComponent {
   label?: string
 }
 
+/** World pickup: E takes it into the hotbar and the node disappears. */
+export interface PickupComponent {
+  type: 'pickup'
+  /** inventory item id, e.g. 'flashlight' */
+  item: string
+  /** HUD prompt (default 'TAKE') */
+  label?: string
+}
+
 /** Rapier body. Dynamic bodies can be telekinesis-grabbable. On fixed bodies
  * blockPlayer adds a player-movement AABB (from size when given, else the
  * rendered bounds). collider 'none' = no rapier body — player blocking only. */
@@ -169,5 +178,6 @@ export type Component =
   | WaterComponent
   | DoorComponent
   | SwitchComponent
+  | PickupComponent
 
 export type ComponentType = Component['type']

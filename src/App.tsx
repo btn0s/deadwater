@@ -14,11 +14,11 @@ import { SceneRoot } from './engine/render'
 import { sceneNodes } from './engine/scene'
 
 function Hotbar() {
-  const { slots, active } = useInventory()
+  const { slots, active, stowed } = useInventory()
   return (
     <div className="hotbar">
       {Array.from({ length: SLOT_COUNT }, (_, i) => (
-        <div key={i} className={`hotbar-slot${i === active ? ' on' : ''}`}>
+        <div key={i} className={`hotbar-slot${i === active ? (stowed ? ' on stowed' : ' on') : ''}`}>
           <span className="hotbar-key">{i + 1}</span>
           {slots[i] && <span className="hotbar-item">{slots[i].label}</span>}
         </div>

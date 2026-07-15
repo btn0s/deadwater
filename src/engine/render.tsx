@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useGLTF, useFBX, useTexture } from '@react-three/drei'
 import { RigidBody, CuboidCollider, type RapierRigidBody } from '@react-three/rapier'
@@ -23,6 +23,7 @@ import { Rack } from '../game/Rack'
 import { SewerWater } from '../game/SewerWater'
 import { registerInteractable } from '../game/interactions'
 import { isGroupOn, toggleGroup } from '../game/lightGroups'
+import { inventory, ITEM_DEFS } from '../game/inventory'
 import { player } from '../game/playerState'
 import { useWorldTexture } from './textures'
 import { MODEL_REGISTRY } from './models'
@@ -41,6 +42,7 @@ import type {
   WaterComponent,
   DoorComponent,
   SwitchComponent,
+  PickupComponent,
 } from './types'
 
 /** 'game' runs physics/behaviors; 'editor' renders visuals + lights only. */
@@ -253,6 +255,34 @@ function RailingVisual({ length, spacing }: { length: number; spacing: number })
 
 function WaterVisual({ c }: { c: WaterComponent }) {
   return <SewerWater position={[0, 0, 0]} size={[c.width, c.height]} />
+}
+
+/** world pickup: E takes the item; the node vanishes for the session */
+function PickupEffect({ c }: { c: PickupComponent }) {
+  const group = useContext(NodeGroupContext)
+  const [taken, setTaken] = useState(false)
+  useEffect(() => {
+    const g = group?.current
+    if (!g || taken) return
+    g.updateWorldMatrix(true, false)
+    const p = new THREE.Vector3()
+    g.getWorldPosition(p)
+    return registerInteractable({
+      x: p.x,
+      z: p.z,
+      radius: 1.4,
+      label: c.label ?? 'TAKE',
+      fade: false,
+      action: () => {
+        const def = ITEM_DEFS[c.item as keyof typeof ITEM_DEFS]
+        if (def && inventory.add(def)) {
+          g.visible = false
+          setTaken(true)
+        }
+      },
+    })
+  }, [group, c.item, c.label, taken])
+  return null
 }
 
 /** wall switch: E toggles a light group's circuit — instant, no fade */
@@ -513,6 +543,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
   const water = componentOf(node, 'water')
   const door = componentOf(node, 'door')
   const switchC = componentOf(node, 'switch')
+  const pickup = componentOf(node, 'pickup')
 
   const children = index.childrenOf.get(node.id) ?? []
 
@@ -556,6 +587,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
         {environment && <EnvironmentEffect c={environment} />}
         {mode === 'game' && door && <DoorEffect c={door} />}
         {mode === 'game' && switchC && <SwitchEffect c={switchC} />}
+        {mode === 'game' && pickup && <PickupEffect c={pickup} />}
         {instance && <InstanceView c={instance} index={index} prefix={`${instancePrefix}${node.id}::`} />}
         {children.map((child) => (
           <NodeView key={child.id} node={child} index={index} instancePrefix={instancePrefix} />

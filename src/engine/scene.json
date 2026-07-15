@@ -9393,6 +9393,129 @@
      "label": "OFFICE LIGHT"
     }
    ]
+  },
+  {
+   "id": "torch-pickup",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "torch-pickup/body",
+   "parent": "torch-pickup",
+   "transform": {
+    "pos": [
+     0.045,
+     0.032,
+     0
+    ],
+    "rot": [
+     0,
+     0,
+     1.5707963267948966
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.028,
+      0.032,
+      0.17,
+      10
+     ],
+     "tint": "#2a2d30"
+    }
+   ]
+  },
+  {
+   "id": "torch-pickup/head",
+   "parent": "torch-pickup",
+   "transform": {
+    "pos": [
+     -0.055,
+     0.036,
+     0
+    ],
+    "rot": [
+     0,
+     0,
+     1.5707963267948966
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.036,
+      0.042,
+      0.05,
+      10
+     ],
+     "tint": "#33373b"
+    }
+   ]
+  },
+  {
+   "id": "torch-pickup/lens",
+   "parent": "torch-pickup",
+   "transform": {
+    "pos": [
+     -0.082,
+     0.036,
+     0
+    ],
+    "rot": [
+     0,
+     0,
+     1.5707963267948966
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.037,
+      0.037,
+      0.004,
+      10
+     ],
+     "tint": "#8f8a76",
+     "fullbright": true
+    }
+   ]
+  },
+  {
+   "id": "office-structure/torch",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -16.24,
+     0.772,
+     1.15
+    ],
+    "rot": 0.7
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "torch-pickup"
+    },
+    {
+     "type": "pickup",
+     "item": "flashlight",
+     "label": "TAKE TORCH"
+    }
+   ]
   }
  ]
 }

@@ -57,8 +57,8 @@ function makeBeamTexture(): THREE.Texture {
  */
 export function Flashlight() {
   const camera = useThree((s) => s.camera)
-  const { slots, active } = useInventory()
-  const equipped = slots[active]?.id === 'flashlight'
+  const { slots, active, stowed } = useInventory()
+  const equipped = !stowed && slots[active]?.id === 'flashlight'
   const slot = useRef(-1)
   const rig = useRef<THREE.Group>(null)
 

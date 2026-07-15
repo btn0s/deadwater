@@ -85,6 +85,10 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
     { key: 'group', kind: 'text' },
     { key: 'label', kind: 'text' },
   ],
+  pickup: [
+    { key: 'item', kind: 'text' },
+    { key: 'label', kind: 'text' },
+  ],
 }
 
 /** defaults used by the inspector's "add component" menu */
@@ -100,6 +104,7 @@ export const COMPONENT_DEFAULTS: Record<Exclude<ComponentType, 'environment'>, C
   water: { type: 'water', width: 4, height: 2 },
   door: { type: 'door', target: [0, 0], label: 'USE' },
   switch: { type: 'switch', group: 'warehouse' },
+  pickup: { type: 'pickup', item: 'flashlight', label: 'TAKE' },
 }
 
 // dot-path helpers for nested fields (environment.fog.near)

@@ -227,6 +227,15 @@ body,
   box-shadow: 0 0 0 1px rgba(214, 226, 208, 0.5);
   background: rgba(22, 26, 24, 0.6);
 }
+
+/* active but put away (F) */
+.hotbar-slot.on.stowed {
+  border-color: rgba(150, 160, 150, 0.55);
+  box-shadow: none;
+}
+.hotbar-slot.on.stowed .hotbar-item {
+  color: rgba(170, 178, 166, 0.55);
+}
 .hotbar-key {
   position: absolute;
   top: 2px;
