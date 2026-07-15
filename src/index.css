@@ -202,6 +202,47 @@ body,
   pointer-events: none;
 }
 
+/* minecraft-style hotbar */
+.hotbar {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  pointer-events: none;
+}
+.hotbar-slot {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  background: rgba(10, 12, 14, 0.55);
+  border: 1px solid rgba(150, 160, 150, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hotbar-slot.on {
+  border-color: rgba(214, 226, 208, 0.9);
+  box-shadow: 0 0 0 1px rgba(214, 226, 208, 0.5);
+  background: rgba(22, 26, 24, 0.6);
+}
+.hotbar-key {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  color: rgba(170, 180, 170, 0.7);
+}
+.hotbar-item {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: rgba(222, 230, 216, 0.92);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+}
+
 /* area-transition fade */
 .fade {
   position: absolute;

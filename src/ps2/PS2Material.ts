@@ -28,6 +28,10 @@ export const lightColors = Array.from({ length: MAX_LIGHTS }, () => new THREE.Co
 export const lightRadii: number[] = new Array(MAX_LIGHTS).fill(1)
 /** 0 = omnidirectional, 1 = shaded fixture casting a wide downward cone */
 export const lightSpots: number[] = new Array(MAX_LIGHTS).fill(0)
+/** aimed spotlights (flashlight): unit direction per slot */
+export const lightDirs = Array.from({ length: MAX_LIGHTS }, () => new THREE.Vector3(0, -1, 0))
+/** cos of the cone half-angle; 0 disables the cone (default) */
+export const lightCones: number[] = new Array(MAX_LIGHTS).fill(0)
 export const ambientColor = rawColor(0x35383f)
 
 const fogColorUniform = { value: rawColor(0x07080a) }
@@ -42,6 +46,8 @@ export const sharedLightUniforms = {
   uLightColor: { value: lightColors },
   uLightRadius: { value: lightRadii },
   uLightSpot: { value: lightSpots },
+  uLightDir: { value: lightDirs },
+  uLightCone: { value: lightCones },
   uAmbient: { value: ambientColor },
   fogColor: fogColorUniform,
   fogNear: fogNearUniform,
@@ -73,6 +79,8 @@ const vertexShader = /* glsl */ `
   uniform vec3 uLightColor[${MAX_LIGHTS}];
   uniform float uLightRadius[${MAX_LIGHTS}];
   uniform float uLightSpot[${MAX_LIGHTS}];
+  uniform vec3 uLightDir[${MAX_LIGHTS}];
+  uniform float uLightCone[${MAX_LIGHTS}];
   uniform vec3 uAmbient;
   uniform vec2 uUvRepeat;
   uniform vec2 uUvOffset;
@@ -96,11 +104,15 @@ const vertexShader = /* glsl */ `
       float atten = clamp(1.0 - dist / uLightRadius[i], 0.0, 1.0);
       float ndl = max(dot(worldNormal, toLight / max(dist, 1e-4)), 0.0);
       // shaded fixtures throw a wide downward cone: fade out near horizontal,
-      // nothing upward — the shade blocks it
+      // nothing upward — the shade blocks it; a little light leaks past the
+      // shade (bounce) so the ceiling above fades instead of snapping to black
       float cosDown = toLight.y / max(dist, 1e-4);
-      // a little light leaks past the shade (bounce light) so the ceiling
-      // above fades instead of snapping to black
       float spot = mix(1.0, mix(0.06, 1.0, smoothstep(-0.12, 0.45, cosDown)), uLightSpot[i]);
+      // aimed cone (flashlight): fade by angle off the beam axis
+      if (uLightCone[i] > 0.0) {
+        float along = dot(normalize(-toLight), uLightDir[i]);
+        spot *= smoothstep(uLightCone[i], uLightCone[i] + 0.12, along);
+      }
       light += uLightColor[i] * (ndl * atten * spot);
     }
     vLight = mix(light, vec3(1.0), uFullbright);

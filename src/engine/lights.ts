@@ -1,4 +1,4 @@
-import { MAX_LIGHTS, lightPositions, lightColors, lightRadii, lightSpots } from '../ps2/PS2Material'
+import { MAX_LIGHTS, lightPositions, lightColors, lightRadii, lightSpots, lightDirs, lightCones } from '../ps2/PS2Material'
 
 /**
  * Runtime allocator for the shared PS2 light slots. Light components acquire
@@ -35,4 +35,6 @@ export function releaseLightSlot(i: number) {
   lightColors[i].setRGB(0, 0, 0)
   lightRadii[i] = 1
   lightSpots[i] = 0
+  lightDirs[i].set(0, -1, 0)
+  lightCones[i] = 0
 }

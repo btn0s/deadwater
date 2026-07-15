@@ -85,6 +85,8 @@ const vertexShader = /* glsl */ `
   uniform vec3 uLightColor[${MAX_LIGHTS}];
   uniform float uLightRadius[${MAX_LIGHTS}];
   uniform float uLightSpot[${MAX_LIGHTS}];
+  uniform vec3 uLightDir[${MAX_LIGHTS}];
+  uniform float uLightCone[${MAX_LIGHTS}];
   uniform vec3 uAmbient;
   uniform float uTime;
 
@@ -123,6 +125,10 @@ const vertexShader = /* glsl */ `
       float ndl = max(dot(worldNormal, toLight / max(dist, 1e-4)), 0.0);
       float cosDown = toLight.y / max(dist, 1e-4);
       float spot = mix(1.0, mix(0.06, 1.0, smoothstep(-0.12, 0.45, cosDown)), uLightSpot[i]);
+      if (uLightCone[i] > 0.0) {
+        float along = dot(normalize(-toLight), uLightDir[i]);
+        spot *= smoothstep(uLightCone[i], uLightCone[i] + 0.12, along);
+      }
       light += uLightColor[i] * (ndl * atten * spot);
     }
     vLight = light;
