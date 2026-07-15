@@ -1,12 +1,15 @@
-# HUD Readability Checklist
+# DEADWATER HUD readability checklist
 
-- Player health/status is readable during normal movement and high-action moments.
-- Objective/progress information is visible without competing with threats or pickups.
-- Text contrast remains legible over bright, dark, and moving scene backgrounds.
-- Critical status changes have at least two feedback channels when useful: shape, color, motion, sound, or text.
-- Meters, timers, and counters have fixed-width or stable containers.
-- HUD placement avoids the player focal area and likely spawn/threat lanes.
-- HUD scale is appropriate for desktop, laptop, and mobile viewports.
-- Touch controls and HUD elements do not overlap each other.
-- UI transitions do not delay input response or hide the next player decision.
-- Screenshot review confirms HUD readability before and after interaction.
+- The idle reticle remains visible over black fog, bright fixtures, water, and patterned surfaces.
+- Aimed-at-grabbable and holding states are distinct by shape or geometry, not color alone.
+- The prompt sits near the reticle without covering the target and hides when pointer lock is absent.
+- Prompt copy names one input and one action in a stable single-line region when possible.
+- Thin pickup hit proxies do not make prompts appear far outside the visible object.
+- Hotbar slots keep fixed size as labels, selection, stow, and carry lock change.
+- Slot numbers and item labels remain readable at the smallest supported desktop viewport.
+- Locked and stowed states remain understandable in grayscale or reduced saturation.
+- The bottom hotbar, center prompt, and overlay control copy never overlap.
+- Transition fade covers the whole play viewport and does not trap focus or input.
+- CSS animation is restrained and reduced-motion behavior is considered.
+- Screenshot review includes empty inventory, equipped item, stowed item, small carry, large carry, and pointer-unlocked overlay as relevant.
+- Active play confirms the HUD does not hide the next doorway, hazard, or interactable.

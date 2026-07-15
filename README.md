@@ -37,7 +37,7 @@ editing and agentic editing never fork.
 ## What's in the kit
 
 **PS2 renderer** (`src/ps2/`) — `PS2Material` (Gouraud per-vertex lighting
-with 12 shared light slots and shaded-fixture downward cones, diffuse-only
+with 20 shared light slots and shaded-fixture downward cones, diffuse-only
 maps, gamma-space pipeline like the Graphics Synthesizer, linear fog, ordered
 dither to 5-bit color, stochastic texture bombing, UV scroll), `PS2Pipeline`
 (fixed 512×448 target, bilinear upscale, interlace + CRT falloff, 4:3
@@ -83,10 +83,10 @@ dev middlewares in `vite.config.ts` (`/__sheet`, `/__scene`), console hooks
 | Diffuse-only materials | No normal/roughness/AO maps; 256px textures, bilinear mag filter, hard mip transitions, no anisotropy |
 | Perspective-correct texturing | Deliberately **no** PS1 affine wobble or vertex snapping — the PS2 didn't have those artifacts |
 | Interlaced CRT output | Faint line darkening at internal resolution + mild corner falloff in the upscale pass |
-| Sparse dynamic lights | 12-light budget, self-flickering fluorescent fixtures with telegraph-noise cadence |
+| Sparse dynamic lights | 20 shared slots, self-flickering fluorescent fixtures with telegraph-noise cadence |
 
-No shadow maps, no postprocessing stack, no tone mapping — vertex lights,
-fog, and dither.
+No general scene shadow maps, postprocessing stack, or tone mapping. World
+lights stay per-vertex; the flashlight alone uses one hard 512px depth shadow.
 
 ## Starting a new game from this
 

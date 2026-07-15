@@ -1,155 +1,117 @@
-# Game Design And Level Design
+# DEADWATER game and level design
 
-Use this reference before broad new-game creation, major mechanic changes, progression tuning, level/arena/track/wave design, combat encounters, or any claim that gameplay is premium, polished, complete, or less generic.
+Use this reference for new mechanics, objectives, room flow, environmental challenges, resource placement, difficulty, or broad gameplay changes. Keep the design compact and prove it through the existing game and editor.
 
-This is not a long design document. It is a compact player-facing contract that turns an idea into implementable rules, spaces, pacing, and tuning checks.
+## Design brief gate
 
-Research basis: Unity's GDD guidance emphasizes player goals, rules/mechanics, difficulty, core loop, and feedback; MDA separates mechanics, runtime dynamics, and player experience; Unity's level-design material emphasizes concept, blockout/greybox, playtest, and iteration; Steve Swink's game-feel framing centers real-time control, simulated space, and polish.
+Before broad implementation, state:
 
-## Design Brief Gate
+- Player promise: what the player gets to feel or do in DEADWATER.
+- Target feeling: tension, curiosity, vulnerability, competence, relief, or another precise state.
+- Primary verb: move, inspect, carry, use, unlock, light, traverse, or evade.
+- Supporting verbs: run, jump, stow, switch equipment, move props, open a route.
+- Immediate objective: what the player should understand without reading source.
+- Pressure: darkness, uncertain space, limited hands, blocked routes, environmental danger, pursuit, or time.
+- Reward: information, access, equipment, safer traversal, a shortcut, or visible world change.
+- Setback and recovery: what goes wrong and how play resumes without friction.
+- Skill expression: what an attentive or practiced player does better.
+- Non-goals: mechanics deliberately excluded from this pass.
 
-Before implementation, write a brief with:
+Reject a brief that only says to explore a good-looking warehouse. The authored space must create a choice, problem, consequence, or discovery.
 
-- Player promise: the fantasy in one sentence.
-- Target feeling: tense, fast, tactical, elegant, chaotic, precise, cozy, etc.
-- Primary verb: steer, aim, shoot, place, dodge, bank, sink, parry, solve.
-- Secondary verbs: boost, upgrade, collect, block, drift, aim, reload, switch lane.
-- Core loop: what the player repeats every 5-30 seconds.
-- Progression loop: what changes across 1-5 minutes.
-- Fail/retry loop: how the player loses, learns, and restarts.
-- Scoring/economy: what is rewarded, what is spent, what creates risk.
-- Skill expression: what a better player does differently.
-- Readability promise: how the next decision is communicated.
-- Non-goals: features intentionally out of scope for this slice.
+## Core loop contract
 
-Reject "explore a cool scene" as a design brief. A game brief must include player decisions, pressure, feedback, and consequence.
-
-## Core Loop Contract
-
-Write the loop as:
+Write one sentence:
 
 ```text
-Player does [verb] to achieve [objective] while [pressure] creates risk; success gives [reward/progression], failure causes [cost/retry].
+The player uses [verb] to reach or learn [objective] while [pressure] creates risk; success changes [world, route, inventory, or knowledge], and a setback leads to [recovery].
 ```
 
-Then prove the loop in code:
+Then map the sentence to existing systems:
 
-- The primary verb is mapped to real input.
-- The objective is visible in the world or HUD.
-- Pressure exists within the first playable minute.
-- Reward/progression changes game state, not only visuals.
-- Failure or setback teaches what happened.
-- Restart/retry is fast enough to encourage another attempt.
+| Contract part | Likely implementation |
+| --- | --- |
+| Navigate and frame | `PlayerController`, custom blockers, fixed 4:3 camera |
+| Inspect or use | reticle ray and `registerInteractable` |
+| Manipulate space | Rapier grabbables and carry modes |
+| Resource or tool | inventory, pickup component, equipment component |
+| Change access | door transition, switch/light group, moved blocker |
+| Communicate state | prompt, hotbar, world light or sound, fade |
+| Author layout | `scene.json`, prefabs, editor hierarchy and inspector |
 
-## MDA Check
+Do not add a new state machine if the loop can be represented by a small component, existing store transition, or authored world change.
 
-Use this as a compact design review:
+## First-person level plan
 
-- Mechanics: exact rules, controls, collisions, timers, spawn tables, physics, scoring.
-- Dynamics: what happens when a real player uses those rules under pressure.
-- Aesthetics: the intended feeling and whether screenshots/playtest evidence supports it.
+Plan each changed area around player sightlines and the fixed camera:
 
-If the intended feeling does not emerge from the current mechanics, change mechanics or level layout. Do not try to fix missing dynamics with graphics alone.
+- Arrival frame: what the player sees at eye height on entry.
+- Orientation anchor: a sign, light, doorway, silhouette, sound, or unique structure.
+- First readable choice: route, object, tool, or switch.
+- Teaching beat: a safe use of the new mechanic.
+- Pressure beat: the mechanic matters under obstruction, darkness, pursuit, limited reach, or limited hands.
+- Payoff: route opens, power returns, item is found, threat is avoided, or space changes.
+- Recovery and reorientation: a landmark or quiet zone after the pressure.
+- Return path: whether the changed space reads differently when crossed again.
 
-## Level And Encounter Plan
+Use the editor to block scale and sightlines before writing one-off layout code. Keep walls, props, lights, physics, and authored interactions in `scene.json`.
 
-Before building a track, arena, map, wave set, table, or puzzle space, define:
+## Spatial readability at 512x448
 
-- Spatial format: lane, circuit, arena, corridor, open field, table, grid, tower path, puzzle room.
-- Camera contract: what the camera can and cannot see.
-- Player start, first decision, first reward, first threat.
-- Safe zone or learning space, if the genre needs one.
-- Main route plus optional risk/reward route, if applicable.
-- Landmarks or orientation anchors.
-- Escalation: how challenge increases every 20-60 seconds or per wave/hole/lap/phase.
-- Recovery beats: where the player can breathe or regain control.
-- Failure readability: how hazards, attacks, misses, and penalties are telegraphed.
-- Reuse plan: which pieces are modular, randomized, or parameterized.
+The fixed PS2-era render target removes fine detail. Decisions must survive the final image.
 
-Greybox first: use simple shapes to prove scale, route, timing, line-of-sight, collision, and pacing before investing in art detail.
+- Use silhouette, value, motion, light pools, sound, and placement before small text.
+- Keep important interactables distinct from clutter at the distance where the prompt becomes available.
+- Put landmarks above or beside dense prop fields rather than inside them.
+- Use fog to stage discovery, not to hide every route.
+- Check the real 4:3 game view. The editor camera is not evidence of player readability.
+- Use contact sheets to compare area-wide composition, then enter the game for reach and occlusion.
 
-## Genre Patterns
+## Interaction and inventory decisions
 
-### Endless Runner
+Interactions should create a decision rather than a checklist of E prompts.
 
-- Teach lanes or steering with an early safe segment.
-- Alternate compression and release: dense hazard groups, then reward/visibility windows.
-- Use at least three obstacle families with distinct silhouettes and telegraphs.
-- Difficulty can ramp via speed, lane pressure, obstacle combinations, and reward placement.
+- A small carried object can coexist with the active tool. A bulky object consumes both hands.
+- Stowing, switching, pickup, and carry lock should force understandable tradeoffs.
+- A switch should produce a visible or audible world change.
+- A locked interaction may communicate a future route, but repeated inert prompts become noise.
+- A door transition should preserve orientation or deliberately reset it with a clear arrival landmark.
+- A movable object should matter to access, cover, route, or environmental storytelling when it is more than set dressing.
 
-### Arcade Racer
+## Pacing and difficulty
 
-- Define handling fantasy first: drift-heavy, grip racing, hover glide, combat racer, rally.
-- Track should have readable apexes, braking/drift cues, recovery width, landmarks, and route rhythm.
-- Add skill tests: clean racing line, boost timing, drift angle, traffic threading, shortcut risk.
+Increase difficulty through clearer combinations rather than random density:
 
-### Dogfight / Space Shooter
+- Teach one input or state transition at a time.
+- Combine familiar verbs after the player has used them safely.
+- Make the consequence legible before adding harsher timing.
+- Alternate constrained spaces with areas that let the player reorient.
+- Use named constants and authored component values for reach, movement, light radius, fog, door target, or object mass behavior.
+- Keep restart or recovery quick. DEADWATER's tension should come from the situation, not repeated setup.
 
-- Define engagement range, turn rate, projectile speed, lock-on/lead affordance, and escape options.
-- Encounters need target readability, off-screen threat indicators, and moments to reacquire orientation.
-- Use waves or objectives that force movement, not only circular chasing.
+## Authored data and reusable pieces
 
-### Tower Defense
+- Use library subtrees and `instance` components for repeated composed structures.
+- Use generator components with explicit seeds for procedural litter and set pieces.
+- Keep repeated model definitions in `MODEL_REGISTRY` so the editor palette and thumbnail path stay synchronized.
+- Give nodes stable ids that communicate purpose without embedding runtime logic in the id.
+- Parent for meaningful transforms and organization, not merely to shorten the root list.
 
-- Define path topology, chokepoints, build zones, enemy archetypes, tower roles, economy cadence, and wave tells.
-- Good maps create placement decisions, not just optimal obvious tiles.
-- Waves should test different tower roles and expose upcoming enemy types before punishment.
+## Rejection tests
 
-### Billiards / Pool / Snooker
+Revise the design if any statement is true:
 
-- Physics and rules are the game design. Use readable shot aim, cue force, spin/english, turn state, legal target feedback, foul feedback, and camera reset.
-- Level design is table readability: pockets, rails, ball colors, aim lines, shadows, and overhead/low camera options.
+- The first meaningful action after entering the area is unclear.
+- The new mechanic exists but never changes a decision.
+- The objective is only explained in overlay copy.
+- A prompt appears through a wall or on an object the player cannot reach.
+- A critical item disappears in fog, dither, or clutter at normal play distance.
+- The editor view looks good but the fixed player camera cannot read the route.
+- Random prop placement can block a required path or make screenshots unstable.
+- A two-handed carry has no tradeoff because the active tool is never needed.
+- Failure or setback gives no clue about the cause.
+- The area is decorative and could be removed without changing play.
 
-### Mini Golf
+## Evidence and report
 
-- Each hole should have one clear read, one trick, and one risk/reward route.
-- Escalate via ramps, banks, moving blockers, portals, split paths, gravity changes, and timing windows.
-- Avoid holes where the first shot outcome is unreadable from the tee.
-
-### Boss Fight / Action Arena
-
-- Define boss phases, telegraphs, recovery windows, player punish windows, arena hazards, and camera lock behavior.
-- Every attack needs a readable tell, avoid/defend option, impact feedback, and cooldown.
-- Phases should add combinations or arena pressure, not just more health.
-
-### Puzzle / Physics Game
-
-- State the rule being taught in each puzzle.
-- First puzzle teaches, second confirms, third twists.
-- Failure should reveal information. Avoid hidden dependency chains that require guessing.
-
-## Difficulty And Pacing
-
-Use a curve, not random escalation:
-
-- Introduce one new concept at a time.
-- Combine known concepts after they are understood.
-- Add breathing space after high-pressure moments.
-- Increase challenge through timing, density, speed, resource scarcity, enemy mix, or spatial constraints.
-- Keep early failures recoverable unless the genre is intentionally harsh.
-- Tune with named constants and record changes.
-
-## Fun-Factor Rejection Tests
-
-Reject or iterate if any are true:
-
-- The first 30 seconds lack a real decision.
-- The player can ignore the main mechanic and still progress.
-- The objective is unclear without reading source code or instructions.
-- Failure happens before the player can understand why.
-- Challenge is only "more things" rather than better combinations.
-- Rewards do not change strategy, score, progression, or feel.
-- The space is decorative and does not shape decisions.
-- The game is fun only in the designer's explanation, not in active play.
-
-## Report Requirements
-
-Report:
-
-- Game design brief.
-- Core loop contract.
-- Level/encounter plan.
-- Difficulty/pacing plan.
-- Tuning constants changed.
-- Fun-factor rejection tests passed or remaining failures.
-- Evidence from active play, not just a screenshot.
+Report the brief, loop sentence, area beats, authored nodes or prefabs, tuning values, editor checks, active-play findings, and relevant contact-sheet output. A contact sheet proves composition; it does not prove pointer lock, reach, occlusion, carry state, or player understanding. Test those in play.

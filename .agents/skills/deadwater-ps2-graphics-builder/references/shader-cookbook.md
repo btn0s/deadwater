@@ -1,286 +1,306 @@
-# Shader And Material Cookbook
+# DEADWATER shader cookbook
 
-Concrete material, shader, and post-processing recipes. Use with `references/technical-art.md` (budgets, when shader work is justified) and `references/render-recipes.md` (render pipeline).
+Use this cookbook for shader and material work in this repository. It targets the Three.js version in `package.json`, currently `^0.185.1`, and the custom `ShaderMaterial` pipeline under `src/ps2/`.
 
-Targets three.js `^0.184`; imports use the `three/addons/*` alias (maps to `examples/jsm`). Every entry lists **When**, **Cost** (draw calls / fill rate / compile), and **Read** (the rule: effects clarify gameplay, never hide missing geometry).
+## Non-negotiable shader contract
 
-## Prerequisite: Renderer And Environment Map
+- `[DEADWATER policy]` Ordinary world materials use gamma/display-space color math.
+- `[DEADWATER policy]` Ordinary world materials use diffuse plus additive emissive only.
+- `[DEADWATER policy]` Ordinary scene lights are evaluated per vertex.
+- `[DEADWATER policy]` Core opaque output uses linear fog, 4x4 ordered dither, and 5-bit-per-channel quantization.
+- `[DEADWATER policy]` Color textures use raw sampling, bilinear magnification, hard mip transitions, and anisotropy 1.
+- `[DEADWATER policy]` Imported stock PBR materials are replaced at runtime.
 
-Metals and glossy dielectrics read as flat gray without an environment map to reflect. Set this up once before PBR materials.
+Do not introduce `MeshStandardMaterial`, `MeshPhysicalMaterial`, PMREM, IBL, tone mapping, output color transforms, normal maps, metalness, roughness, AO, clearcoat, or transmission into the shipped scene renderer.
 
-```ts
-import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+## Recipe index
 
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping; // simpler tone mapping for bright arcade reads
-renderer.toneMappingExposure = 1.0;
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+| Need | Use | Owner | Class |
+| --- | --- | --- | --- |
+| Opaque or cutout world surface | `createPS2Material` | `src/ps2/PS2Material.ts` | DEADWATER policy |
+| Raw display-space color | `rawColor`, `rawColorFromString` | `src/ps2/PS2Material.ts` | DEADWATER policy |
+| World texture setup | `prepTexture` | `src/ps2/PS2Material.ts` | DEADWATER policy |
+| Broad anti-tiling | `bombing` / `uBomb` | `src/ps2/PS2Material.ts` | Modern cheat |
+| Flashlight light and shadow | torch uniforms and hard depth compare | `src/ps2/PS2Material.ts`, `src/ps2/torchShadow.ts` | Modern cheat |
+| Dirty transparent window | `createGlassMaterial` | `src/engine/render.tsx` | Modern cheat |
+| Sewer water and foam | `SewerWater` shader | `src/game/SewerWater.tsx` | Modern cheat around policy core |
+| Security feed | `screenMaterial` | `src/game/Cctv.tsx` | Modern cheat |
+| Final display treatment | blit shader | `src/ps2/PS2Pipeline.tsx` | Modern cheat around policy target |
 
-// 5-line env map: neutral studio IBL, no HDR file needed.
-const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture; // r184: RoomEnvironment() takes no args
-scene.environmentIntensity = 1.0; // r184 global multiplier over per-material envMapIntensity
-pmrem.dispose();
-```
+## Ordinary material recipes
 
-Needed by any scene with metal, ceramic, glass, or clearcoat. Cost is one PMREM bake at startup, near-zero per frame; it lights support surfaces so hero emissive/trim still wins attention.
-
-## PBR Material Recipes
-
-Copy the config; tune `color` to the palette. `envMapIntensity` values assume the env map above. Use `MeshStandardMaterial` unless a `MeshPhysicalMaterial`-only feature (clearcoat, transmission, sheen) is visible during play.
-
-```ts
-// Painted metal (car body, ship hull panel) — dielectric paint over metal read via clearcoat.
-new THREE.MeshPhysicalMaterial({ color: 0x1f6feb, metalness: 0.0, roughness: 0.5,
-  clearcoat: 0.9, clearcoatRoughness: 0.15, envMapIntensity: 1.0 });
-
-// Bare brushed metal (raw steel, gun frame) — needs the env map to look metallic.
-new THREE.MeshStandardMaterial({ color: 0xaeb4bd, metalness: 1.0, roughness: 0.4, envMapIntensity: 1.1 });
-
-// Rubber / tire — near-black, no reflection, kills the env map.
-new THREE.MeshStandardMaterial({ color: 0x0a0a0b, metalness: 0.0, roughness: 0.92, envMapIntensity: 0.35 });
-
-// Matte plastic (housings, crates) — dielectric, mid roughness, muted reflection.
-new THREE.MeshStandardMaterial({ color: 0xd23b3b, metalness: 0.0, roughness: 0.62, envMapIntensity: 0.6 });
-
-// Glossy ceramic / clean hull — sharp reflection, add clearcoat for wet-look premium.
-new THREE.MeshPhysicalMaterial({ color: 0xf5f5f5, metalness: 0.0, roughness: 0.12,
-  clearcoat: 1.0, clearcoatRoughness: 0.05, envMapIntensity: 1.0 });
-
-// Emissive signal (beacon, pickup core) — dark base so only the glow reads; >1 intensity feeds bloom.
-new THREE.MeshStandardMaterial({ color: 0x101010, emissive: 0x18e0ff, emissiveIntensity: 2.5,
-  metalness: 0.0, roughness: 0.4 });
-
-// Cloth / fabric — high roughness + sheen for the soft edge highlight.
-new THREE.MeshPhysicalMaterial({ color: 0x3a4a6b, metalness: 0.0, roughness: 0.9,
-  sheen: 1.0, sheenRoughness: 0.5, sheenColor: new THREE.Color(0x8899bb), envMapIntensity: 0.5 });
-```
-
-**Read:** separate roles by roughness/metalness contrast (matte vs glossy, metal vs plastic), not hue alone.
-
-### Glass: real vs fake
+### Diffuse texture and tint
 
 ```ts
-// REAL refractive glass — MeshPhysicalMaterial transmission.
-new THREE.MeshPhysicalMaterial({ metalness: 0.0, roughness: 0.05, transmission: 1.0,
-  thickness: 0.5, ior: 1.5, envMapIntensity: 1.0 });
+import { createPS2Material, prepTexture } from '../ps2/PS2Material'
+
+const material = createPS2Material({
+  map: prepTexture(diffuseTexture),
+  color: '#8c8877',
+  repeat: [4, 2],
+})
 ```
 
-- **When:** one or two hero surfaces (cockpit canopy, potion vial) at close range.
-- **Cost:** high. Each transmissive material triggers an extra scene render into a transmission buffer every frame; fill-rate heavy and multiplies with resolution. Never use on repeated/instanced props.
-- **Read:** refraction must not smear the hazard behind it into unreadability.
+- **When:** walls, floors, props, structural primitives, and imported diffuse surfaces.
+- **Cost:** one diffuse sample, the fixed per-vertex 20-slot light loop, fog, and dither.
+- **Read:** use tint to unify the palette, not to repair an incorrectly authored diffuse texture.
+
+### Diffuse plus emissive
 
 ```ts
-// CHEAP fake glass — no transmission buffer. Use for repeated windows, visors, shields.
-new THREE.MeshPhysicalMaterial({ color: 0x88ccff, metalness: 0.0, roughness: 0.1,
-  transparent: true, opacity: 0.25, clearcoat: 1.0, envMapIntensity: 1.5, depthWrite: false });
+const material = createPS2Material({
+  map: prepTexture(diffuseTexture),
+  emissiveMap: prepTexture(emissiveTexture),
+})
 ```
 
-- **Cost:** one transparent draw call, no extra render target. Add the fresnel rim below for a readable edge.
+The shared shader computes:
 
-## onBeforeCompile Patterns
+```glsl
+vec3 color = texel.rgb * uColor * light + texture2D(emissiveMap, vUv).rgb;
+```
 
-Inject GLSL into stock materials to keep PBR lighting for free. Rules that make this safe with shared materials:
+- **When:** lamp bulbs embedded in a housing, signs, screens, machine indicators.
+- **Cost:** one additional texture sample.
+- **Read:** the diffuse housing still follows vertex lights. Only painted emissive texels glow.
 
-- **Cache key:** any material whose `onBeforeCompile` injects code MUST set `customProgramCacheKey` returning a string unique to that injection. Without it three can hand back a cached program compiled from a different (un-injected) material of the same type, silently dropping your code.
-- **Sharing:** `onBeforeCompile` runs once per compiled program. Reuse one material instance across meshes and its uniforms update once for all. For per-object variation, use separate material instances (same cache key → program is still reused) or drive it from `instanceMatrix` / `instanceColor`.
-- **Animating uniforms:** `onBeforeCompile` fires once, so stash the shader (`material.userData.shader = shader`) and write the uniform each frame: `if (m.userData.shader) m.userData.shader.uniforms.uTime.value = t;`. The snippets below use this pattern.
-
-### (a) Fresnel rim glow
-
-`vNormal` and `vViewPosition` (both view space) exist in the Standard/Physical fragment shader; `saturate` is defined in `<common>`.
+### Fullbright signal
 
 ```ts
-material.onBeforeCompile = (shader) => {
-  shader.uniforms.uRimColor = { value: new THREE.Color(0x33ccff) };
-  shader.uniforms.uRimPower = { value: 3.0 };
-  shader.uniforms.uRimStrength = { value: 1.5 };
-  shader.fragmentShader =
-    'uniform vec3 uRimColor;\nuniform float uRimPower;\nuniform float uRimStrength;\n' +
-    shader.fragmentShader.replace(
-      '#include <emissivemap_fragment>',
-      `#include <emissivemap_fragment>
-       float fres = pow(1.0 - saturate(dot(normalize(vNormal), normalize(vViewPosition))), uRimPower);
-       totalEmissiveRadiance += uRimColor * fres * uRimStrength;`
-    );
-};
-material.customProgramCacheKey = () => 'fresnel-rim';
+const signal = createPS2Material({ fullbright: true, color: 0xffe4a8 })
 ```
 
-- **When:** shields, cloak/invuln states, silhouette separation from a busy background.
-- **Cost:** a few ALU ops, no extra passes.
-- **Read:** the rim marks a state change; keep base color readable when the rim is off.
+- **When:** visible lamp face, small status light, void card, or deliberately unlit signal geometry.
+- **Cost:** the shader still executes the fixed vertex loop before mixing to white.
+- **Read:** fullbright is visible geometry, not a light source. Pair it with a `light` component when it must illuminate nearby surfaces.
 
-### (b) Scrolling emissive panels
+Do not use fullbright on a whole prop to hide poor lighting.
 
-Inject a private UV varying so it works without a map assigned.
+## Raw color recipe
+
+Three.js color setters can interpret hexadecimal values through color management. DEADWATER explicitly requests raw display values:
 
 ```ts
-material.onBeforeCompile = (shader) => {
-  shader.uniforms.uTime = { value: 0 };
-  shader.uniforms.uPanelColor = { value: new THREE.Color(0x18e0ff) };
-  material.userData.shader = shader;
-  shader.vertexShader = 'varying vec2 vCookUv;\n' + shader.vertexShader.replace(
-    '#include <begin_vertex>', '#include <begin_vertex>\n vCookUv = uv;');
-  shader.fragmentShader =
-    'uniform float uTime;\nuniform vec3 uPanelColor;\nvarying vec2 vCookUv;\n' +
-    shader.fragmentShader.replace(
-      '#include <emissivemap_fragment>',
-      `#include <emissivemap_fragment>
-       float scroll = fract(vCookUv.y * 6.0 - uTime * 0.5);
-       float band = smoothstep(0.46, 0.5, scroll) * smoothstep(0.54, 0.5, scroll);
-       totalEmissiveRadiance += uPanelColor * band * 2.0;`
-    );
-};
-material.customProgramCacheKey = () => 'scroll-emissive';
+import { rawColor, rawColorFromString } from '../ps2/PS2Material'
+
+const concreteTint = rawColor(0x6f7069)
+const editorTint = rawColorFromString('#6f7069')
 ```
 
-- **When:** energy conduits, reactor walls, loading/charge bars, boost lanes.
-- **Cost:** one `fract`/`smoothstep`, no textures.
-- **Read:** scroll direction/speed should encode state (charging up, draining down).
+`rawColor` calls `setHex` with `THREE.LinearSRGBColorSpace` so the stored channel values match the supplied display values used by the shader. Use these helpers for material, ambient, fog, and light colors that enter the raw pipeline.
 
-### (c) Wind sway (foliage / flags)
+Do not add an sRGB-to-linear conversion around these helpers. The project intentionally avoids that workflow.
 
-`transformed` is object space and displaced before `<project_vertex>` applies `instanceMatrix`, so read the instance translation column for per-instance phase. Assumes model origin at the base, up = +Y.
+## Texture preparation recipe
+
+Use the shared boundary:
 
 ```ts
-material.onBeforeCompile = (shader) => {
-  shader.uniforms.uTime = { value: 0 };
-  material.userData.shader = shader;
-  shader.vertexShader = 'uniform float uTime;\n' + shader.vertexShader.replace(
-    '#include <begin_vertex>',
-    `#include <begin_vertex>
-     #ifdef USE_INSTANCING
-       float phase = instanceMatrix[3].x + instanceMatrix[3].z; // instance world offset
-     #else
-       float phase = 0.0;
-     #endif
-     float h = max(position.y, 0.0); // base stays planted, tips move most
-     transformed.x += sin(uTime * 1.5 + phase) * 0.08 * h;
-     transformed.z += cos(uTime * 1.1 + phase) * 0.05 * h;`
-  );
-};
-material.customProgramCacheKey = () => 'wind-sway';
+export function prepTexture(tex: THREE.Texture): THREE.Texture {
+  tex.wrapS = THREE.RepeatWrapping
+  tex.wrapT = THREE.RepeatWrapping
+  tex.magFilter = THREE.LinearFilter
+  tex.minFilter = THREE.LinearMipmapNearestFilter
+  tex.anisotropy = 1
+  tex.colorSpace = THREE.NoColorSpace
+  tex.needsUpdate = true
+  return tex
+}
 ```
 
-- **When:** grass cards, banners, antennae, kelp — background life, not gameplay geometry.
-- **Cost:** two trig ops per vertex; free on an `InstancedMesh`.
-- **Read:** sway is ambient motion; never move collidable/interactable geometry with it.
+- `[DEADWATER policy]` Bilinear magnification keeps the PS2-style presentation from turning into PSX nearest-neighbor pixelation.
+- `[DEADWATER policy]` Nearest mip selection keeps mip level changes hard.
+- `[DEADWATER policy]` Anisotropy remains 1.
+- `[DEADWATER policy]` `NoColorSpace` prevents texture decode before display-space shader math.
 
-### (d) Dissolve / spawn
+Water is a documented exception. `makeWaterTexture` in `src/game/SewerWater.tsx` uses trilinear minification because hard mip bands sweep across its large animated plane.
 
-Threshold-discard with a glowing edge. Inject a local-position varying and a hash; drive `uProgress` 0→1 to despawn, 1→0 to spawn.
+## Core Gouraud lighting recipe
+
+Reuse `sharedLightUniforms` and the vertex path in `src/ps2/PS2Material.ts`. The shader:
+
+1. transforms the vertex and normal to world space;
+2. starts from ambient with a small normal-Y tilt;
+3. loops through all 20 compiled light slots;
+4. applies distance, Lambert, fixture shade, and optional cone terms;
+5. skips the flashlight slot because that light is evaluated per fragment;
+6. interpolates `vLight` across the triangle.
+
+The standard fix for a faceted or missing light pool is local topology, normals, radius, or placement. It is not a second fragment-light implementation.
+
+When writing a special material that should remain scene-lit, copy the current uniform and vertex-light structure from `src/ps2/PS2Material.ts` at implementation time. Do not copy an old snippet from this guide and assume it matches the live shader.
+
+## Core fog and ordered-dither recipe
+
+Custom opaque world shaders must preserve the current fog and output quantization. Use this shape:
+
+```glsl
+float bayer2(vec2 a) {
+  a = floor(a);
+  return fract(a.x * 0.5 + a.y * a.y * 0.75);
+}
+
+float bayer4(vec2 a) {
+  return bayer2(0.5 * a) * 0.25 + bayer2(a);
+}
+
+vec3 applyDeadwaterOutput(
+  vec3 color,
+  float fogDepth,
+  vec3 fogColor,
+  float fogNear,
+  float fogFar
+) {
+  float fogFactor = clamp((fogDepth - fogNear) / (fogFar - fogNear), 0.0, 1.0);
+  color = mix(color, fogColor, fogFactor);
+
+  float dither = (bayer4(gl_FragCoord.xy) - 0.5) / 31.0;
+  color = clamp(color + dither, 0.0, 1.0);
+  return floor(color * 31.0 + 0.5) / 31.0;
+}
+```
+
+- **When:** a new opaque shader genuinely cannot use `createPS2Material`.
+- **Cost:** small fragment ALU, no extra samples or pass.
+- **Read:** dither operates at the internal framebuffer coordinate. Verify it through `PS2Pipeline` at 512x448.
+
+Do not include Three.js tone-mapping or color-space chunks after this function. The returned value is already the intended display-space output.
+
+## Animated UV recipe
+
+`createPS2Material` exposes `uUvOffset`. Update the existing uniform instead of rebuilding a material:
 
 ```ts
-material.onBeforeCompile = (shader) => {
-  shader.uniforms.uProgress = { value: 0 };
-  shader.uniforms.uEdgeColor = { value: new THREE.Color(0xff6a00) };
-  material.userData.shader = shader;
-  shader.vertexShader = 'varying vec3 vDisPos;\n' + shader.vertexShader.replace(
-    '#include <begin_vertex>', '#include <begin_vertex>\n vDisPos = position;');
-  shader.fragmentShader =
-    `uniform float uProgress;\nuniform vec3 uEdgeColor;\nvarying vec3 vDisPos;
-     float hash13(vec3 p){ p = fract(p * 0.1031); p += dot(p, p.yzx + 33.33); return fract((p.x + p.y) * p.z); }\n` +
-    shader.fragmentShader.replace(
-      '#include <dithering_fragment>',
-      `float n = hash13(floor(vDisPos * 12.0));
-       if (n < uProgress) discard;
-       float edge = smoothstep(uProgress, uProgress + 0.08, n);
-       gl_FragColor.rgb += uEdgeColor * (1.0 - edge) * 3.0; // post-tonemap add feeds bloom
-       #include <dithering_fragment>`
-    );
-};
-material.customProgramCacheKey = () => 'dissolve';
+const material = createPS2Material({ map: prepTexture(diffuse), repeat: [2, 2] })
+
+useFrame(({ clock }) => {
+  const offset = material.uniforms.uUvOffset.value as THREE.Vector2
+  offset.set(clock.elapsedTime * 0.02, 0)
+})
 ```
 
-- **When:** enemy death, teleport-in, pickup spawn, object streaming.
-- **Cost:** one hash + `discard` (discard disables early-Z; keep it to spawning objects, not the whole scene).
-- **Read:** the edge color/direction telegraphs the event — spawn vs destroy must look different.
+- **When:** conveyor markings, slow grime crawl, or a bounded special surface.
+- **Cost:** one uniform update; the ordinary sample and material remain shared only if every consumer uses the same offset.
+- **Read:** keep scroll slow enough that hard mip transitions and 512x448 presentation remain stable.
 
-## Gradient Sky Dome
+If instances need independent offsets, a shared material cannot carry per-object values. Use geometry UVs, instance attributes, or separate bounded material instances.
 
-Cheaper than a cubemap for stylized scenes: a `BackSide` sphere with a top/horizon lerp plus a sun disc and halo.
+## Texture bombing recipe
 
-```ts
-const skyUniforms = {
-  uTop:      { value: new THREE.Color(0x3a6fb0) },
-  uHorizon:  { value: new THREE.Color(0xcfe4f5) },
-  uSunColor: { value: new THREE.Color(0xfff2cc) },
-  uSunDir:   { value: new THREE.Vector3(0.4, 0.28, 0.6).normalize() },
-};
-const sky = new THREE.Mesh(
-  new THREE.SphereGeometry(500, 32, 16),
-  new THREE.ShaderMaterial({
-    side: THREE.BackSide, depthWrite: false, uniforms: skyUniforms,
-    vertexShader: `varying vec3 vDir;
-      void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-    fragmentShader: `varying vec3 vDir;
-      uniform vec3 uTop, uHorizon, uSunColor, uSunDir;
-      void main(){
-        float h = clamp(vDir.y * 0.5 + 0.5, 0.0, 1.0);
-        vec3 col = mix(uHorizon, uTop, pow(h, 0.6));
-        float d = clamp(dot(normalize(vDir), normalize(uSunDir)), 0.0, 1.0);
-        col += uSunColor * (pow(d, 800.0) + pow(d, 8.0) * 0.25); // disc + halo
-        gl_FragColor = vec4(col, 1.0);
-      }`,
-  })
-);
-sky.frustumCulled = false;
-scene.add(sky);
+Enable the existing path through scene data:
+
+```json
+{
+  "type": "surface",
+  "width": 12,
+  "height": 6,
+  "texture": "Concrete031",
+  "repeat": [6, 3],
+  "bombing": 1
+}
 ```
 
-- **When:** any stylized outdoor scene without a photographic backdrop.
-- **Cost:** one draw call, no cubemap textures, no mips.
-- **Read:** a raw `ShaderMaterial` bypasses tone mapping and sRGB conversion — author colors in display space; if the scene runs ACES, nudge them brighter. Keep horizon value distinct from hazards silhouetted against it.
+`sampleBombed` in `src/ps2/PS2Material.ts` samples three randomly offset triangular-lattice cells and sharpens their blend.
 
-## Post-Processing Chain
+- `[Modern cheat]` This is stochastic anti-tiling, not a PS2 hardware claim.
+- **When:** a large wall, floor, or bank visibly repeats even after correct UV scale.
+- **Cost:** three diffuse samples instead of one on every covered fragment.
+- **Read:** inspect for ghosted high-contrast features. Bombing works best on low-frequency grime and concrete, not signs, brick courses, text, or directional metal.
 
-Finishing pass only. Move tone mapping/sRGB to `OutputPass`; keep `renderer.toneMapping` set so it reads it.
+Use zero when it does not materially improve the active frame.
 
-```ts
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+## Hard-shadowed flashlight recipe
 
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
+The fragment shader uses one conditional depth lookup:
 
-// UnrealBloomPass(resolution, strength, radius, threshold)
-const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight),
-  0.45,  // strength: 0.35-0.6
-  0.3,   // radius: 0.2-0.4
-  0.85); // threshold: only pixels brighter than this bloom
-composer.addPass(bloom);
-
-const VignetteShader = {
-  uniforms: { tDiffuse: { value: null }, uStrength: { value: 0.85 }, uSize: { value: 0.72 } },
-  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-  fragmentShader: `uniform sampler2D tDiffuse; uniform float uStrength, uSize; varying vec2 vUv;
-    void main(){
-      vec4 c = texture2D(tDiffuse, vUv);
-      float d = distance(vUv, vec2(0.5));
-      c.rgb *= mix(1.0, smoothstep(uSize, uSize - 0.45, d), uStrength);
-      gl_FragColor = c;
-    }`,
-};
-composer.addPass(new ShaderPass(VignetteShader));
-composer.addPass(new OutputPass()); // ALWAYS last: tone mapping + sRGB
-
-// loop: composer.render() instead of renderer.render()
-// resize: composer.setSize(w, h); composer.setPixelRatio(Math.min(devicePixelRatio, 2));
+```glsl
+float d = texture2D(uShadowMap, p.xy).x;
+if (p.z - 0.0035 > d) shadow = 0.0;
 ```
 
-- **Bloom rule:** bloom sells authored emissive (threshold 0.85 keeps mid-bright materials out). It must never be the main source of detail — if a shape only reads because it glows, the geometry is missing.
-- **Vignette cost:** one full-screen ShaderPass; keep `uStrength` subtle, never darken the play path.
-- **Mobile:** the composer allocates full-resolution HDR targets, so cost scales with DPR². Cap DPR before adding passes. On low-end, skip the composer (call `renderer.render`) or run bloom-only via `composer.setPixelRatio(Math.min(devicePixelRatio, 1.25))`. Compare screenshots with post on/off and profile.
+- `[Modern cheat]` The flashlight alone receives per-fragment Lambert lighting and hard shadow mapping.
+- **When:** the equipped torch must create a round, occluded first-person light pool.
+- **Cost:** a 512x512 scene depth render while equipped, plus one depth sample for fragments inside the cone.
+- **Read:** the one-tap edge is intentional. Do not add PCF softness, cascades, or ordinary-light shadows.
 
-## Cheap Tricks
+Tune the camera, bias, radius, and cone through `src/game/Flashlight.tsx` and `src/ps2/torchShadow.ts`. Do not fork the shadow math into another material.
 
-- **Vertex-color AO** — bake occlusion into the mesh: `geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))`, material `{ vertexColors: true }`, darken cavities/creases. **When:** static props/terrain. **Cost:** one attribute, zero draw calls. **Read:** ground shapes with contact darkness; don't tint gameplay-critical surfaces.
-- **Polygon-offset decals** — coplanar decal mesh with `{ polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1, transparent: true }` to kill z-fighting. **When:** panel lines, numbers, faction glyphs. **Cost:** +1 draw call each — instance repeats. **Read:** decals imply function/scale, not random surface noise.
-- **Fake contact shadow** — flat `PlaneGeometry` with a radial-gradient `CanvasTexture`, `{ transparent: true, depthWrite: false }`, under the object; scale/fade alpha with height. **When:** hovering or moving props that don't warrant a shadow map. **Cost:** one draw call, no shadow pass. **Read:** anchors floating objects so position reads.
-- **Emissive LOD signals** — swap `emissiveIntensity` or material by distance so far pickups/beacons still read, add geometry detail only up close. **When:** dense repeated signals. **Cost:** a material/uniform swap. **Read:** keep the signal color constant across LOD so identity survives the transition.
-- **Matcap props** — `new THREE.MeshMatcapMaterial({ matcap })` bakes lighting into one texture; no lights or env needed. **When:** background/stylized props. **Cost:** the cheapest lit-looking material, one texture. **Read:** matcap ignores scene lights, so never use it where a dynamic light or state glow must show on the surface.
+## Dirty glass sheen recipe
+
+The glass shader in `src/engine/render.tsx` uses:
+
+```glsl
+float glow = clamp(dot(vLight, vec3(0.333)), 0.0, 1.5);
+float sheen = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0)
+  * 0.35 * glow;
+vec3 color = grime * uColor * vLight * 2.0 + vec3(sheen * 0.5);
+float alpha = 0.22 + dirt * 0.4 + sheen;
+```
+
+- `[Modern cheat]` The per-fragment view-dependent sheen fakes reflected light without PBR or an environment map.
+- **When:** dirty warehouse windows and similar rare panes.
+- **Cost:** one grime sample, per-fragment normalization and power, transparency sorting, and overdraw.
+- **Read:** grime carries the surface at face-on angles; sheen appears only at grazing views and where vertex lights provide energy.
+
+Do not use this for clean refractive glass, repeated bottle fields, or every glossy surface.
+
+## Depth-aware foam recipe
+
+The water path samples the opaque depth texture at `gl_FragCoord / uResolution`, reconstructs eye depth, and adds a narrow noisy rim where scene geometry intersects the water.
+
+- `[Modern cheat]` This requires a full opaque depth pre-pass every gameplay frame.
+- **When:** pilings, banks, grates, junk, and seawalls need readable water contact.
+- **Cost:** the depth pass, one scene-depth sample, two water texture layers, and foam ALU.
+- **Read:** the scrolled noise must break the rim. A clean contour around every object looks like an outline bug.
+
+The water fragment shader maintains its own R5G6B5-style dither and quantization. Do not silently copy that local exception into core opaque materials.
+
+## CCTV screen recipe
+
+The CCTV screen shader in `src/game/Cctv.tsx` samples the 128x96 feed once, computes luma, applies a green monochrome palette, lifts black, and alternates scanline brightness.
+
+- `[Modern cheat]` The feed is a real extra scene render at four updates per second.
+- **When:** the office monitor needs a live surveillance read.
+- **Cost:** periodic scene submission, a small render target, one screen sample, and simple fragment ALU.
+- **Read:** preserve the low-rate chop and low resolution. Verify the feed shows useful yard motion and does not stall the main frame.
+
+Do not use the CCTV target as a general portal or mirror system.
+
+## CRT blit recipe
+
+The final blit samples the 512x448 main target once, darkens alternating internal rows by 7 percent, and applies a mild quadratic corner falloff.
+
+- `[Modern cheat]` This approximates CRT display character in a modern browser.
+- `[DEADWATER policy]` Bilinear target filtering and the 4:3 CSS viewport are the chosen presentation.
+- **Cost:** one fullscreen triangle and one main-target sample.
+- **Read:** it should be noticeable in comparison but should not crush the dark sewer or interfere with HUD text.
+
+Do not add curvature, chromatic aberration, bloom, noise, mask patterns, or rolling distortion without a separate cheat review and comparison capture.
+
+## Resource lifecycle
+
+- Memoize material, geometry, and generated texture creation in React components.
+- Dispose resources uniquely owned by a component in an effect cleanup.
+- Do not dispose shared textures from `useTexture`, the model cache, or shared uniform resources from an individual material.
+- Update uniform values in place. Do not replace shared uniform objects installed into every material.
+- Keep render targets owned by their pipeline module or component and dispose them if their owner unmounts permanently.
+- Do not create shader variants through changing source strings every frame.
+
+## Shader review checklist
+
+Before accepting shader code, verify:
+
+- claim label is hardware fact, DEADWATER policy, or modern cheat;
+- core versus cheat path is explicit;
+- owner and consumers are named;
+- raw display-space math is preserved;
+- ordinary scene lighting remains per vertex;
+- diffuse and emissive remain the ordinary material inputs;
+- fog and dither match the core path, or the cheat exception is documented;
+- texture filtering and color-space flags match policy;
+- texture sample, pass, transparency, vertex, program, and render-target costs are counted;
+- resources are memoized and disposed correctly;
+- identical before and after live frames exist;
+- `npm run build` and `npm run lint` pass.
+
+Reject a shader whose only purpose is generic noise, glow, fake PBR, or making the image look older without improving a named DEADWATER surface or gameplay read.

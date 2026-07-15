@@ -1,63 +1,63 @@
-# Three.js Game UI Prompt Templates
+# DEADWATER UI prompt templates
 
-Reusable prompt templates packaged with this skill. Use only templates relevant to the current request, and adapt placeholders to the game/project context.
+Use one template and replace every placeholder. Keep game HUD and editor workflows separate unless the task explicitly spans both.
 
----
+## 4:3 game HUD pass
 
-# Premium HUD/UI Pass Prompt
+```text
+Use $deadwater-game-ui-designer to improve DEADWATER's game HUD or pointer-lock overlay.
 
-Use `deadwater-game-ui-designer` to make this Three.js game's HUD and in-game UI feel premium, readable, and genre-specific.
+Changed states:
+State owners:
+Information priority:
+Input and pointer-lock behavior:
+Longest prompt or item labels:
+Smallest supported desktop viewport:
+Mobile-gate impact:
 
-Context to gather:
-- Current screenshots at desktop and mobile sizes.
-- Game genre, core verb, target mood, and player decisions the HUD must support.
-- Current HUD/menu files, game state sources, input model, and touch controls.
+Keep the HUD as DOM inside the fixed 4:3 viewport. Preserve the center reticle and interaction ray contract, stable hotbar geometry, sparse PS2-era visual language, and the fixed 512x448 render pipeline. Verify active play, pointer-lock entry and release, state transitions, text fit, overlap, focus, build, and console.
+```
 
-Design goals:
-- Keep the playable game as the first screen.
-- Make survival/status/objective information readable during motion.
-- Use stable dimensions for counters, buttons, meters, and labels.
-- Use icons where they reduce clutter, with labels where meaning is ambiguous.
-- Match the game's world materials, color, typography, and feedback language.
+## Editor usability pass
 
-Constraints:
-- Do not add marketing-page hero sections or explanatory feature copy.
-- Do not nest cards inside cards.
-- Do not let UI cover critical gameplay at desktop or mobile sizes.
-- Avoid text overflow, clipped controls, layout shift, and generic dashboard styling.
+```text
+Use $deadwater-game-ui-designer to improve DEADWATER's browser editor.
 
-Verification:
-- Build and run locally.
-- Capture desktop and mobile screenshots.
-- Check console/page errors.
-- Verify text fit, no overlap, no clipped controls, and at least one UI state change from real input.
+Affected workspace region:
+User task to make faster or safer:
+Scene-store operations involved:
+Keyboard, pointer, drag, and focus behavior:
+Dense-state test data:
+Save, empty, loading, disabled, or error states:
 
----
+Keep the Unity-style toolbar, hierarchy, central viewport, details inspector, bottom palette, and assets workspace. Use modern editor legibility and shared inspector schemas. Verify a real select-edit-undo-save path and confirm gameplay effects stay disabled in editor mode.
+```
 
-# Responsive Game Menu Pass Prompt
+## Game overlay or menu state
 
-Use `deadwater-game-ui-designer` to design or improve this Three.js game's pause, start, settings, win, lose, or restart menus.
+```text
+Use $deadwater-game-ui-designer to add or revise this DEADWATER overlay.
 
-Menu states needed:
-- 
+Trigger and exit:
+Pointer-lock behavior:
+Primary and secondary actions:
+Game state shown beneath it:
+Keyboard and pointer focus order:
+Reduced-motion needs:
 
-Target devices/orientations:
-- 
+Keep the overlay inside the 4:3 viewport and visually consistent with the sparse game UI. Do not build a landing page or generic card stack. Verify open, close, Escape, click, keyboard focus, re-entry to play, and the smallest supported viewport.
+```
 
-Requirements:
-- Menus must feel like part of the game, not a website overlay.
-- Modal menus may pause or dim gameplay, but should not look like marketing cards.
-- Buttons need clear hover, pressed, focus, disabled, and touch states.
-- Settings must use appropriate controls: toggles, sliders, segmented controls, icon buttons, and select menus.
-- Layout must respect safe-area insets and remain usable on mobile.
+## Mobile-preview pass
 
-Implementation notes:
-- Prefer semantic HTML/CSS over canvas-rendered UI unless 3D placement is required.
-- Keep UI state driven by the game state model.
-- Keep dimensions stable so labels and counters do not shift layout.
+```text
+Use $deadwater-game-ui-designer to improve DEADWATER's non-playable mobile preview without implying touch gameplay.
 
-Verification:
-- Test every menu state.
-- Capture desktop and mobile screenshots.
-- Check keyboard/mouse and touch paths when both are supported.
-- Confirm no text overflow, overlap, clipping, or unreachable controls.
+Target devices and orientations:
+Copy changes:
+Share behavior:
+Atmospheric scene behavior:
+Reduced-motion behavior:
+
+Keep the preview honest that mouse and keyboard are required. Preserve the atmospheric 4:3 Canvas, omit CLOCK IN, and verify coarse-pointer detection, missing pointer-lock support, ?mobile preview, native share or copy fallback, portrait and landscape fit, and console errors.
+```

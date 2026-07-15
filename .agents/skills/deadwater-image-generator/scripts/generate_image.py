@@ -1,191 +1,80 @@
 #!/usr/bin/env python3
-# /// script
-# requires-python = ">=3.10"
-# dependencies = [
-#     "google-genai>=1.0.0",
-#     "pillow>=10.0.0",
-# ]
-# ///
-"""
-Generate images using Google's Gemini image API.
+"""Inspect or prepare a DEADWATER runtime image. Generation uses Codex tools."""
 
-Usage:
-    uv run generate_image.py --prompt "your image description" --filename "output.png" [--resolution 1K|2K|4K] [--api-key KEY]
-    uv run generate_image.py probe   # prints GEMINI_API_KEY=SET|MISSING and exits
-"""
+from __future__ import annotations
 
 import argparse
-import os
-import sys
+import json
+import shutil
+import struct
+import subprocess
 from pathlib import Path
 
 
-def get_api_key(provided_key: str | None) -> str | None:
-    """Get API key from argument first, then environment."""
-    if provided_key:
-        return provided_key
-    return os.environ.get("GEMINI_API_KEY")
+def dimensions(path: Path) -> tuple[int, int] | None:
+    data = path.read_bytes()[:32]
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return struct.unpack(">II", data[16:24])
+    if data.startswith(b"\xff\xd8"):
+        with path.open("rb") as stream:
+            stream.read(2)
+            while True:
+                marker = stream.read(1)
+                if not marker:
+                    return None
+                if marker != b"\xff":
+                    continue
+                while marker == b"\xff":
+                    marker = stream.read(1)
+                code = marker[0]
+                if code in {0xD8, 0xD9}:
+                    continue
+                size = struct.unpack(">H", stream.read(2))[0]
+                if code in {0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF}:
+                    payload = stream.read(5)
+                    height, width = struct.unpack(">HH", payload[1:5])
+                    return width, height
+                stream.seek(size - 2, 1)
+    return None
 
 
-def cmd_probe() -> None:
-    """Print the SET|MISSING credential contract line used by skip rules and audits."""
-    status = "SET" if os.environ.get("GEMINI_API_KEY") else "MISSING"
-    print(f"GEMINI_API_KEY={status}")
+def inspect(path: Path) -> dict:
+    size = dimensions(path)
+    return {
+        "path": str(path),
+        "bytes": path.stat().st_size,
+        "dimensions": size,
+        "runtimeMax": 256,
+        "needsReduction": bool(size and max(size) > 256),
+        "note": "Use PNG for alpha/emissive/sign art and JPEG for suitable opaque diffuse art.",
+    }
 
 
-def main():
-    if len(sys.argv) > 1 and sys.argv[1] == "probe":
-        cmd_probe()
-        return
+def prepare(source: Path, output: Path, maximum: int) -> dict:
+    if not source.exists():
+        raise FileNotFoundError(source)
+    sips = shutil.which("sips")
+    if not sips:
+        raise RuntimeError("prepare requires macOS sips")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    if source.resolve() != output.resolve():
+        shutil.copy2(source, output)
+    subprocess.run([sips, "-Z", str(maximum), str(output)], check=True, stdout=subprocess.DEVNULL)
+    return {"source": str(source), "output": str(output), "max": maximum, "result": inspect(output)}
 
-    parser = argparse.ArgumentParser(
-        description="Generate images using Google's Gemini image API"
-    )
-    parser.add_argument(
-        "--prompt", "-p",
-        required=True,
-        help="Image description/prompt"
-    )
-    parser.add_argument(
-        "--filename", "-f",
-        required=True,
-        help="Output filename (e.g., sunset-mountains.png)"
-    )
-    parser.add_argument(
-        "--input-image", "-i",
-        help="Optional input image path for editing/modification"
-    )
-    parser.add_argument(
-        "--resolution", "-r",
-        choices=["1K", "2K", "4K"],
-        default=None,
-        help="Output resolution: 1K, 2K (default for generation), or 4K; "
-             "when editing, defaults to match the input image size"
-    )
-    parser.add_argument(
-        "--api-key", "-k",
-        help="Gemini API key (overrides GEMINI_API_KEY env var)"
-    )
 
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    commands = parser.add_subparsers(dest="command", required=True)
+    inspect_parser = commands.add_parser("inspect")
+    inspect_parser.add_argument("path", type=Path)
+    prep_parser = commands.add_parser("prepare")
+    prep_parser.add_argument("source", type=Path)
+    prep_parser.add_argument("output", type=Path)
+    prep_parser.add_argument("--max", type=int, default=256, dest="maximum")
     args = parser.parse_args()
-
-    # Get API key
-    api_key = get_api_key(args.api_key)
-    if not api_key:
-        print("Error: No API key provided.", file=sys.stderr)
-        print("Please either:", file=sys.stderr)
-        print("  1. Provide --api-key argument", file=sys.stderr)
-        print("  2. Set GEMINI_API_KEY environment variable", file=sys.stderr)
-        sys.exit(1)
-
-    # Import here after checking API key to avoid slow import on error
-    from google import genai
-    from google.genai import types
-    from PIL import Image as PILImage
-
-    # Initialise client
-    client = genai.Client(api_key=api_key)
-
-    # Set up output path
-    output_path = Path(args.filename)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    # Load input image if provided
-    input_image = None
-    output_resolution = args.resolution
-    if args.input_image:
-        try:
-            input_image = PILImage.open(args.input_image)
-            print(f"Loaded input image: {args.input_image}")
-
-            # Auto-detect resolution if not explicitly set by user
-            if output_resolution is None:
-                # Map input image size to resolution
-                width, height = input_image.size
-                max_dim = max(width, height)
-                if max_dim >= 3000:
-                    output_resolution = "4K"
-                elif max_dim >= 1500:
-                    output_resolution = "2K"
-                else:
-                    output_resolution = "1K"
-                print(f"Auto-detected resolution: {output_resolution} (from input {width}x{height})")
-        except Exception as e:
-            print(f"Error loading input image: {e}", file=sys.stderr)
-            sys.exit(1)
-    if output_resolution is None:
-        output_resolution = "2K"  # production reference default per SKILL.md
-
-    # Build contents (image first if editing, prompt only if generating)
-    if input_image:
-        contents = [input_image, args.prompt]
-        print(f"Editing image with resolution {output_resolution}...")
-    else:
-        contents = args.prompt
-        print(f"Generating image with resolution {output_resolution}...")
-
-    try:
-        response = client.models.generate_content(
-            model="gemini-3-pro-image-preview",
-            contents=contents,
-            config=types.GenerateContentConfig(
-                response_modalities=["TEXT", "IMAGE"],
-                image_config=types.ImageConfig(
-                    image_size=output_resolution
-                )
-            )
-        )
-        
-        # Process response and convert to PNG
-        image_saved = False
-        for part in response.parts:
-            if part.text is not None:
-                print(f"Model response: {part.text}")
-            elif part.inline_data is not None:
-                # Convert inline data to PIL Image and save as PNG
-                from io import BytesIO
-
-                # inline_data.data is already bytes, not base64
-                image_data = part.inline_data.data
-                if isinstance(image_data, str):
-                    # If it's a string, it might be base64
-                    import base64
-                    image_data = base64.b64decode(image_data)
-
-                image = PILImage.open(BytesIO(image_data))
-
-                suffix = output_path.suffix.lower()
-                if suffix in {".jpg", ".jpeg"}:
-                    # JPEG has no alpha channel: flatten onto white
-                    if image.mode in ("RGBA", "LA", "P"):
-                        rgba = image.convert("RGBA")
-                        flat = PILImage.new("RGB", rgba.size, (255, 255, 255))
-                        flat.paste(rgba, mask=rgba.split()[3])
-                        flat.save(str(output_path), "JPEG", quality=92)
-                    else:
-                        image.convert("RGB").save(str(output_path), "JPEG", quality=92)
-                else:
-                    # PNG supports alpha: preserve it (logos/icons/UI/decals need transparency)
-                    if image.mode not in ("RGB", "RGBA"):
-                        has_alpha = "A" in image.mode or (
-                            image.mode == "P" and "transparency" in image.info
-                        )
-                        image = image.convert("RGBA" if has_alpha else "RGB")
-                    image.save(str(output_path), "PNG")
-                    if image.mode == "RGBA":
-                        print("Alpha channel preserved (RGBA PNG).")
-                image_saved = True
-        
-        if image_saved:
-            full_path = output_path.resolve()
-            print(f"\nImage saved: {full_path}")
-        else:
-            print("Error: No image was generated in the response.", file=sys.stderr)
-            sys.exit(1)
-            
-    except Exception as e:
-        print(f"Error generating image: {e}", file=sys.stderr)
-        sys.exit(1)
+    result = inspect(args.path) if args.command == "inspect" else prepare(args.source, args.output, args.maximum)
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == "__main__":

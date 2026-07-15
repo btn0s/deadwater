@@ -1,4 +1,4 @@
 interface:
-  display_name: "Three.js 3D Generator"
-  short_description: "Generate, texture, rig, animate, and convert Three.js game assets"
-  default_prompt: "Load deadwater-3d-asset-pipeline/SKILL.md (try ~/.codex/skills/deadwater-3d-asset-pipeline/SKILL.md, then ~/.claude/skills, ~/.agents/skills, or repo skills/) and follow it exactly, including its reference gates. Non-negotiables: run the probe before declaring the key unavailable; load api-notes before provider calls; use deadwater-image-generator first when a 2D concept/reference would improve the result; download outputs immediately; report task IDs, file paths, and Three.js import notes."
+  display_name: "DEADWATER 3D Asset Pipeline"
+  short_description: "Find and integrate licensed DEADWATER models"
+  default_prompt: "Use $deadwater-3d-asset-pipeline to source, prepare, register, place, and verify a licensed 3D asset in DEADWATER."

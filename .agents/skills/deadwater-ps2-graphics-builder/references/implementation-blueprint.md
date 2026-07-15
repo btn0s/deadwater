@@ -1,157 +1,155 @@
-# AAA Graphics Implementation Blueprint
+# DEADWATER graphics implementation blueprint
 
-Use this when a Three.js game reads as basic even after it is playable. The goal is a production graphics architecture that can be iterated, scored, profiled, and reused. For premium/AAA/showcase work, also load `references/technical-art.md` and treat the technical art brief and budget as part of the graphics architecture.
+Use this reference for broad renderer, scene-art, lighting, material, or imported-model work.
 
-## Recommended Ownership
+## Architectural position
 
-```text
-src/assets/MaterialLibrary.ts
-src/assets/ProceduralTextures.ts
-src/assets/DecalShapes.ts
-src/assets/ModelDiagnostics.ts
-src/assets/ImportedAssetRegistry.ts
-src/assets/modelFactories/HeroFactory.ts
-src/assets/modelFactories/ObstacleFactory.ts
-src/assets/modelFactories/RewardFactory.ts
-src/assets/modelFactories/WorldPropKit.ts
-src/systems/LightingRig.ts
-src/systems/RenderPipeline.ts
-src/systems/VfxSystem.ts
-src/systems/WorldArtDirector.ts
-src/systems/QualityDiagnostics.ts
-```
+DEADWATER is a data-driven React Three Fiber game with a custom shader pipeline. Do not replace that pipeline with a generic Three.js PBR stack.
 
-Keep these boundaries lightweight. In small projects, a single file can contain multiple factories, but the concepts must remain separate: materials, authored geometry, repeated props, effects, render settings, and diagnostics.
+- `[DEADWATER policy]` `src/engine/scene.json` is the source of truth for world composition.
+- `[DEADWATER policy]` `src/engine/types.ts` defines the components an editor or agent may place.
+- `[DEADWATER policy]` `src/engine/render.tsx` maps those components to runtime visuals and strips imported materials.
+- `[DEADWATER policy]` `src/ps2/PS2Material.ts` owns the opaque diffuse and emissive material contract.
+- `[DEADWATER policy]` `src/ps2/PS2Pipeline.tsx` owns offscreen rendering and presentation.
 
-## Hybrid AI Asset Pipeline
+Keep those boundaries. A visual change belongs in scene data when it is placement or tuning, in an engine component when it is reusable scene vocabulary, and in `src/ps2/` only when it changes the renderer contract.
 
-Choose the asset path per surface:
+## Repository ownership map
 
-- Procedural Three.js: repeated detail, simple props, rails, track parts, decals, collision proxies, VFX geometry, debug-friendly primitives.
-- `deadwater-image-generator`: concept sheets, T-pose/A-pose references, texture references, trim sheets, decals, icons, logos, skies, backgrounds, UI art.
-- `deadwater-3d-asset-pipeline`: hero/player, characters, creatures, vehicles, buildings, weapons, signature props, pickups, bosses, complex terrain modules.
-- Hybrid: image-generator concept/reference -> 3D-generator image-to-model -> Three.js import -> procedural collision/VFX/prop kit -> visual scorecard.
+| Concern | Canonical path | Change here when |
+| --- | --- | --- |
+| Material and light shader | `src/ps2/PS2Material.ts` | The shared diffuse/emissive, Gouraud, fog, dither, bombing, or flashlight response changes |
+| Fixed render target and pass order | `src/ps2/PS2Pipeline.tsx` | A full-scene pass, target, or final blit changes |
+| Flashlight shadow | `src/ps2/torchShadow.ts` | Its 512 shadow target, light camera, matrix, or uniforms change |
+| Scene depth | `src/ps2/sceneDepth.ts` | Depth-consuming effects need shared camera depth |
+| CCTV target and camera | `src/ps2/cctv.ts` | CCTV resolution, refresh contract, or fixed camera changes |
+| Runtime component visuals | `src/engine/render.tsx` | A component needs reusable geometry or material conversion |
+| Component schema | `src/engine/types.ts` and `src/engine/inspector.ts` | Scene data needs a new editable field or component |
+| Model registry | `src/engine/models.ts` | A glTF or FBX asset becomes placeable |
+| Texture registry | `src/engine/textures.ts` | A tileable diffuse texture becomes placeable |
+| Light allocation | `src/engine/lights.ts` | Slot lifecycle or diagnostics change |
+| World placement | `src/engine/scene.json` | Geometry, props, lights, environment, collisions, or instances move |
+| Water | `src/game/SewerWater.tsx` | Flow, wave, foam, opacity, or water-only shading changes |
+| Flashlight rig | `src/game/Flashlight.tsx` | Viewmodel, beam, aim, inventory, or torch camera pose changes |
+| CCTV objects and screen | `src/game/Cctv.tsx` | Monitor/camera meshes or screen treatment change |
+| Contact sheets | `src/game/DevViews.tsx` | Review coverage or named camera sets change |
+| 4:3 presentation and HUD | `src/index.css` | Canvas framing or CSS overlay changes |
 
-For premium/AAA/showcase/high-fidelity/less-basic games, do not decide `deadwater-3d-asset-pipeline` or `deadwater-image-generator` is unnecessary before loading the relevant skill when the game includes characters, creatures, vehicles, ships, weapons, buildings, signature props, hero pickups, skies, textures, decals, logos, icons, or GUI art. Load first, run the credential probe, then document the tradeoff.
+## Decision order
 
-Use `deadwater-3d-asset-pipeline` when generated model fidelity will materially improve the active screenshot. Do not use generated 3D for every repeated small prop; use instancing/procedural kits for volume.
+Solve a visual problem at the lowest stable layer:
 
-For premium hero surfaces, procedural-only is not a valid final choice unless a real blocker is recorded: missing key from the credential probe, API/network/quota error after an attempted command, user requested no external assets, or offline-only constraint. Repeated low-value props can stay procedural.
+1. Adjust scene placement, scale, repetition, environment, or a component field in `src/engine/scene.json`.
+2. Reuse an existing model, texture, primitive, generator, instance, or light component.
+3. Add a reusable engine component or procedural generator.
+4. Add or adapt a diffuse asset and route it through the registries.
+5. Extend the shared material only when many surfaces need the same behavior.
+6. Add a full-scene pass only when no cheaper layer can produce the required read.
 
-Fill the external asset sourcing ledger before the graphics phase using the canonical template in `deadwater-game-director/references/phase-playbook.md` (Ledger Templates). It records the credential probe output, the chosen source per surface (procedural / `deadwater-image-generator` / `deadwater-3d-asset-pipeline` / hybrid), and the generated outputs or allowed blocker for each surface.
+Every step below the scene layer raises regression and pass cost. The technical-art contract must justify steps 4 through 6.
 
-## Production Surfaces
+## Scene construction contract
 
-A premium pass must touch every weak visible surface:
+Use the flat node tree in `src/engine/scene.json`. Each visual node should answer:
 
-- Hero/player: authored silhouette, state feedback, decals/trim, readable front/up/side, collision proxy.
-- Hazards/enemies: at least three distinct silhouettes with telegraphs and material cues.
-- Rewards/interactables: at least two forms with collection states and motion/VFX hooks.
-- World kit: foreground, playable lane/arena, midground, background/parallax, set dressing, scale cues.
-- Materials/textures: shared PBR/stylized material library, procedural panel lines, noise, trim, wear, emissive masks.
-- Lighting/render: color space, tone mapping, exposure, shadows/contact, fog/depth, post-processing discipline.
-- VFX/motion: event-driven bursts, trails, impact rings, speed lines, shield/boost states, pickup/fail feedback.
-- UI/world cohesion: UI colors, icons, alerts, and meters echo gameplay materials and status colors.
-- Diagnostics: renderer counts, material/geometry/texture counts, screenshots, scorecard.
+- What gameplay or composition role does it serve?
+- Which node owns its transform?
+- Is it unique, repeated through `instance`, or generated?
+- Does it need a separate `physics` component?
+- Which contact-sheet camera proves it is placed correctly?
 
-For imported generated 3D assets, also require downloaded GLB/PBR output, import wrappers with scale/pivot/bounds, simple collision proxies, animation clips when relevant, and triangle/material/texture/file-size diagnostics.
+Preserve the warehouse layout rules in `docs/WAREHOUSE-LAYOUT.md`: clear drive and cross aisles, squared stock, rack rows on column lines, and clutter only in designated junk areas. Dense placement is not automatically better. Occlusion, traversal, and sightline quality are part of the graphics pass.
 
-## Technical Art Contract
+## Material flow
 
-Before broad implementation, write the technical art brief and render budget from `references/technical-art.md`: hero vs support surfaces, render budget target, material kit roles, shader/VFX purpose, instancing/LOD/culling plan, and imported asset cleanup. Treat that brief as part of this graphics architecture.
+### Authored surfaces and primitives
 
-Do not add costly effects until this contract exists. A technical-art pass should make the scene more authored and more measurable at the same time.
+`SurfaceVisual` and `PrimitiveVisual` in `src/engine/render.tsx` create `PS2Material` instances. Add only these inputs to the ordinary material path:
 
-## Material Library
+- raw diffuse texture;
+- raw display-space tint;
+- UV repeat and offset;
+- optional additive emissive map;
+- optional fullbright flag for deliberately unlit signal geometry;
+- optional texture-bombing density for selected broad tiled surfaces.
 
-Implement the named material-role kit defined in `references/technical-art.md` (`bodyPrimary`, `bodySecondary`, `trim`, `hazard`, `reward`, `glass`, `emissiveSignal`, `groundContact`, `decalDark`/`decalLight`, plus shared UI/world signal colors) in `src/assets/MaterialLibrary.ts`. Create named roles instead of one-off colors and share materials across repeated meshes.
+`SurfaceVisual` tessellates planes so per-vertex lights have enough samples. Tune `segments` in the scene component when a light pool facets or misses a broad surface. Do not fix Gouraud artifacts by moving ordinary lights to the fragment shader.
 
-## Procedural Texture And Decal Kit
+### Imported glTF and FBX
 
-Use canvas textures, shape geometry, or thin offset meshes for detail that would otherwise require external assets:
+Register assets in `src/engine/models.ts`, then place them with a `model` component in `src/engine/scene.json`.
 
-- Panel lines and access hatches.
-- Trim sheets and edge bands.
-- Window strips, city light grids, arena markings.
-- Hazard stripes, arrows, target indicators, lane glyphs.
-- Scratches, wear, noise, dirt, heat tint, scorch marks.
-- UI/world icon motifs reused in HUD and diegetic markers.
+`applyPS2Materials` in `src/engine/render.tsx` replaces imported glTF materials. It keeps the first source material's diffuse and emissive maps, recognizes glass by mesh or material name, disables Three.js shadow flags, and drops the PBR channels. This is the intended boundary.
 
-Set texture filtering, mipmaps, repeat/wrap, color space, and anisotropy intentionally. Avoid unique full-size textures for tiny repeated marks.
+Check imports for:
 
-Use `deadwater-image-generator` for high-value 2D source art: terrain/rock/asphalt/snow/moss texture references, sci-fi trim sheets, signs, hazard stripes, cockpit decals, sky/background plates, menu/loading art, faction logos, pickup icons, ability icons, and GUI glyphs. Use the resulting images either as actual 2D assets or as image-to-3D inputs.
+- scale, orientation, ground contact, pivot, and bounds;
+- useful silhouette at gameplay distance;
+- source material arrays that collapse incorrectly to the first material;
+- mesh and material names needed by the glass heuristic;
+- emissive texels that should survive as an additive map;
+- textures reduced to the project's 256px working scale unless a larger source is justified;
+- collision represented separately with the `physics` component;
+- attribution in `public/models/CREDITS.md`.
 
-## Model Factories
+FBX assets receive one explicit base-color texture and use the centimeter-scale heuristic in `FbxVisual`. Verify the result instead of trusting the heuristic.
 
-Factories should return a grouped object plus metadata:
+## Lighting architecture
 
-```ts
-type ModelFactoryResult = {
-  root: THREE.Group;
-  collision?: THREE.Object3D;
-  lod?: THREE.LOD;
-  bounds?: THREE.Box3;
-  diagnostics?: {
-    meshes: number;
-    materials: number;
-    geometries: number;
-    triangles?: number;
-  };
-};
-```
+`src/ps2/PS2Material.ts` compiles a 20-entry light array into every ordinary material. `src/engine/lights.ts` allocates those slots at runtime.
 
-Use named child meshes for readable debugging. Separate visual detail from collision proxies. Keep repeated detail instanced where practical.
+- `[DEADWATER policy]` Twenty is a shader-array budget, not a PS2 hardware limit.
+- `[DEADWATER policy]` Leave at least one slot for `src/game/Flashlight.tsx` in gameplay areas where it can be equipped.
+- `[DEADWATER policy]` Use scene lights for shaped illumination and fullbright/emissive geometry for visible fixtures.
+- `[DEADWATER policy]` Tune surface tessellation, light radius, intensity, cone, and ambient together.
+- `[Modern cheat]` Only the flashlight skips the vertex loop and receives per-fragment hard shadowing.
 
-For imported generated 3D models, create an `ImportedAssetRegistry` or loader wrapper that returns similar metadata: root group, bounds, collision proxy, animation clips, and diagnostics. Never put 3D/image/audio generation API calls in browser runtime code.
+Prefer moving or consolidating fixtures over increasing the array size. Increasing `MAX_LIGHTS` expands the loop for every vertex whether the new slots are active or not.
 
-## World Art Director
+## Special-system ownership
 
-Build the world as layers:
+### Flashlight
 
-- Play layer: ground, lanes, rails, objective path, hazards, pickups.
-- Near layer: speed props, signs, arches, barriers, debris, foreground occluders used carefully.
-- Mid layer: buildings, cliffs, hangars, pillars, platforms, arena machinery.
-- Far layer: skyline, terrain silhouettes, nebula/cloud/fog cards, parallax planes.
-- Motion layer: speed lines, particles, trail strips, dust, sparks, screen-space UI feedback.
+The flashlight uses one shared light slot for bookkeeping, but its ordinary material contribution is evaluated per fragment and compared with a one-tap hard shadow map. Keep the shadow map scoped to this light. Verify aim convergence, shadow acne, viewmodel exclusion from depth passes, and the scene with the flashlight stowed.
 
-Every layer should support gameplay readability. Do not obscure threats or the next decision.
+### Water
 
-## Render Pipeline
+Water owns its own shader in `src/game/SewerWater.tsx`. It keeps per-vertex scene lighting but uses the shared opaque depth target for per-fragment intersection foam. The depth pass hides registered water and flashlight rig objects through `waterMeshes` in `src/ps2/sceneDepth.ts`.
 
-Own renderer setup in one place:
+Do not attach unrelated objects to `waterMeshes` as a general visibility system. Do not add reflection, refraction, or SSR to make the water look expensive. Improve flow, texture scale, silhouette bob, light response, and bounded foam first.
 
-- `outputColorSpace = THREE.SRGBColorSpace`.
-- Tone mapping and exposure selected for the art direction.
-- DPR capped for mobile and high-density displays.
-- Shadows enabled only for objects that benefit from grounding.
-- Post-processing is limited and measured: bloom, vignette, chromatic aberration, film grain, or color grade only when they improve authored forms.
-- Resize updates canvas, renderer, camera, composer, and UI CSS variables.
+### Glass
 
-## VFX System
+`createGlassMaterial` in `src/engine/render.tsx` is a dirty translucent surface with a facing-ratio sheen. It is a modern cheat, not `MeshPhysicalMaterial`. Keep it rare, sort-aware, and `depthWrite: false`. Verify the geometry behind it remains legible.
 
-Implement the event-driven VFX language from `references/technical-art.md` in `src/systems/VfxSystem.ts`. Effects should be pooled, readable, and tied to state; they must clarify state instead of adding permanent particle clutter.
+### CCTV
 
-## Diagnostics
+The CCTV feed renders at 128x96 every 0.25 seconds. It is a deliberate low-resolution, low-rate insert. Keep the camera coverage, temporary yard visibility override, monitor readability, and extra renders measurable.
 
-Own diagnostics in `src/systems/QualityDiagnostics.ts`. Report the renderer diagnostics defined in `references/technical-art.md` (calls, triangles, geometries, textures, material count, DPR/post/shadow settings), plus these architecture-specific counts:
+### CRT presentation
 
-- Scene mesh count, instanced mesh count, unique materials/geometries/textures.
-- Approximate visible prop counts by layer.
-- Screenshot paths and visual scorecard.
-- Performance notes after post-processing, shadows, or many repeated props.
+The final blit adds line darkening and corner falloff, then the CSS viewport presents 4:3. This is the final-frame contract. Contact sheets do not execute this blit and cannot prove it.
 
-## Browser Game Budgets
+## Implementation sequence
 
-Use the render budget starting points and instancing/LOD/culling guidance in `references/technical-art.md`, then measure on the target game after every major graphics pass.
+1. Capture the affected live view and contact-sheet tiles.
+2. State the visible defect and its owner path.
+3. Record the claim label and technical-art budget impact.
+4. Change scene data or reuse existing vocabulary first.
+5. Add reusable geometry or diffuse assets only when scene edits are insufficient.
+6. Change the shared material or pass graph last.
+7. Verify darkness, ordinary lights, flashlight, fog, dither, texture filtering, affected cheats, and collision.
+8. Re-capture the same evidence and score it.
 
-## Implementation Order
+## Architectural rejection list
 
-1. Score active screenshots and identify the weakest three categories.
-2. Add material and diagnostic foundations.
-3. Decide which weak surfaces need procedural, `deadwater-image-generator`, `deadwater-3d-asset-pipeline`, or hybrid treatment.
-4. Build/import hero/player and one complete obstacle/reward family.
-5. Add world prop kit and layered composition.
-6. Add lighting/render polish.
-7. Add event-driven VFX.
-8. Re-score desktop/mobile active screenshots.
-9. Optimize measured bottlenecks.
+Reject a change that:
+
+- introduces stock PBR materials or an environment map into shipped world rendering;
+- adds PSX vertex snapping, affine wobble, or nearest-only pixelation as a global effect;
+- treats 512x448 or 20 lights as universal PS2 limits;
+- hides flat composition behind fog, darkness, bloom, or noise;
+- adds a shader without a label, owner, cost, and comparison capture;
+- edits generated contact-sheet PNGs as if they were source assets;
+- bypasses `src/engine/scene.json` with hard-coded one-off world placement;
+- reports direct contact sheets as proof of final CRT presentation.

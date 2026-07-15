@@ -1,40 +1,58 @@
-# Three.js QA/Release Prompt Templates
+# DEADWATER QA prompt templates
 
-Reusable prompt templates packaged with this skill. Use only templates relevant to the current request, and adapt placeholders to the game/project context.
+Use only the template that matches the request. Replace every placeholder with repo-specific facts before running it.
 
----
+## Release pass
 
-# Release Pass Prompt
+```text
+Use $deadwater-qa-release to assess DEADWATER release readiness.
 
-Use `deadwater-qa-release` to prepare this Three.js game for release.
+Target host and base path: [target]
+Changed areas: [game/editor/scene/assets/audio/rendering]
 
-Release target:
-- static host, GitHub Pages, Netlify, Vercel, itch.io, or other:
+Required evidence:
+- Run npm run build and production preview.
+- Verify / and the editor.html shipping policy.
+- Capture console, page, network, canvas, and main-interaction evidence.
+- Verify scene.json and changed asset paths.
+- Exercise the changed zones with __teleport and player-height screenshots.
+- Record __testCollision and __lightSlots output when relevant.
+- Decide whether visual baselines and a scripted playtest need updates.
+- Report pass, fail, or partial with artifacts and residual risks.
+```
 
-Requirements:
-- Run production build and preview.
-- Verify asset paths under the intended base path.
-- Check bundle size and large assets.
-- Run desktop and mobile visual QA.
-- Confirm no debug-only UI leaks unless intentionally enabled.
-- Produce final report with commands, artifacts, screenshots, and residual risks.
+## Focused scene QA
 
----
+```text
+Use $deadwater-qa-release to verify this DEADWATER scene change.
 
-# Visual Test Harness Prompt
+Area: [warehouse/office/dock/sewer]
+Scene nodes: [ids]
+Expected visual and collision result: [result]
 
-Use `deadwater-qa-release` to add or evaluate a visual test harness for this Three.js game.
+Run the dev game and editor. Validate scene.json, capture the area's contact sheet and a player-height screenshot, probe changed collision, inspect light slots, exercise the nearby interaction, and report objective canvas/browser evidence without applying generic brightness or fidelity scores.
+```
 
-Context:
-- Game/milestone:
-- Visual surfaces to protect:
-- Dynamic/random systems:
-- Target viewports:
+## Visual baseline pass
 
-Requirements:
-- Load `references/visual-test-harness.md`.
-- Decide whether to add, extend, or skip screenshot baselines.
-- Cover active-play desktop and mobile when warranted.
-- Add deterministic hooks or setup for seed, state, pause, reduced motion, camera shake, debug UI, and asset loading where practical.
-- Keep canvas-pixel smoke and interaction checks.
-- Report baseline update command, compare command, artifact paths, thresholds/masks, and flake risks.
+```text
+Use $deadwater-qa-release to add or update Playwright visual protection for DEADWATER.
+
+State and camera pose: [label plus x,z,yaw]
+Acceptance image: [what must remain visible/correct]
+Dynamic systems: [water/flicker/rat/physics/CCTV/flashlight]
+
+Use existing DEADWATER hooks, a fixed viewport, one WebGL worker, narrow masks, and repeated-run threshold calibration. Keep nonblank canvas and interaction assertions. Report update/compare commands, snapshots, masks, thresholds, and flake risks.
+```
+
+## Scripted playtest
+
+```text
+Use $deadwater-qa-release to create or run a DEADWATER Playwright playtest.
+
+Start pose: [x,z,yaw]
+Core path: [movement/door/switch/pickup/carry/flashlight/crowbar]
+Expected state change: [result]
+
+Drive real input after __devLock(true), sample __playerPos, use __testCollision and __lightSlots where relevant, release all keys and dev lock in cleanup, retain failure traces, and report state-based results rather than headless FPS.
+```

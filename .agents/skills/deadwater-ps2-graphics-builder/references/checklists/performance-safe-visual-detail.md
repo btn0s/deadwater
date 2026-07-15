@@ -1,14 +1,24 @@
-# Performance-Safe Visual Detail Checklist
+# Performance-safe visual detail checklist
 
-Gate the render budget and instancing/LOD guidance in `references/technical-art.md`.
+Gate geometry density, texture use, repeated detail, transparent surfaces, shaders, and pass changes.
 
-- Baseline renderer info is captured when increasing fidelity.
-- Draw calls, triangles, geometries, materials, textures, and frame time are reviewed against the render budget in `references/technical-art.md` after changes.
-- Repeated details use the instancing/LOD approach in `references/technical-art.md`: instancing, shared resources, atlases, or generated texture reuse where practical.
-- High segment counts are limited to silhouette-critical forms.
-- Shadows are scoped by light count, shadow map size, casters/receivers, and camera distance.
-- Post-processing is justified by gameplay readability or strong art direction.
-- DPR caps or adaptive quality are considered for mobile.
-- Generated resources have a disposal/reuse strategy.
-- The worst-case gameplay scene, not only idle view, is inspected.
-- Visual detail remains readable at mobile resolution without excessive GPU cost.
+- [ ] The technical-art contract names the target desktop, browser, build mode, worst view, and flashlight state.
+- [ ] Main-pass calls and triangles are measured separately from depth, flashlight shadow, CCTV, and blit.
+- [ ] The report does not quote the final blit counters as if they describe the whole frame.
+- [ ] Main-view calls are at or below the 250 starting target, or baseline overage and non-regression are documented.
+- [ ] Main-view triangles are at or below the 400k starting target, or baseline overage and non-regression are documented.
+- [ ] Live geometries, textures, render targets, and shader programs are counted against `references/technical-art.md`.
+- [ ] Median and p95 frame time meet the named target or the exact failure is reported.
+- [ ] Vertex density is spent on silhouette and Gouraud interpolation visible at 512x448.
+- [ ] Hidden and subpixel geometry was removed or justified.
+- [ ] Collision geometry remains separate from visual detail.
+- [ ] Repeated props reuse registry assets, scene instances, geometry, and materials where the engine permits it.
+- [ ] Texture sources are the smallest size that survives the gameplay camera.
+- [ ] Texture bombing's three-sample cost is restricted to surfaces where it materially improves repetition.
+- [ ] Transparent glass layers and overdraw are bounded.
+- [ ] Flashlight shadow cost is measured equipped versus stowed.
+- [ ] CCTV periodic spikes are inspected, not hidden inside an average.
+- [ ] Water depth-prepass cost is included in frame accounting.
+- [ ] No new full-scene pass was added without purpose, cost, fallback, and comparison evidence.
+- [ ] Generated textures, geometries, materials, and render targets have clear ownership and disposal.
+- [ ] The worst interactive scene remains playable and visually readable after the detail pass.

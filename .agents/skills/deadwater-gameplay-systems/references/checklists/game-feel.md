@@ -1,20 +1,17 @@
-# Game Feel Checklist
+# DEADWATER game-feel checklist
 
-Use before claiming a game feels good, is juicy, is polished, or is premium. Pairs with references/game-feel.md.
-
-- The primary verb produces a visible response within 100ms of input.
-- Every scoring, pickup, damage, and death event has at least one visual and one audio response.
-- Screenshake is trauma-based with the `trauma²` curve, per-second decay, and a hard cap.
-- Trauma magnitude scales with event weight (pickup subtle, explosion unmistakable).
-- Hitstop scales the gameplay delta only; camera, shake, tweens, and HUD keep the real delta.
-- Hitstop is reserved for heavy contact, not fired on every minor event.
-- The render loop is never paused to create a freeze; only gameplay delta is scaled.
-- Squash-and-stretch preserves volume and settles with an overshoot (easeOutBack).
-- FOV punch calls updateProjectionMatrix() and decays back to base.
-- Impact flash stores the material's base emissive value and tweens back to it.
-- Feedback never obscures the next player decision (shake/flash/hitstop stay readable).
-- Gamepad rumble is feature-detected and matched in strength to the event.
-- Repeated audio samples use pitch/volume variance so they never sound identical.
-- All gameplay and effect randomness routes through createSeededRandom, never Math.random.
-- Time-based effects are driven by accumulated game time, not wall clock.
-- Each core event maps to a full feedback stack (see the tuning table), not a single cue.
+- One input owner handles each changed action.
+- Pointer-lock loss clears held keys and re-entry restores control.
+- Per-frame motion clamps large delta and keeps mutable frame state in refs or stable objects.
+- Ordinary gameplay `useFrame` callbacks do not take positive render priority or call `gl.render`.
+- Walk, run, jump, look, head bob, collision radius, and step height remain coherent.
+- Reticle prompts identify the first unobstructed valid target and stay stable at the edge of reach.
+- Interaction state, HUD, inventory, held body, and equipment agree after success and failure paths.
+- Small and large carries use the intended anchors and inventory lock rules.
+- Every carry release path restores dynamic body type and clears carry lock.
+- Audio fires once on the owning state transition and the first gesture unlocks Web Audio.
+- HUD or camera feedback remains readable in the 4:3 view and does not hide the next decision.
+- Any FOV change restores 60 degrees, retains 4:3 aspect, and updates the projection matrix.
+- Authored procedural and actor behavior uses scene seeds and `mulberry32`.
+- Named tuning values and before/after observations are recorded.
+- Active input, console, final game view, and relevant contact-sheet verification pass.

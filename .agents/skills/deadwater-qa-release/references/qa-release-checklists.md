@@ -1,157 +1,201 @@
-# QA And Release Checklists
+# DEADWATER QA and release checklists
 
-Use this before calling a Three.js browser game complete, premium, release-ready, or fixed.
+Use this reference before calling DEADWATER fixed, visually verified, or release-ready.
 
-## Browser QA Matrix
+## Evidence tiers
 
-Minimum meaningful QA:
+Use the smallest tier that proves the claim.
 
-- Dependencies installed or known.
-- Build/typecheck passes.
-- Dev or preview server opened at the correct URL.
-- Console/page/network errors captured.
-- Canvas nonblank and visually varied through pixel sampling.
-- Desktop active-play screenshot.
-- Mobile active-play screenshot when mobile is in scope.
-- Main input path changes game state.
-- Objective/progress path works.
-- Fail/retry or pause/resume path works when relevant.
-- Recent or risky code paths triggered.
-- Physics-heavy games: engine choice, fixed timestep, body/collider count, collision/trigger path, high-speed tunneling check, and restart body cleanup verified.
-- HUD text fit, overlap, safe areas, and touch targets checked when UI changed.
-- Renderer diagnostics captured when graphics complexity changed.
-- Imported/generated asset paths, file sizes, and runtime load behavior checked when external assets changed.
-- Audio unlock, decode/load, loop cleanup, mute/volume, and main SFX triggers checked when audio changed.
-- Visual test harness decision recorded when work is premium, release-ready, UI-heavy, generated-asset-heavy, or likely to regress visually.
+| Tier | Required evidence |
+| --- | --- |
+| Smoke | build or dev load, console/page/network capture, visible canvas, nonblank pixels |
+| Change QA | smoke plus the changed player/editor path, targeted hook outputs, screenshots |
+| Visual regression | change QA plus stable Playwright baselines and comparison artifacts |
+| Release | production build and preview, game and editor policy, assets/licenses, main interaction, residual risks |
 
-## Interaction QA
+Passing one tier does not imply the next.
 
-Test what a player actually does:
+## Browser matrix
 
-- Start or resume.
-- Move/aim/steer/jump/attack/boost as appropriate.
-- Collect or score.
-- Avoid or hit a hazard.
-- Trigger a state change: combo, wave, checkpoint, damage, shield, fail, win.
-- Pause and resume.
-- Restart after fail.
-- For physics games, verify bodies reset cleanly after restart and no stale bodies keep simulating.
-- For audio, verify user-gesture unlock, main SFX triggers, ambience loop start/stop, pause/resume, restart cleanup, and mute/volume controls.
-- Resize or rotate when responsive/mobile is in scope.
+### Game development build
 
-Do not rely only on screenshots for gameplay changes.
+- Open `http://127.0.0.1:5173/`.
+- Confirm `.frame`, `.viewport`, and one visible canvas.
+- Confirm the viewport aspect is 4:3 within a small rounding tolerance.
+- Record canvas CSS size and drawing-buffer size. The drawing buffer follows the displayed canvas at DPR 1; the renderer's internal 512x448 target is offscreen.
+- Confirm `__sheet`, `__teleport`, `__playerPos`, `__devLock`, `__testCollision`, and `__lightSlots` exist.
+- Capture console errors, page errors, request failures, and HTTP failures.
+- Capture a screenshot and objective nonblank pixel data.
 
-## Visual QA
+### Editor development build
 
-For premium/AAA/showcase or "less basic" requests:
+- Open `http://127.0.0.1:5173/editor.html`.
+- Confirm hierarchy, viewport, inspector, toolbar, and palette render.
+- Confirm `__sceneStore` and `__lightSlots` exist.
+- Select a node, switch camera or gizmo mode, and verify the UI state changes.
+- When save is in scope, make a reversible edit, save, validate the JSON response, and restore the original scene data before finishing.
+- Test asset thumbnails and the asset stage when model integration changed.
 
-- Capture active-play screenshot before and after when possible.
-- Use the visual scorecard.
-- Check for automatic failures:
-  - primitive-dominant active screenshot
-  - flat plane/box skyline world
-  - generic stat-card HUD
-  - one repeated obstacle/reward silhouette
-  - fog/glow/darkness hiding missing geometry
-  - no renderer diagnostics
-- Confirm UI and VFX do not obscure threats, rewards, player, or next decision.
-- Confirm desktop and mobile framing both show the playable path.
-- For generated 3D assets, confirm imported models have correct scale, orientation, material readability, collision proxies, and animation clips in active gameplay.
-- Decide whether to add/extend visual regression baselines. If skipped, record why the scene is not deterministic, not valuable enough yet, or covered by smoke checks only.
+### Production preview
 
-## Visual Test Harness QA
+- Run `npm run build` before preview.
+- Open built `/` and `/editor.html` according to the release policy.
+- Repeat nonblank canvas, console, page, network, and main-interaction checks.
+- Expect development hooks to be absent. Their absence is a pass, not missing coverage.
+- Verify models, textures, sounds, and entry chunks resolve with the deployment base path.
 
-When a visual harness is warranted:
+## Scene-data checks
 
-- Add deterministic hooks or test setup for random seed, camera shake, particles, time, debug UI, and active state.
-- Cover active desktop and active mobile screenshots when mobile is in scope.
-- Cover changed HUD/menu/fail/generated-asset states.
-- Use Playwright screenshot comparisons with deliberate thresholds.
-- Keep canvas-pixel smoke and interaction tests; visual baselines are additional evidence.
-- Report baseline update command, compare command, snapshot paths, masks, thresholds, and flake risks.
+Validate `src/engine/scene.json` as part of scene, asset, light, collision, or editor work:
 
-## Mobile QA
+- JSON parses and contains a `nodes` array.
+- Node IDs are unique.
+- Every non-null parent ID exists.
+- Library definitions stay out of root rendering.
+- Model components use `gltf` or `fbx` and reference existing public files.
+- FBX components include a base-color texture where required.
+- Surface texture names exist in `TEXTURE_URLS`.
+- Physics values match the component schema.
+- One environment component supplies ambient and fog values.
+- Authored lights plus temporary runtime lights fit the current `MAX_LIGHTS` allocation.
 
-- Touch controls emit game intents.
-- Pointer release/cancel/blur cannot leave controls stuck.
-- Safe areas respected.
-- Touch targets reachable and separated.
-- Page scroll does not steal gameplay input.
-- Orientation/resize preserves canvas and HUD.
-- DPR/performance acceptable.
-- Desktop input still works unless intentionally removed.
-- UI remains readable on narrow screens.
+Do not hard-code a remembered light limit in QA. Read `MAX_LIGHTS` from `src/ps2/PS2Material.ts`; the README may lag code.
 
-## Performance QA
+## Gameplay checks
 
-When draw calls, asset counts, shaders, shadows, or post-processing changed:
+Use `__devLock(true)` for headless automation. Pointer lock is still the manual path.
 
-- Record renderer calls, triangles, geometries, textures.
-- Record FPS/frame time if available.
-- Record physics engine, timestep, body count, collider count, active sensors, CCD bodies, and known expensive colliders when physics changed.
-- Note DPR cap and post/shadow settings.
-- Check active gameplay, not only idle view.
-- Compare before/after if performance work was requested.
-- Report any unmeasured risk honestly.
+1. Read `__playerPos()`.
+2. Hold a movement key and read it again.
+3. Assert finite coordinates and meaningful displacement.
+4. Teleport to the changed zone when traversal time adds no test value.
+5. Exercise the real interaction input after teleporting.
+6. Release keys and call `__devLock(false)` during cleanup.
 
-## Release Checks
+For doors and area transitions, record position before interaction and the expected target position. For carry/throw, verify both the visual and Rapier state. For inventory, verify active slot, stow state, and the equipped viewmodel.
 
-Before release-ready:
+## Collision checks
 
-- Production build passes.
-- Production preview/static server tested.
-- Vite `base` and asset URLs match target host.
-- Debug GUI, diagnostics overlays, verbose logs, and test shortcuts are gated or removed from player-facing release.
-- Bundle and large assets reviewed.
-- API keys are not present in client-side code, checked-in files, built assets, or browser-visible environment.
-- Public assets load under static hosting assumptions.
-- Browser support assumptions documented.
-- Deployment command or static artifact location reported.
-- Residual risks listed.
+`__testCollision(x, z, dx, dz, radius)` returns the adjusted position and collider count without moving the player. Use it for deterministic geometry checks:
 
-## Evidence Format
+- approach changed geometry from both sides;
+- move parallel to confirm sliding;
+- use a player-like radius, currently 0.35 unless the source changes;
+- assert finite output and expected blocking or passage;
+- compare collider count before and after scene reload when collider lifecycle changed.
+
+Follow with an in-game movement check. The hook tests the custom player AABB path, not Rapier dynamics.
+
+## Lighting checks
+
+`__lightSlots()` returns every shared shader slot. Record:
+
+- total slots and used slots;
+- finite positions, colors, radii, and spot values for used slots;
+- authored-light count after scene load;
+- circuit toggle changes;
+- flicker behavior without treating its exact cadence as deterministic;
+- flashlight slot acquisition and release;
+- no `out of light slots` warning.
+
+The renderer uses custom shader uniforms. Looking for Three.js `PointLight` objects is the wrong diagnostic.
+
+## Visual checks
+
+DEADWATER deliberately uses a dark gamma-space, diffuse-only PS2-style renderer. Reject only observable defects:
+
+- blank or near-uniform canvas;
+- wrong 4:3 framing or stretched HUD;
+- missing model or texture;
+- broken scale, pivot, culling, or collision alignment;
+- light-slot exhaustion, NaNs, or visibly unlit required paths;
+- clipped text or overlay obstruction;
+- obvious shader failure, depth artifact, missing fog, water break, or flashlight shadow regression;
+- scene seams, z-fighting, or transparent sorting failures introduced by the change.
+
+Color entropy, edge density, mean luminance, contrast, and dominant-color share are descriptive. A dark foggy room may have low values and still be correct. Do not use generic saturation, complexity, or fidelity thresholds.
+
+### Contact sheets
+
+Call:
+
+```js
+await window.__sheet();
+await window.__sheet('office');
+await window.__sheet('dock');
+await window.__sheet('sewer');
+```
+
+The files are `contact-sheet.png` and `contact-sheet-<area>.png` in the repo root. Contact sheets intentionally lift ambient and move fog far away. Use them for layout, coverage, missing assets, and broad composition. Use player screenshots for final lighting and fog.
+
+## Objective render data
+
+Record a short, stable sample rather than enforcing imported budgets:
+
+- animation frames observed;
+- draw calls per frame;
+- estimated submitted triangles per frame;
+- WebGL buffer and texture creations during the sample;
+- canvas CSS and drawing-buffer dimensions;
+- resource counts and transferred bytes grouped by model, texture, audio, script, and style;
+- pixel nonblank result and raw distribution values.
+
+Compare against a prior report or baseline when performance is the claim. Without a baseline, report the numbers and the unmeasured risk. Headless Chromium is functional evidence only; do not report its frame timing as real-GPU performance.
+
+## Audio checks
+
+When audio changes:
+
+- trigger the first pointer gesture and confirm `AudioContext` resumes;
+- listen for the changed event and at least one variant path;
+- verify missing or late sample loads do not throw;
+- cross zone boundaries and confirm ambience changes without duplicate loops;
+- blur, refocus, reload, and remount affected systems;
+- inspect console/network for decode and 404 errors;
+- check volume and pitch variance by ear and code where automated audio capture is impractical.
+
+## Release checks
+
+- `npm run build` passes.
+- Intended entry points exist in `dist`.
+- Preview URLs load with no runtime or asset errors.
+- Debug-only hooks and views are gated by `import.meta.env.DEV`.
+- Bundle and public asset growth is explained.
+- `public/models/CREDITS.md` covers CC BY sources.
+- No NC/ND, unapproved paid, or unattributed assets ship.
+- No credentials or temporary provider URLs appear in source or output.
+- Deployment base path and static-host assumptions are recorded.
+
+## Evidence format
 
 ```text
-QA result: pass/fail
-Commands:
-URL:
-Controls tested:
-Screenshots/artifacts:
+QA result: pass | fail | partial
+Scope and diff:
+Commands and URLs:
+Game result:
+Editor result:
+Production preview result:
+Controls and interactions:
+Player/collision/light hook output:
+Canvas and render sample:
+Contact sheets/screenshots/baselines:
 Console/page/network errors:
-Canvas pixel check:
-Desktop/mobile viewports:
-Renderer/performance diagnostics:
-Visual test harness:
-Physics diagnostics:
-External asset evidence:
-Audio evidence:
-Issues found/fixed:
-Residual risks:
+Scene and asset checks:
+Audio checks:
+Visual harness decision:
+Bot playtest decision:
+Issues found or fixed:
+Untested scope and residual risks:
 ```
 
-## Bug Report Format
+## Common failures
 
-```text
-Title:
-Severity:
-Reproduction steps:
-Expected:
-Actual:
-Browser/viewport/device:
-Console/page errors:
-Screenshot/artifact:
-Likely owner:
-Suggested fix:
-```
-
-## Common Release Failures
-
-- Testing dev server but shipping untested production build.
-- Static host base path breaks assets.
-- Debug UI visible to players.
-- Mobile UI passes screenshot but controls do not work.
-- Canvas is nonblank but wrong app is running on the port.
-- Physics gameplay looks right visually but collision proxies, sensors, or restart cleanup were not tested.
-- Screenshots are title/idle views instead of active play.
-- Premium claim has no visual scorecard or renderer diagnostics.
-- 3D/image/audio generation API key or generated temporary URLs accidentally exposed in client code.
+- Testing only the dev server, then calling the production build ready.
+- Treating a visible title overlay as proof the 3D scene rendered.
+- Using contact-sheet lighting as proof of shipping lighting.
+- Assuming the editor matches the fixed 512x448 game pipeline.
+- Expecting dev hooks in production.
+- Judging the PS2 image with generic brightness or PBR metrics.
+- Updating `scene.json` without validating parents, assets, collision, and lights.
+- Proving movement but not releasing held keys or dev lock during test cleanup.
+- Running parallel headless WebGL workers and trusting their timing.

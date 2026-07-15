@@ -1,60 +1,91 @@
 ---
 name: deadwater-ps2-graphics-builder
-description: "Upgrade Three.js games from basic/prototype visuals to premium AAA-inspired browser graphics. Combines art-direction critique, procedural model building, technical art, mandatory external asset sourcing decisions, deadwater-3d-asset-pipeline assets, deadwater-image-generator concept/texture workflows, scene visual polish, material/texture libraries, world prop kits, shaders, VFX readability, render budgets, LOD/instancing, render pipeline, and visual scorecard gates. For premium games with characters, vehicles, ships, weapons, buildings, signature props, skies, textures, decals, logos, icons, or GUI art, load the relevant generator skills before deciding procedural assets are enough."
+description: Use when designing, reviewing, or implementing DEADWATER's repo-local PS2-style Three.js graphics, including vertex-lit materials, scene art, imported model adaptation, renderer changes, water, glass, CCTV, flashlight shadows, CRT presentation, or visual-performance verification.
 ---
 
-# Three.js AAA Graphics Builder
+# DEADWATER PS2 graphics builder
 
 ## Purpose
 
-Own the production graphics pass. Convert basic screenshots into authored, high-density, performance-aware visual experiences.
+Own graphics and technical art for this repository. Protect the renderer contract while improving silhouettes, spatial composition, texture use, lighting, atmosphere, and measured runtime cost.
 
-## Use When
+This renderer is PS2-style, not a claim that every choice matches every PlayStation 2 title. It is not PSX rendering and it is not retro PBR.
 
-Screenshots still look basic, models look primitive, worlds are sparse, UI/world art feels generic, or the user asks for premium, AAA, high-fidelity, showcase, or less-basic graphics.
+## Claim labels
 
-## Required References
+Label renderer claims in plans, code comments, reviews, and reports:
 
-These references are required phase-entry gates, not optional reading:
+- `[Hardware fact]` for a documented PlayStation 2 capability or behavior. Keep the statement narrow. PS2 titles used many resolutions, framebuffer formats, material strategies, and light counts.
+- `[DEADWATER policy]` for a project choice enforced by this repository. The fixed 512x448 target and 20-slot shader array belong here.
+- `[Modern cheat]` for a newer technique used to serve DEADWATER's look or gameplay. Name its visual purpose and cost.
 
-- Load `references/visual-scorecard.md` before scoring, judging completion, or making any premium/AAA/showcase claim.
-- Load `references/implementation-blueprint.md` before changing graphics architecture, materials, VFX, rendering, diagnostics, or broad visual systems.
-- Load `references/model-recipes.md` before building or upgrading hero/player, obstacle, enemy, pickup, world-kit, material, or prop models.
-- Load `references/render-recipes.md` before changing lighting, tone mapping, shadows, fog, post-processing, materials, or render composition.
-- Load `references/technical-art.md` before premium/AAA/showcase graphics work, shaders/material systems, VFX systems, generated/imported asset cleanup, LOD/instancing work, or visual changes that could affect browser performance.
-- Load `references/shader-cookbook.md` before writing any custom shader, `onBeforeCompile` injection, material recipe, sky, or post-processing chain — use its proven values and GLSL patterns instead of improvising.
-- Load `references/checklists/aaa-game-quality-gate.md` and `references/checklists/aaa-visual-scorecard.md` before declaring a game premium, AAA, showcase, complete, release-ready, or less basic.
-- Load the relevant checklist before focused work: `references/checklists/procedural-model-quality.md`, `references/checklists/material-lighting-quality.md`, `references/checklists/performance-safe-visual-detail.md`, or `references/checklists/technical-art-quality.md`.
-- Load `references/prompt-templates.md` only when the user asks for reusable prompts, a graphics-pass prompt, or a task template.
+Never convert a project constant into a hardware limit. Never describe a modern cheat as hardware-authentic.
 
-For broad "still looks basic", premium, AAA, high-fidelity, showcase, or less-basic graphics work, load all five references as the first action in the phase. Track them in a reference ledger with yes/no, path, and failure reason. Do not mark the graphics phase complete while any required reference is skipped.
+## Core renderer contract
 
-External asset sourcing gate:
+- `[DEADWATER policy]` Run the main material path in gamma/display space. Sample color textures raw with `THREE.NoColorSpace`; use `rawColor` or `rawColorFromString`; do not add an sRGB decode, a linear-light workflow, tone mapping, or an environment map.
+- `[DEADWATER policy]` Use diffuse plus additive emissive only. Do not use runtime metalness, roughness, normal, AO, clearcoat, transmission, IBL, `MeshStandardMaterial`, or `MeshPhysicalMaterial` as the shipped scene language.
+- `[DEADWATER policy]` Calculate ordinary scene lighting per vertex in `src/ps2/PS2Material.ts`. Add vertices where light interpolation needs resolution. Do not replace Gouraud lighting with per-fragment scene lighting.
+- `[DEADWATER policy]` Render the game to the fixed 512x448 target in `src/ps2/PS2Pipeline.tsx`, then present it inside the 4:3 viewport in `src/index.css`.
+- `[DEADWATER policy]` Quantize the core material output to 5 bits per color channel with the 4x4 ordered dither in `src/ps2/PS2Material.ts`.
+- `[DEADWATER policy]` Prepare ordinary textures through `prepTexture`: bilinear magnification, hard mip transitions, anisotropy 1, raw color sampling.
+- `[DEADWATER policy]` Treat `MAX_LIGHTS = 20` as this shader's compile-time slot budget. Reserve capacity for the equipped flashlight and measure the live allocator with `window.__lightSlots()`.
+- `[DEADWATER policy]` Strip imported glTF/FBX materials at runtime through `applyPS2Materials` in `src/engine/render.tsx`. Preserve diffuse and emissive maps only. Do not repair an import by reintroducing PBR.
+- `[Hardware fact]` Do not add PS1/PSX affine texture wobble or vertex snapping. Those are not part of DEADWATER's PS2 target.
 
-- For premium/AAA/showcase/high-fidelity/less-basic graphics with a hero/player, character, creature, boss, vehicle, ship, building, weapon, signature prop, complex pickup, or hero environment piece, load `deadwater-3d-asset-pipeline` before deciding procedural geometry is enough.
-- For premium/AAA/showcase/high-fidelity/less-basic graphics with concept needs, texture/material references, decals, logos, faction marks, icons, GUI art, skies, backgrounds, title/menu art, or image-to-3D inputs, load `deadwater-image-generator` before deciding 2D external assets are not needed.
-- Run the director credential probe before using `key unavailable` as a skip reason and paste the SET/MISSING output.
-- Create an asset sourcing ledger for each high-value surface: procedural / deadwater-image-generator / deadwater-3d-asset-pipeline / hybrid, plus outputs or skip reason.
-- `not-needed` is valid only after the relevant skill was loaded and the ledger explains why external generation would not improve a non-hero support surface, or why the credential probe or attempted generation shows a real blocker.
-- For premium hero surfaces, procedural-only is not an allowed final answer unless there is real blocker evidence. At least one high-value surface must show a 3D generator task ID, downloaded GLB/GLTF/FBX path, image generator output path, or documented hybrid chain.
+## Approved modern cheats
+
+Keep these cheats bounded and explicit:
+
+- Per-fragment, hard-shadowed flashlight: `src/ps2/torchShadow.ts`, `src/game/Flashlight.tsx`, and the fragment path in `src/ps2/PS2Material.ts`.
+- Depth-aware water intersection foam: `src/ps2/sceneDepth.ts`, the depth pre-pass in `src/ps2/PS2Pipeline.tsx`, and `src/game/SewerWater.tsx`.
+- Stochastic texture bombing on selected large surfaces: `uBomb` in `src/ps2/PS2Material.ts` and `bombing` in `src/engine/types.ts` and `src/engine/scene.json`.
+- Grimy per-fragment glass sheen: `createGlassMaterial` in `src/engine/render.tsx`.
+- Low-resolution chopped CCTV feed: `src/ps2/cctv.ts`, `src/game/Cctv.tsx`, and the scheduled render in `src/ps2/PS2Pipeline.tsx`.
+- CRT presentation cues: line darkening and corner falloff in `src/ps2/PS2Pipeline.tsx`, plus the 4:3 frame in `src/index.css`.
+
+Do not use a cheat as a general replacement for the core renderer. A new cheat needs a named owner, a player-facing reason, a cost estimate, and visual evidence with the cheat enabled and disabled.
+
+## Required references
+
+Load only the references needed for the task, but do not skip a gate that matches the work:
+
+- Read `references/implementation-blueprint.md` before renderer architecture, scene ownership, material conversion, or broad graphics work.
+- Read `references/technical-art.md` before setting budgets, changing passes, adding lights, importing assets, or making performance claims.
+- Read `references/render-recipes.md` before changing the pipeline, presentation, lighting, fog, flashlight, water, glass, or CCTV.
+- Read `references/shader-cookbook.md` before writing or reviewing shader code.
+- Read `references/model-recipes.md` before adding or adapting models, procedural set pieces, collision proxies, or scene density.
+- Read `references/visual-scorecard.md` before scoring screenshots or claiming a graphics pass is complete.
+- Read the matching file under `references/checklists/` before final verification. Use `references/checklists/ps2-renderer-quality-gate.md` and `references/checklists/ps2-visual-scorecard.md` for broad completion claims.
+- Read `references/prompt-templates.md` only when preparing reusable task prompts.
+
+For a broad graphics pass, load the blueprint, technical-art contract, render recipes, model recipes, shader cookbook, scorecard, `references/checklists/ps2-renderer-quality-gate.md`, and `references/checklists/ps2-visual-scorecard.md`.
 
 ## Workflow
 
-1. Capture or inspect active desktop/mobile screenshots.
-2. Score visuals across art direction, hero/player, obstacles, rewards, world, materials, render, VFX, UI, and performance evidence.
-3. Add missing graphics architecture: material library, procedural textures/decals, model factories, world prop kit, technical-art budget, VFX system, render pipeline, diagnostics.
-4. Run the credential probe, then fill the external asset sourcing ledger per surface: procedural Three.js factory, `deadwater-image-generator` 2D reference/texture, `deadwater-3d-asset-pipeline` 3D generation, or a hybrid.
-5. Upgrade every weak visible surface, not only one hero object.
-6. Add lighting/render/material polish after authored forms exist.
-7. Add event-driven VFX tied to gameplay state.
-8. Re-score screenshots against the calibration anchors, citing the inspector's measured metrics. Continue until every premium category is at least 2/3 or report exact blockers.
-9. Run the fresh-eyes review per `references/visual-scorecard.md` before finalizing premium/AAA/showcase claims.
-10. Verify renderer diagnostics against the render budget table, technical-art budget, desktop/mobile screenshots, console/page errors, canvas pixels, imported asset budgets, and playability.
+1. Inspect `src/ps2/`, the relevant components in `src/engine/render.tsx`, the affected nodes in `src/engine/scene.json`, and current live frames.
+2. Classify each planned change as hardware fact, DEADWATER policy, or modern cheat.
+3. Capture a baseline live 4:3 frame and the relevant contact sheet. Record renderer counts, frame time, active light slots, pass state, and visible defects that the available tooling can measure.
+4. Write a short technical-art contract using `references/technical-art.md`.
+5. Improve the weakest visible surfaces with the smallest renderer-compatible change. Favor scene composition, mesh silhouette, vertex density, diffuse texture treatment, emissive masks, and light placement before a new shader or pass.
+6. Route imported assets through `src/engine/models.ts` and `applyPS2Materials`. Verify scale, pivot, bounds, texture size, emissive behavior, material collapse, and collision separately.
+7. Rebuild and inspect the same views. Test ordinary lighting, flashlight on and off, water intersections, glass, CCTV, darkness, and motion when affected.
+8. Complete `references/visual-scorecard.md` and the relevant checklists. Report exact failures rather than lowering the contract.
 
-## Core Rule
+## Verification boundary
 
-Do not make primitives look AAA by adding glow. First build authored forms, then materials, then lighting, then effects.
+Run `npm run build` and `npm run lint` from the repository root.
 
-## Final Response
+In a development game session, call `await window.__sheet()` to refresh `contact-sheet.png`, `contact-sheet-office.png`, `contact-sheet-dock.png`, and `contact-sheet-sewer.png`. These sheets use direct scene renders from `src/game/DevViews.tsx`; they validate geometry, materials, lighting, and coverage but bypass the final `PS2Pipeline` CRT blit. Capture the visible `.viewport canvas` separately to verify the fixed internal target, upscale, CRT treatment, HUD, and 4:3 presentation.
 
-Report the reference ledger, credential probe output, external asset sourcing ledger, technical art brief, score before/after, production surfaces upgraded, files changed, screenshots/artifacts, renderer diagnostics, imported asset diagnostics when relevant, VFX readability and render-budget tradeoffs, and remaining blockers. For premium/AAA/showcase claims, include the filled visual scorecard exactly as defined in `references/visual-scorecard.md`, including average and automatic failures remaining.
+## Final report
+
+Report:
+
+- contract changes grouped as hardware fact, DEADWATER policy, and modern cheat;
+- exact repository files changed;
+- before and after live-frame and contact-sheet evidence;
+- renderer counts, frame-time evidence, active light slots, and pass costs that were measured;
+- imported asset conversion checks when relevant;
+- filled visual scorecard and failed quality gates;
+- remaining risks and the next concrete visual pass.

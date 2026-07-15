@@ -1,18 +1,17 @@
-# Visual Verification Checklist
+# Visual verification checklist
 
-- Open the local dev or preview URL in a browser.
-- Check browser console errors and page errors.
-- Confirm the canvas has nonzero display size and drawing-buffer size.
-- Capture a screenshot.
-- Sample canvas pixels for nonblank output and color variance.
-- Test at desktop, laptop, and mobile viewport sizes.
-- Confirm camera aspect updates after resize.
-- Confirm UI/HUD text does not overlap or clip.
-- Interact for at least one core action and observe visible state change.
-- If using snapshots, make dynamic effects deterministic or mask them.
-- If the game is premium, release-ready, UI-heavy, or generated-asset-heavy, also use `deadwater-qa-release/references/visual-test-harness.md` and `deadwater-qa-release/references/checklists/visual-test-harness.md`, or record why a baseline harness is not warranted.
-- If HUD/menu layout changed, also use `deadwater-game-ui-designer/references/checklists/game-ui-quality.md`, `deadwater-game-ui-designer/references/checklists/hud-readability.md`, and `deadwater-game-ui-designer/references/checklists/responsive-ui-fit.md`.
-- If procedural models/materials changed, also use `deadwater-ps2-graphics-builder/references/checklists/procedural-model-quality.md`, `deadwater-ps2-graphics-builder/references/checklists/material-lighting-quality.md`, and `deadwater-ps2-graphics-builder/references/checklists/performance-safe-visual-detail.md`.
-- If the target is premium, AAA, complete, release-ready, or showcase quality, also use `deadwater-ps2-graphics-builder/references/checklists/aaa-game-quality-gate.md`.
-- If screenshots still look basic, also use `deadwater-ps2-graphics-builder/references/checklists/aaa-visual-scorecard.md`.
-- If the game is an endless runner, also use `deadwater-gameplay-systems/references/checklists/endless-runner-premium-quality.md`.
+- Open the correct game or editor URL and identify it in the report.
+- Capture console errors, page errors, failed requests, and HTTP failures.
+- Confirm the canvas has nonzero CSS and drawing-buffer dimensions.
+- In game mode, confirm the `.viewport` is 4:3. Treat the 512x448 internal target as a code/config invariant because it is offscreen.
+- Capture a full-page screenshot and sample canvas pixels for nonblank output.
+- Record pixel range and distribution as diagnostics, not artistic grades.
+- In dev game mode, confirm `__sheet`, `__teleport`, `__playerPos`, `__devLock`, `__testCollision`, and `__lightSlots` exist.
+- In dev editor mode, confirm `__sceneStore` and `__lightSlots` exist.
+- Capture contact sheets for the changed area: overall, office, dock, or sewer.
+- Also capture player-height views. Contact sheets raise ambient and fog distance, so they do not represent the final game image.
+- Check dark detail, fog, 5-bit dither, texture sampling, fixture glow, water, CCTV, and flashlight only where the change touches them.
+- Check HUD overlap, 4:3 placement, overlay state, and text fit.
+- Use screenshots at the fixed test viewport used by existing baselines.
+- Test narrow/mobile framing only when that target is explicitly in scope.
+- Keep canvas smoke, interaction checks, and visual baselines as separate evidence.

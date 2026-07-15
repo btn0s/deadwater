@@ -1,19 +1,17 @@
-# Game Design And Level Design Checklist
+# DEADWATER game and level design checklist
 
-Use before claiming a new game, major gameplay upgrade, level/encounter pass, premium gameplay, or polished gameplay is complete.
-
-- A game design brief names player promise, target feeling, primary verb, objective, pressure, reward, fail/retry, and non-goals.
-- The core loop is written as verb -> objective -> pressure -> reward/progression -> failure/retry.
-- The loop is implemented through real input, not only described.
-- The first playable minute includes at least one objective, one meaningful pressure source, one feedback/reward event, and one setback or fail/retry path when genre-appropriate.
-- Player skill expression is explicit: what a better player does differently.
-- Difficulty curve is named and tied to parameters, spawn tables, wave composition, speed, resource economy, or spatial constraints.
-- Level/track/arena/map/wave/hole/puzzle plan includes start, first decision, first threat, first reward, landmarks, escalation, recovery beats, and failure readability.
-- Greybox/blockout scale and routes are proven before expensive visual detail.
-- Obstacles, enemies, rewards, and interactables are placed to create decisions, not random clutter.
-- Camera framing supports the next decision in the planned space.
-- UI/HUD communicates objective, pressure, reward, or fail state.
-- Game-feel tuning covers control response, simulated space, camera, feedback, and restart speed.
-- At least one active playtest loop was used to tune values.
-- Fun-factor rejection tests have no unresolved blocker for the requested quality bar.
-- Final report includes design brief, core loop contract, level/encounter plan, tuning notes, evidence, and remaining design risks.
+- The brief names player promise, target feeling, primary verb, objective, pressure, reward or world change, setback or recovery, skill expression, and non-goals.
+- The loop maps to existing movement, reticle interaction, carry, inventory, light, door, audio, or scene-component systems.
+- The changed area has an arrival frame, orientation anchor, readable first choice, teaching beat, pressure beat, payoff, and recovery point.
+- The fixed player camera, not only the editor camera, can see the next decision.
+- Important silhouettes, values, light pools, and prompts survive the 512x448 output and fog.
+- Interactables are reachable, occluded by solid geometry, and distinct from nearby clutter.
+- Carry and inventory rules create an understandable tradeoff when both hands are occupied.
+- World changes have visible or audible consequences.
+- Required geometry, lights, props, physics, and interactions are authored in `scene.json`.
+- Repeated authored pieces use prefabs or seeded generators where they improve consistency.
+- Randomized content cannot block a required route or invalidate comparison artifacts.
+- Difficulty combines learned verbs and readable constraints instead of adding random density.
+- Setbacks explain what happened and recover without repeated setup.
+- Active play proves the decision and consequence; contact sheets prove area composition.
+- No unresolved rejection test remains for the requested slice.

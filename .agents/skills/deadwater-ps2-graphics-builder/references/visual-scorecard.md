@@ -1,147 +1,187 @@
-# Visual Scorecard
+# DEADWATER visual scorecard
 
-Score active-play screenshots, not idle title screens or isolated showroom models. Use desktop and mobile screenshots when mobile is in scope.
+Score active gameplay in the visible 4:3 viewport. Use contact sheets for scene coverage and a live canvas capture for the final 512x448 pipeline, CRT blit, HUD, and presentation.
 
-Scores are self-assessed against the anchors below, so they drift optimistic. Two countermeasures are mandatory for premium/AAA/showcase claims: cite Measured Evidence for the categories it supports, and run the Fresh-Eyes Review before finalizing.
+## Evidence set
 
-## Calibration Anchors
+Gather the complete relevant set before scoring:
 
-Reference screenshots for score calibration are packaged in `deadwater-ps2-graphics-builder/assets/scorecard-anchors/`:
+- baseline and current live `.viewport canvas` captures from the same player pose;
+- `contact-sheet.png` plus the affected area sheets from the project root;
+- flashlight-off and flashlight-on captures when the flashlight is available;
+- close views of water intersections, glass, CCTV, or imported assets when changed;
+- per-pass renderer counts or a clearly named unavailable metric;
+- frame-time capture with browser, hardware, build mode, view, and state;
+- `window.__lightSlots()` output when lighting changed;
+- `npm run build` and `npm run lint` results.
 
-- `scene-1.jpg` — score ~1: primitive player and pickups on a flat sparse arena, utility HUD.
-- `scene-2.jpg` — score ~2: authored track kit, imported hero asset, designed genre HUD, intentional lighting.
-- `scene-3.jpg` — score ~2.5-3: dense layered world in active play, readable hero silhouette, event VFX, cohesive HUD.
+Contact sheets come from direct scene renders in `src/game/DevViews.tsx`. They bypass the final target and CRT presentation. Never score final-pipeline integrity from contact sheets alone.
 
-Before scoring World/environment, Hero/player, Materials/textures, or Lighting/render, view the anchors and compare: if your screenshot reads closer to `scene-1.jpg` than `scene-3.jpg` for that surface, the category is at most a 1-2 regardless of how much code was written.
+## Scoring scale
 
-## Scoring Scale
-
-- 0: Placeholder. Default primitives, sparse world, unreadable state, debug UI, or no evidence.
-- 1: Basic styled. Playable and themed, but still obvious prototype assets, flat composition, repeated silhouettes, or generic UI.
-- 2: Premium stylized. Authored silhouettes, material/detail systems, readable state, cohesive UI/world, measured performance.
-- 3: Showcase. Strong art direction, memorable hero and world, dense authored detail, excellent readability, polished VFX/rendering, and diagnostics.
+- 0: Missing, broken, contradicted, or no evidence.
+- 1: Present but weak, inconsistent, generic, or unmeasured.
+- 2: Intentional, renderer-conformant, readable, and supported by evidence.
+- 3: Distinctive, cohesive across views and states, technically controlled, and proven with before/after and measured evidence.
 
 ## Categories
 
-1. Art direction.
-   - 0: No clear theme.
-   - 1: Theme is mostly colors/fog.
-   - 2: Theme affects forms, materials, UI, world, and feedback.
-   - 3: Distinct identity visible in every surface.
-2. Hero/player.
-   - 0: Default primitive stack.
-   - 1: Basic object with glow or simple attachments.
-   - 2: Authored silhouette, decals/trim, state cues, collision proxy.
-   - 3: Memorable model with layered construction and expressive feedback.
-3. Obstacles/enemies.
-   - 0: Cubes/cones/spheres.
-   - 1: Recolored repeated silhouette.
-   - 2: Three readable variants with telegraphs and material cues.
-   - 3: Varied family with animation, anticipation, and gameplay clarity.
-4. Rewards/interactables.
-   - 0: Plain sphere/ring/token.
-   - 1: Repeated object with simple glow.
-   - 2: Two authored forms with idle/collect states and UI feedback.
-   - 3: Desirable, animated, and clearly valued during motion.
-5. World/environment.
-   - 0: Flat plane, empty arena, box skyline.
-   - 1: Themed but sparse repeated blocks.
-   - 2: Layered prop kit with foreground/midground/background and scale cues.
-   - 3: Dense authored world that supports gameplay readability.
-6. Materials/textures.
-   - 0: Flat colors.
-   - 1: Basic roughness/metalness or emissive color.
-   - 2: Shared material roles, procedural decals, trim, panel lines, wear/noise.
-   - 3: Rich cohesive material language with measured texture/resource use.
-7. Lighting/render.
-   - 0: Default lights or unreadable darkness.
-   - 1: Fog/bloom used as main style.
-   - 2: Intentional tone mapping, exposure, key/fill/rim, contact, depth.
-   - 3: Cinematic but readable composition with disciplined post-processing.
-8. VFX/motion.
-   - 0: None or random particles.
-   - 1: Generic particles/trails.
-   - 2: Event-driven VFX for boost, pickup, hit, fail, combo, shield, or spawn.
-   - 3: High-impact effects that clarify gameplay and remain performant.
-9. UI/HUD.
-   - 0: Debug text or missing UI.
-   - 1: Generic stat-card dashboard.
-   - 2: Genre-specific HUD states, meters/icons, responsive text fit.
-   - 3: Cohesive game interface with strong hierarchy and polished transitions.
-10. Performance evidence.
-   - 0: No metrics after visual changes.
-   - 1: Informal "seems fine".
-   - 2: Renderer counts, build/browser QA, desktop/mobile screenshots, and technical-art budget notes.
-   - 3: Baseline/post metrics, bottleneck notes, budgets, optimized asset strategy, and VFX/readability tradeoffs.
+### 1. Renderer-contract fidelity
 
-## Thresholds
+- 0: Stock PBR, linear/sRGB workflow, wrong target/aspect, or ordinary per-fragment lighting replaces the core.
+- 1: Core mostly survives but custom paths omit raw color, filtering, fog, dither, or import conversion.
+- 2: Gamma/display-space, diffuse/emissive, Gouraud, 512x448, 4:3, dither, filtering, and runtime PBR stripping all hold.
+- 3: The contract is tested at every affected boundary, and comments/reports separate hardware facts, DEADWATER policies, and modern cheats.
 
-Premium:
+### 2. Art direction and atmosphere
 
-- Every category at least 2.
-- Average at least 2.3.
-- Desktop and mobile active-play screenshots captured when mobile is in scope.
-- Renderer diagnostics reported after graphics changes.
+- 0: No coherent warehouse, dock, sewer, or horror identity.
+- 1: Mood comes mainly from darkness, fog, or a green tint.
+- 2: Structure, stock layout, grime, lights, props, water, sound-facing cues, and UI support the same industrial setting.
+- 3: Each area is recognizable at a glance while sharing one restrained DEADWATER visual language.
 
-Showcase:
+### 3. World composition and geometry
 
-- At least six categories score 3.
-- No category below 2.
-- Average at least 2.7.
-- Performance evidence includes before/after or budget-aware notes.
+- 0: Empty planes, stretched boxes, accidental intersections, or blocked routes dominate.
+- 1: Props exist but placement is scattered, repetitive, incorrectly scaled, or weak in the first-person frame.
+- 2: Warehouse operational zones, negative space, foreground, midground, focal objects, and traversal sightlines are intentional.
+- 3: Composition remains strong across gameplay and every relevant contact-sheet camera, with purposeful occlusion and no filler density.
 
-## Automatic Failures
+### 4. Model and set-piece quality
 
-Any of these prevents a premium/AAA/showcase claim:
+- 0: Broken imports, placeholder primitives, PBR-only source read, missing collision, or wrong scale.
+- 1: Models load but collapse after material stripping, lack silhouette, or read only in editor thumbnails.
+- 2: Imported and procedural assets keep useful silhouettes, normals, diffuse/emissive treatment, scale, bounds, and separate collision at gameplay distance.
+- 3: Reusable prop families and focal set pieces feel authored for this renderer, with diagnostic and licensing evidence.
 
-- Active screenshot is primitive-dominant.
-- Main world is mostly stretched boxes, flat planes, or a sparse arena.
-- Hero asset is mostly default primitives plus glow.
-- Obstacles or rewards are one repeated silhouette.
-- HUD is mostly rectangular stat/debug cards.
-- Fog, darkness, bloom, or particles hide missing authored geometry.
-- UI overlaps the play path, clips text, or fails mobile safe areas.
-- The game is not playable through real input.
-- No active-play screenshot was captured.
-- No renderer diagnostics were collected after major graphics work.
-- No technical-art budget or imported/generated asset diagnostics were reported for premium graphics work.
+### 5. Texture and material language
 
-## Measured Evidence
+- 0: Missing textures, sRGB/PBR mismatch, unreadable noise, or accidental fullbright surfaces.
+- 1: Diffuse maps work but repeat, scale, mip changes, or value separation remain obvious.
+- 2: Raw diffuse and emissive maps, 256px working scale, UV repeat, tint, hard mip transitions, and limited bombing support form and material identity.
+- 3: Texture choices remain clear in motion, darkness, flashlight, fog, and dither without relying on runtime PBR.
 
-Run the canvas inspector (`npm run inspect:canvas`, or `deadwater-qa-release/scripts/inspect-threejs-canvas.mjs`) on desktop and mobile and cite its `metrics` and `renderBudget` blocks in the scorecard. The numbers are advisory signals, not gates, but they must be reported and low values must be explained rather than ignored:
+### 6. Vertex lighting, darkness, and fog
 
-- `colorEntropyBits` below ~3.0 or `dominantColorShare` above ~0.6 suggests a sparse, flat scene — supporting evidence against World/environment or Materials/textures scores above 2.
-- `edgeDensity` below ~0.04 suggests primitive-dominant or empty framing — supporting evidence against World/environment and Hero/player scores above 2.
-- `luminance.contrast` below ~60 suggests fog/darkness compression — supporting evidence against Lighting/render scores above 2.
-- `renderBudget` rows over the tier budget require a documented tradeoff in the technical-art budget (see `references/technical-art.md`).
-- Renderer diagnostics (calls, triangles, geometries, textures) back the Performance evidence category.
+- 0: Essential paths are black, lights leak or fail, or the flashlight is the only readable illumination.
+- 1: Fixtures illuminate the scene but pools facet, flatten, clip, or fight ambient/fog.
+- 2: Per-vertex pools, normals, surface segments, fixture emissive/fullbright faces, ambient, and fog produce readable depth.
+- 3: Lighting composes each area, survives movement and circuit states, and stays within the slot and frame budgets.
 
-## Fresh-Eyes Review
+### 7. Modern-cheat discipline
 
-The builder must not be the only grader. For premium/AAA/showcase claims:
+- 0: A cheat is described as authentic hardware behavior, replaces the core renderer, or has an unknown owner and cost.
+- 1: Flashlight, foam, bombing, glass, CCTV, or CRT works but is overused, visually noisy, or unmeasured.
+- 2: Each active cheat has a label, owner, player-facing purpose, bounded coverage, cost, fallback, and comparison evidence.
+- 3: Cheats solve specific reads with minimal scope and fail cleanly when disabled or unavailable.
 
-- If the runner supports subagents (Task tool or equivalent), spawn a reviewer with ONLY: the screenshots, this scorecard file, and the inspector metrics JSON. No build context, no prior scores. The reviewer must receive the COMPLETE capture set — every captured state, desktop and mobile — never a hand-picked subset; a curated selection can hide weak states or miss content the builder knows exists (capture states with the inspector's `--state` flag so nothing is gated behind live play). The reviewer fills the scorecard independently; reconcile by taking the lower score per category unless concrete evidence overturns it. Report both score sets.
-- If subagents are unavailable, run an adversarial self-review before finalizing: for each category, write one sentence making the strongest case that the score is a 1, citing what is visible in the screenshot; only then assign the score. Include these sentences in the report.
+### 8. 4:3 and CRT presentation
 
-## Report Format
+- 0: Wrong aspect, missing final blit, broken scaling, or clipped HUD.
+- 1: The frame is 4:3 but composition, line treatment, corner falloff, or scaling hurts readability.
+- 2: Fixed internal target, bilinear upscale, mild CRT cues, CSS frame, HUD, and overlays remain readable at tested desktop sizes.
+- 3: The final presentation strengthens the mood without hiding dither, crushing dark areas, or looking like a generic CRT filter.
+
+### 9. Gameplay-state readability
+
+- 0: Crosshair, prompts, pickups, doors, hazards, or interaction targets disappear into the scene.
+- 1: Readability works only when still, close, or with the flashlight on.
+- 2: Navigation, interaction, carry state, fixture state, water boundaries, and surveillance cues read during normal movement.
+- 3: Visual hierarchy anticipates player decisions across dark, lit, flashlight, office, dock, and sewer states.
+
+### 10. Performance and verification evidence
+
+- 0: No build/lint result, no live capture, or a performance claim without metrics.
+- 1: Commands pass and screenshots exist, but per-pass counts, frame time, or light slots are missing.
+- 2: Same-view before/after captures, build, lint, contact sheets, live final frame, per-pass counts, frame time, and relevant diagnostics are reported.
+- 3: The report explains every cost delta, identifies bottlenecks, validates periodic and optional passes, and records a tested fallback.
+
+## Gates
+
+### Renderer-conformant graphics pass
+
+- Renderer-contract fidelity scores 3.
+- Every other category scores at least 2.
+- Average score is at least 2.3.
+- No automatic failure remains.
+
+### Release-ready graphics pass
+
+- Renderer-contract fidelity and performance evidence score 3.
+- At least six other categories score 3.
+- No category scores below 2.
+- Average score is at least 2.7.
+- The full relevant evidence set covers ordinary lights, flashlight state, and every changed modern cheat.
+
+These are DEADWATER quality gates. They are not claims of high-end photoreal fidelity or universal PS2 authenticity.
+
+## Automatic failures
+
+Any item below blocks both gates:
+
+- A shipped world path uses stock PBR, an environment map, tone mapping, or runtime roughness/metalness/normal/AO as its material language.
+- A global PSX effect such as affine wobble, vertex snapping, or nearest-only magnification is added and called PS2-style.
+- A report calls 512x448 or 20 light slots a universal PS2 hardware limit.
+- Ordinary scene lighting moves from the vertex shader to per-fragment lighting.
+- Imported glTF/FBX PBR materials bypass `applyPS2Materials` without an explicit renderer redesign.
+- A new modern cheat lacks a label, owner, purpose, bounded cost, fallback, or enabled/disabled evidence.
+- The visible game is not 4:3 or the main target is not fixed at 512x448.
+- Only contact sheets or editor thumbnails are supplied; no live final-pipeline capture exists.
+- Contact sheets are presented as evidence of the CRT blit.
+- Lighting changed without checking slot allocation and the flashlight reserve.
+- A new full-scene pass has no per-pass cost evidence.
+- The flashlight shadow, water foam, glass, or CCTV changed but its affected state was not exercised.
+- Navigation or interaction becomes unreadable in ordinary darkness or under the flashlight.
+- `npm run build` or `npm run lint` fails because of the graphics work.
+
+## Measured evidence rules
+
+- Name the pass attached to draw calls and triangles. The final blit's counters do not describe the main scene.
+- Include render targets and generated textures in memory counts.
+- State the exact light-slot occupancy, not only the number of light nodes in `src/engine/scene.json`.
+- State `not measured` instead of guessing.
+- Name hardware and browser for frame time.
+- Compare identical player pose, camera, window size, light circuits, and flashlight state.
+- Do not use image entropy or edge density as a substitute for visual judgment. If automated image metrics are available, treat them as secondary evidence and state the capture path they measured.
+
+## Independent review
+
+The implementer should not be the only scorer for a release-ready claim.
+
+Give a fresh reviewer only:
+
+- the complete relevant before and after capture set;
+- this scorecard;
+- the filled technical-art metrics;
+- the renderer-change diff when contract fidelity must be checked.
+
+Do not provide the intended score or a defense of the work. Take the lower score per category unless concrete repository evidence resolves the disagreement.
+
+If an independent reviewer is unavailable, write one adversarial sentence per category that argues for the next lower score before assigning the final value.
+
+## Report format
 
 ```text
-Visual scorecard:
-- Art direction: before X / after Y - evidence:
-- Hero/player: before X / after Y - evidence:
-- Obstacles/enemies: before X / after Y - evidence:
-- Rewards/interactables: before X / after Y - evidence:
-- World/environment: before X / after Y - evidence:
-- Materials/textures: before X / after Y - evidence:
-- Lighting/render: before X / after Y - evidence:
-- VFX/motion: before X / after Y - evidence:
-- UI/HUD: before X / after Y - evidence:
-- Performance evidence: before X / after Y - evidence:
-Measured evidence: colorEntropyBits / edgeDensity / luminance.contrast /
-  dominantColorShare per viewport, renderer diagnostics, render budget rows
-Fresh-eyes review: subagent scores or adversarial self-review notes
+DEADWATER visual scorecard
+Evidence set:
+Hardware facts stated:
+DEADWATER policies changed:
+Modern cheats changed:
+
+1. Renderer-contract fidelity: before / after / evidence
+2. Art direction and atmosphere: before / after / evidence
+3. World composition and geometry: before / after / evidence
+4. Model and set-piece quality: before / after / evidence
+5. Texture and material language: before / after / evidence
+6. Vertex lighting, darkness, and fog: before / after / evidence
+7. Modern-cheat discipline: before / after / evidence
+8. 4:3 and CRT presentation: before / after / evidence
+9. Gameplay-state readability: before / after / evidence
+10. Performance and verification evidence: before / after / evidence
+
 Average:
 Automatic failures remaining:
+Renderer-conformant gate: pass/fail
+Release-ready gate: pass/fail
+Lowest category and next concrete pass:
 ```
-
-If any category remains below threshold, state the exact next pass instead of declaring completion.

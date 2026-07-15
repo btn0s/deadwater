@@ -1,17 +1,24 @@
-# Technical Art Quality Checklist
+# DEADWATER technical-art checklist
 
-Use before claiming premium, AAA, showcase, high-fidelity, or less-basic visual quality after graphics changes. Each item gates the guidance in `references/technical-art.md`.
+Gate any graphics change that affects renderer structure, cost, imports, shaders, or completion claims.
 
-- Technical art brief converts art direction into shapes, material roles, lighting, VFX, camera, UI/world motifs, and budgets.
-- Hero surfaces and support surfaces are identified separately.
-- Material kit uses the named shared roles from `references/technical-art.md`, not scattered one-off colors/materials.
-- Shader/post-processing choices have player-facing purpose and measured or bounded cost.
-- VFX follow the event-driven language in `references/technical-art.md`: readable, short-lived, and not hiding collision, threats, rewards, or UI.
-- Instancing is used for large repeated same-geometry/same-material detail where appropriate.
-- LOD, culling, or simplified far variants are planned for heavy background/imported assets.
-- Imported/generated models have scale, pivot/orientation, bounds, file size, triangle/material/texture counts when available, and collision proxies checked.
-- Decals/trim/detail systems reinforce function, route, faction, scale, or state.
-- Threats, rewards, interactables, and player state are not communicated by color alone.
-- DPR cap, shadow settings, post-processing passes, and mobile tradeoffs are reported.
-- Renderer diagnostics match the render budget reporting in `references/technical-art.md`: calls, triangles, geometries, textures, and material count when available.
-- Final visual scorecard performance evidence category includes budget and technical-art evidence, not only screenshots.
+- [ ] The technical-art contract in `references/technical-art.md` is filled before implementation.
+- [ ] The visible problem and affected evidence views are concrete.
+- [ ] Each renderer claim is classified as hardware fact, DEADWATER policy, or modern cheat.
+- [ ] Hardware claims are narrow and do not turn project choices into console limits.
+- [ ] Core path versus cheat path is explicit.
+- [ ] Every change has a canonical repository owner and named consumers.
+- [ ] Geometry and Gouraud vertex-cost impact is estimated and measured where practical.
+- [ ] Texture, material, render-target, and program impact is estimated and measured.
+- [ ] Light-slot impact accounts for the 20-slot compiled project array and flashlight reserve.
+- [ ] Pass impact accounts for CCTV, opaque depth, optional flashlight depth, main scene, and blit.
+- [ ] New full-scene passes default to rejected unless comparison evidence and measurement justify them.
+- [ ] Imported assets report source and shipped diagnostics after PBR stripping.
+- [ ] Modern cheats state purpose, owner, cost, bound, fallback, and enabled/disabled evidence.
+- [ ] Per-pass counters are collected deliberately; last-render counters are not misread as total frame cost.
+- [ ] Frame-time evidence names hardware, browser, build mode, view, and gameplay state.
+- [ ] `window.__lightSlots()` is recorded when lighting changes.
+- [ ] Contact sheets and a live final-pipeline frame are both used for broad visual work.
+- [ ] Every unavailable metric is marked `not measured` rather than guessed.
+- [ ] `npm run build` and `npm run lint` pass.
+- [ ] The final report includes exact files, evidence, budget deltas, failed gates, and next pass.

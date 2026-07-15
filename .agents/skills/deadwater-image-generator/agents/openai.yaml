@@ -1,4 +1,4 @@
 interface:
-  display_name: "Three.js Image Generator"
-  short_description: "Generate concepts, textures, icons, decals, and UI art for Three.js games"
-  default_prompt: "Load deadwater-image-generator/SKILL.md (try ~/.codex/skills/deadwater-image-generator/SKILL.md, then ~/.claude/skills, ~/.agents/skills, or repo skills/) and follow it exactly. Non-negotiables: run the probe before declaring the key unavailable; save outputs inside the project assets directory; report prompt, resolution, output path, intended runtime use, and whether the image feeds deadwater-3d-asset-pipeline."
+  display_name: "DEADWATER Image Generator"
+  short_description: "Create and prepare DEADWATER image assets"
+  default_prompt: "Use $deadwater-image-generator to create or source an image, prepare its PS2 runtime copy, and verify it in DEADWATER."

@@ -1,124 +1,128 @@
 ---
 name: deadwater-game-director
-description: "Primary entrypoint for complete Three.js browser game creation and premium iteration. Use by default for build-a-game, upgrade, polish, premium, AAA, high-fidelity, showcase, from-scratch, endless runner, arcade, action, or release-ready requests. Orchestrates sibling skills for gameplay, AAA graphics, UI, debug/profile, and QA/release, plus 3D/image/audio generators for characters, vehicles, weapons, buildings, props, skies, textures, logos, icons, GUI art, and SFX/voice. Keeps skill-loading, reference, asset-sourcing, and phase ledgers so users never choose skills manually."
+description: "Direct broad development of the DEADWATER Three.js game and its PS2-style engine. Use for complete features, major upgrades, gameplay-plus-art work, visual polish, release preparation, or requests spanning multiple game systems. Route work through the repo-local gameplay, PS2 graphics, UI, debug, QA, 3D asset, image, and audio specialists."
 ---
 
-# Three.js Game Director
+# DEADWATER game director
 
 ## Purpose
 
-Own the end-to-end game outcome. Build the playable loop, route through the right phases, verify evidence, and do not call prototype-quality work premium. "Less basic" from the user means the current visual level is rejected: treat it as the premium bar.
+Own the end-to-end player-facing result. Preserve DEADWATER's data-driven scene graph, React Three Fiber and Rapier architecture, PS2-style renderer, editor workflow, asset provenance, and agent-verifiable runtime hooks.
 
-## Runner Capability Check
+Use this skill as the main entrypoint for broad work. For a narrow task, load the directly relevant specialist and `deadwater-qa-release`.
 
-Before planning, note what this runner can do and adapt:
+## Repository contract
 
-1. **Invoke sibling skills directly?** Usually not — the runner invokes only this skill. Load sibling `SKILL.md` files with file-read tools instead. Never claim a skill was "invoked" when it was only loaded/read.
-2. **Read files by path?** Resolve every skill and reference path through the path ladder below. If a required file cannot be read anywhere on the ladder, record the failure in the ledger and use `references/phase-playbook.md` as the fallback procedure for that phase.
-3. **Run shell commands (node + python3)?** If yes, use the packaged scripts (scaffold creator, credential probe, canvas inspector, report audit). If not, ask the user to run each command and paste the output; never fabricate script output.
-4. **Drive a browser / run Playwright?** If yes, capture screenshots and canvas inspection yourself. If not, ask the user to run `npm run verify:visual` and `npm run inspect:canvas` and paste the results; report unverified visuals as a residual risk, never as verified.
+Treat the current repository as the product and reference implementation:
 
-### Skill Path Ladder
+- `src/ps2/`: PS2-style materials, fixed framebuffer pipeline, depth resources, CCTV, and flashlight shadow.
+- `src/engine/`: scene schema, `scene.json`, component renderers, registries, editor store, lighting, textures, and inspection metadata.
+- `src/game/`: controls, player state, physics, interactions, inventory, AI, audio, culling, and authored game effects.
+- `src/editor/`: the in-browser scene and asset editor.
+- `public/`: runtime textures and models, with provenance in `docs/ASSETS.md` and `public/models/CREDITS.md`.
 
-Try in order, expanding `~` to the user's home directory when the read tool requires absolute paths:
+Do not introduce a parallel vanilla Three.js engine, second scene source of truth, second render loop, or PBR runtime beside the PS2 renderer.
 
-1. `../<skill-name>/SKILL.md` relative to this skill's directory
-2. `~/.claude/skills/<skill-name>/SKILL.md`
-3. `~/.codex/skills/<skill-name>/SKILL.md`
-4. `~/.agents/skills/<skill-name>/SKILL.md`
-5. `skills/<skill-name>/SKILL.md` in the repository source
+## Load sibling skills
 
-Reference files resolve the same way: `<skill-dir>/references/<file>.md`. Sibling skills point back to this ladder instead of restating it.
+For broad features or release work, load all five phase specialists before implementation:
 
-## Sibling Skill Loading
+1. `deadwater-gameplay-systems`
+2. `deadwater-ps2-graphics-builder`
+3. `deadwater-game-ui-designer`
+4. `deadwater-debug-profiler`
+5. `deadwater-qa-release`
 
-For broad work (complete, premium, AAA, polished, high-fidelity, showcase, from-scratch, upgrade, release-ready), load all five phase skills before implementation: `deadwater-gameplay-systems`, `deadwater-ps2-graphics-builder`, `deadwater-game-ui-designer`, `deadwater-debug-profiler`, `deadwater-qa-release`. For narrow director-invoked work, load the directly relevant sibling plus `deadwater-qa-release`. Do not skip sibling loading because this director bundles a phase playbook.
+Load production specialists when their outputs are in scope:
 
-Load generator skills before deciding generated assets are unnecessary, whenever their trigger surfaces exist in premium/AAA/showcase/complete/release-ready/"less basic" work:
+- `deadwater-3d-asset-pipeline`: models, props, textures tied to models, licensing, conversion, registration, collision, or placement.
+- `deadwater-image-generator`: concepts, diffuse or emissive textures, signs, decals, icons, interface art, or image edits.
+- `deadwater-audio-generator`: procedural cues, imported samples, ambience, interface feedback, or audio-system changes.
 
-- `deadwater-3d-asset-pipeline/SKILL.md` — characters, creatures, bosses, vehicles, ships, weapons, buildings, signature props, complex pickups, hero environment pieces, rigging/animation, textured imports.
-- `deadwater-image-generator/SKILL.md` — concept/reference sheets, texture and material references, skies/backgrounds, logos, icons, decals, GUI/title/menu art, terrain/sky plates, image-to-3D inputs.
-- `deadwater-audio-generator/SKILL.md` — SFX, ambience, UI sounds, vehicle/weapon/boss audio, announcer/dialogue, voice conversion, audio cleanup.
+Read sibling files from `.agents/skills/<skill-name>/SKILL.md`. Record `loaded`, not `invoked`, when a file was read rather than activated by the runner.
 
-## External Asset Sourcing Gate
+## Rendering doctrine
 
-- Never record "not-needed" for a generator before loading its `SKILL.md` when trigger surfaces exist.
-- Before claiming an API key is unavailable, run the credential probe and paste its literal `KEY=SET|MISSING` output into the report. Each generator script also has its own `probe` subcommand.
+Classify DEADWATER as a **Three.js PS2-style renderer with targeted modern cheats**. It is neither PSX nor retro-PBR.
+
+Keep these distinctions explicit:
+
+- **PS2 hardware fact:** a capability or behavior supported by primary hardware documentation.
+- **DEADWATER policy:** an art or engineering choice such as 512x448 internal resolution, 4:3 framing, 256px runtime textures, or the current light-slot budget.
+- **Modern cheat:** a modern technique kept because it serves the intended image or play, such as the flashlight shadow map, depth-aware foam, texture bombing, or editor preview.
+
+Do not present a DEADWATER policy as a universal hardware limit. Do not introduce PS1 affine warping or vertex snapping. Do not preserve glTF metallic, roughness, normal, or AO channels in gameplay unless the renderer contract is deliberately redesigned.
+
+## Phase routing
+
+### 1. Discovery and contract
+
+- Inspect the affected scene nodes, components, systems, assets, hooks, and existing verification.
+- State the player-facing outcome, affected gameplay path, render policy, and non-goals.
+- For a large feature, define the playable slice and the level or encounter change before building art around it.
+
+### 2. Gameplay systems
+
+Use `deadwater-gameplay-systems` for mechanics, controls, interactions, physics, state, AI, level flow, camera, feedback, and scene-schema changes. Keep `scene.json` authoritative for world layout.
+
+### 3. Asset and media production
+
+Use the 3D, image, and audio specialists as needed. Prefer the existing vetted CC0 and CC-BY acquisition path. Record source URL, license, processing, runtime path, registry entry, and credit update for every external asset.
+
+Generated media is optional. Never force an external provider when a vetted asset, procedural construction, or existing library better fits the game.
+
+### 4. PS2 graphics and technical art
+
+Use `deadwater-ps2-graphics-builder` for models, materials, lighting, fog, water, shaders, render targets, world density, composition, and renderer budgets. Require the specialist's PS2 visual scorecard for claims that the graphics pass is complete.
+
+### 5. Interface
+
+Use `deadwater-game-ui-designer` for the game HUD and overlays or the editor interface. Keep game presentation and editor usability as separate modes sharing state, not styling rules.
+
+### 6. Debug and profile
+
+Use `deadwater-debug-profiler` for failures and measured performance work. Reproduce before changing code, identify the owning layer, and compare the same camera, build mode, and scene before and after optimization.
+
+### 7. QA and release
+
+Use `deadwater-qa-release` after every meaningful phase. Exercise the real browser path, the game and editor where relevant, production build output, contact sheets, console/page errors, and recent risky interactions.
+
+## Required ledgers
+
+Maintain the four compact ledgers defined in `references/phase-playbook.md`:
+
+1. Skill loading
+2. Required references
+3. Asset provenance and processing
+4. Phase execution
+
+Record only rows that apply, but never omit a row carrying a source, failure, decision, or verification result.
+
+## Completion rules
+
+Do not call broad work complete until the applicable evidence exists:
+
+- `npm run build` and `npm run lint` pass.
+- The game opens without console or page errors.
+- The main changed input or editor path works in the browser.
+- Relevant contact-sheet areas or screenshots were captured.
+- `scene.json` remains loadable and editor/game state agree.
+- Renderer, physics, asset, UI, or audio evidence is reported when that area changed.
+- Production preview was checked for release claims.
+- Remaining risks name an owner and a concrete unverified path.
+
+Graphics claims also require the current PS2 visual scorecard. Asset claims require provenance and runtime integration evidence. A successful download or build alone is never proof that the result works in game.
+
+## Report audit
+
+For broad work, draft the evidence report and run:
 
 ```bash
-bash <director-skill-dir>/scripts/probe_asset_credentials.sh
+python3 .agents/skills/deadwater-game-director/scripts/audit_reference_report.py /path/to/report.md
 ```
 
-- For premium hero surfaces (player, enemy, boss, creature, vehicle, ship, weapon, building, signature prop), procedural-only is not an allowed final answer without real blocker evidence: a `MISSING` probe line, or an attempted generation command plus its API/network/quota error. Otherwise at least one high-value surface must show a 3D generator task ID, downloaded GLB/GLTF/FBX path, image generator output path, or documented hybrid chain.
-- For premium active gameplay, missing audio is a reported gap unless the user asked for silent/offline output or the audio key/API is blocked.
-- Fill the external asset sourcing ledger before the graphics phase. The ledger template and the allowed skip reasons live in `references/phase-playbook.md`.
+Add `--graphics`, `--physics`, `--assets`, `--audio`, or `--release` when those areas are in scope. Fix missing evidence or report the exact blocker.
 
-## Reference Gate
+## Final report
 
-References are phase-entry gates, not optional enrichment. The canonical per-phase Required References list lives in `references/phase-playbook.md`; load that file at planning time for broad work and at phase entry otherwise.
-
-- Load required references at phase entry, not at the end.
-- Track every required reference in the reference ledger with yes/no/not-needed, path, and failure reason.
-- A phase cannot be marked `done` until its required references are loaded, or the final answer reports the reference as unavailable and the phase as blocked/fallback.
-- For premium/AAA/showcase claims, the final response must include the filled 10-category visual scorecard from `deadwater-ps2-graphics-builder/references/visual-scorecard.md`, including measured evidence, average, and automatic failures remaining. Do not substitute a personal rubric.
-- Thorough mode is the default for broad, premium, AAA, showcase, complete, and release-ready requests. Economy mode is allowed only for narrow fixes that do not claim premium quality.
-
-If Task/subagent/workflow tools are available, delegate each major phase to a focused worker with the phase `SKILL.md` plus its required references explicitly loaded. If unavailable, execute serially after loading the same files.
-
-## Ledgers
-
-Keep four ledgers: skill-loading, reference, external asset sourcing, and phase execution. Templates live in `references/phase-playbook.md`.
-
-Compaction rule: report every row that has meaningful state (yes/no/blocked/done/skipped plus path or evidence), and collapse consecutive `not-needed` rows into a single line naming them. Never omit or compress rows that carry real state.
-
-## Phase Routing
-
-- `deadwater-gameplay-systems`: design brief, core loop contract, level/encounter plan, first playable slice, architecture, mechanics, entities, input, camera, physics selection, game feel.
-- External asset sourcing: credential probe, generator skill loading, source decision per surface, task IDs/output files or blocker evidence. Must complete before the graphics phase is `done` for premium work.
-- `deadwater-ps2-graphics-builder`: basic-looking screenshots, asset architecture, models, materials, technical art, shaders, VFX, lighting/render, visual scorecard.
-- `deadwater-game-ui-designer`: HUDs, menus, overlays, responsive UI, icons, safe areas, UI states.
-- `deadwater-debug-profiler`: blank canvas, render/runtime bugs, loading, resize, mobile input/render bugs, performance profiling.
-- `deadwater-qa-release`: browser QA, screenshots, canvas pixels, responsive checks, visual test harness decision, bot playtest, production build, preview, release notes.
-- `deadwater-3d-asset-pipeline` / `deadwater-image-generator` / `deadwater-audio-generator`: external AI-generated 3D models and rigs, 2D concepts/textures/logos/GUI art, and SFX/ambience/voice.
-
-When a sibling skill file is loaded, follow its workflow for that phase. Phase entry/exit evidence, ledger templates, and the fallback procedure for unloadable siblings all live in `references/phase-playbook.md`.
-
-## Packaged Runtime Resources
-
-New projects use the gameplay skill's scaffold creator; canvas verification uses the generated game's `npm run inspect:canvas` or the QA skill's packaged inspector:
-
-```bash
-python3 <deadwater-gameplay-systems-skill-dir>/scripts/create_threejs_game.py ./my-game
-node <deadwater-qa-release-skill-dir>/scripts/inspect-threejs-canvas.mjs --url http://127.0.0.1:5188
-```
-
-## Premium Completion Rule
-
-Premium, AAA, polished, complete, release-ready, and showcase requests require visible quality across gameplay, hero/player, obstacles/enemies, rewards/interactables, world kit, HUD/menu states, render/lighting/materials, feel, performance/mobile, and QA. If screenshots are dominated by primitives, flat roads/arenas, generic stat cards, sparse worlds, or glow-only detail, the task is not done. The full completion gate is in `references/phase-playbook.md`.
-
-## Required Verification
-
-- Build/typecheck; local browser run; console/page error check.
-- Game design brief, core loop contract, and level/encounter plan for broad game creation or major gameplay changes.
-- Active desktop and mobile screenshots plus nonblank canvas pixel evidence.
-- Main input/objective/fail-or-restart path exercised.
-- Visual scorecard with measured evidence for premium/AAA claims, plus a fresh-eyes review pass per `deadwater-ps2-graphics-builder/references/visual-scorecard.md`.
-- External asset sourcing ledger, credential probe output, and real external outputs or blocker evidence for premium asset-category claims.
-- Audio evidence or a reported blocker for premium active-gameplay claims.
-- Renderer diagnostics when graphics changed; technical art budget and VFX/readability evidence when premium graphics changed.
-- Visual test harness decision, and bot playtest evidence when release-ready gameplay is claimed.
-- Final ledgers with evidence and remaining blockers.
-
-## Report Audit
-
-When shell tools are available, draft the final evidence report to a markdown file and audit it before finalizing broad or premium work:
-
-```bash
-python3 <director-skill-dir>/scripts/audit_reference_report.py --premium /path/to/final-report.md
-```
-
-Use `--premium` for premium/AAA/showcase/high-fidelity/polished/complete/release-ready/"less basic" claims; add `--physics` for physics-heavy games; add `--audio` when generated or integrated audio is in scope; add `--no-design` only for debug/perf/QA-only reports with no gameplay claims. If the audit fails, fix the missing sections or state the exact blocker instead of claiming completion. If the script is unavailable, manually enforce the same sections listed in Required Verification.
-
-## Final Response
-
-Report the ledgers (compacted per the rule above), game design brief, core loop contract, level/encounter plan, files changed, run URL, controls, verification commands, screenshots/artifacts, renderer/performance notes, technical art budget, visual test harness decision, quality gates passed, skipped phases, and remaining risks. For premium/AAA/showcase claims, include the filled visual scorecard with measured evidence and automatic failures remaining. Be precise: "invoked" means a slash/tool skill invocation; "loaded" means the file was read into context; "executed phase" means the work was performed under loaded skill guidance or the phase playbook.
+Lead with the player-facing outcome. Include changed files, controls or editor path, commands and URLs used, artifacts, applicable ledgers, measured tradeoffs, and remaining risks. Keep the report proportional to the work; the ledgers exist to preserve decisions, not to bury the result.

@@ -1,4 +1,4 @@
 interface:
-  display_name: "Three.js Game UI Designer"
-  short_description: "Design premium Three.js game UI"
-  default_prompt: "Load deadwater-game-ui-designer/SKILL.md (try ~/.codex/skills/deadwater-game-ui-designer/SKILL.md, then ~/.claude/skills, ~/.agents/skills, or repo skills/) and follow it exactly. Non-negotiables: load the UI patterns reference first; report the reference ledger plus UI state, text-fit, safe-area, and touch-target evidence."
+  display_name: "DEADWATER Game and Editor UI"
+  short_description: "Design the 4:3 HUD and browser editor"
+  default_prompt: "Use $deadwater-game-ui-designer to improve either DEADWATER's sparse game UI or its modern scene editor without mixing their interaction models."

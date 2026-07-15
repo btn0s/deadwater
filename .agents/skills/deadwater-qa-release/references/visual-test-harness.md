@@ -1,102 +1,99 @@
-# Visual Test Harness
+# DEADWATER visual test harness
 
-Use this reference when a Three.js game warrants visual regression testing, baseline screenshots, repeated release checks, generated asset verification, or UI overlap/text-fit regression protection.
+Use Playwright screenshot baselines to protect stable scenes, editor layout, HUD placement, and imported assets. Keep nonblank canvas inspection and gameplay assertions alongside them.
 
-Do not add screenshot baselines for every prototype. Use a harness when the visual state is valuable enough to protect and deterministic enough to compare.
+## Add or update baselines when
 
-Research basis: Playwright supports `expect(page).toHaveScreenshot()` for visual comparisons, device emulation for desktop/mobile projects, screenshot thresholds such as max diff pixels/ratio, and test artifacts/traces. Three.js exposes renderer diagnostics through `WebGLRenderer.info`. Existing canvas pixel checks are good smoke tests, but they do not replace screenshot baselines for polished screens.
+- a player-facing camera composition, scene area, HUD, overlay, texture, model, material, light, fog, or shader changed;
+- the editor hierarchy, inspector, asset stage, toolbar, or viewport changed;
+- a prior visual regression would have been caught by a stable screenshot;
+- a release claim needs repeatable evidence.
 
-## When To Add A Visual Harness
+Skip a baseline when the state has no stable acceptance image or the change is better proven with a hook assertion. Report the reason.
 
-Add or extend a visual harness when:
+## Stable states
 
-- The user asks for premium, AAA, showcase, release-ready, or "less basic" quality.
-- HUD/menu layout or responsive text fit has regressed before.
-- Imported/generated assets must be proven visible in-game.
-- A visual style, level, vehicle, table, arena, or boss scene is important enough to protect.
-- You need desktop/mobile active-play evidence on every release.
-- The game has deterministic states or can expose test hooks to freeze randomness, camera, time, and particles.
+Prefer named, player-height states tied to the scene:
 
-Skip or defer baseline screenshots when:
+| State | Setup |
+| --- | --- |
+| warehouse spawn | `__devLock(true)` then `__teleport(-18.3, 1.6, -1.35)` or current canonical spawn |
+| office | teleport to a recorded office pose and wait for model loads |
+| dock | teleport to a recorded dock pose and wait for water/CCTV as needed |
+| sewer | teleport to a recorded sewer pose and wait for water |
+| equipped flashlight | give/select the flashlight through the real interaction path or a narrowly scoped hook if one is added |
+| editor scene | open `/editor.html`, select a stable node, and use a fixed camera pose |
+| editor assets | open the asset tab after thumbnails finish |
 
-- The game is still an exploratory prototype.
-- The scene is intentionally random and cannot be seeded quickly.
-- Particles/camera/noise dominate the image and masking would hide the useful assertion.
-- The only need is "is the canvas nonblank"; use the canvas inspector instead.
+Store canonical coordinates in the test, next to a label explaining what the camera must see. Do not hide them behind generic state names.
 
-Even when skipped, report the skip reason.
+## Existing hooks
 
-## Harness States
-
-Prefer 2-5 high-value states:
-
-- `active-play-desktop`: player, objective, threat, reward, HUD visible.
-- `active-play-mobile`: same as above under mobile viewport/touch controls.
-- `pause-or-settings`: menu layout, safe areas, text fit.
-- `fail-or-retry`: failure feedback and restart affordance.
-- `hero-asset-or-generated-asset`: imported/generated asset in real lighting and camera distance.
-
-Avoid title-only screenshots unless title/menu work is the actual change.
-
-## Determinism Requirements
-
-Scaffold-generated games ship a working implementation of these hooks (`src/game/Game.ts` `installTestHooks`, typed in `src/vite-env.d.ts`) plus a seeded RNG in `src/utils/random.ts`. Keep the hooks real as the game evolves — the template fails loudly if the hooks object is missing, because silent no-op hooks capture live animating scenes and every rerun diffs. For non-scaffold games, implement the same contract:
+Use the repo's hooks directly:
 
 ```ts
-window.__THREE_GAME_TEST_HOOKS__ = {
-  seed(value: number) {},
-  setState(name: string) {},
-  setPausedForScreenshot(paused: boolean) {},
-  setReducedMotion(enabled: boolean) {},
-  hideDebugUi(hidden: boolean) {},
-};
+await page.evaluate(() => {
+  window.__devLock?.(true)
+  window.__teleport?.(-18.3, 1.6, -1.35)
+})
+await expect.poll(() => page.evaluate(() => window.__playerPos?.())).toMatchObject({
+  x: -18.3,
+  z: 1.6,
+})
 ```
 
-Before taking baselines:
+There is no generic seed/freeze/state hook. If an unstable system prevents a valuable baseline, add the smallest dev-only control for that system and document it. Do not add a general test API preemptively.
 
-- Seed random generation.
-- Pause or stabilize particle/noise systems.
-- Freeze camera shake, hit stop, and time-dependent post effects.
-- Hide debug overlays and FPS meters unless the test covers diagnostics.
-- Wait for fonts, GLTFs, textures, audio decode blockers, and first frames.
-- Use fixed viewport/device profiles.
-- Mask known dynamic UI only if the masked area is not part of the acceptance criteria.
+## Dynamic systems
 
-## Playwright Pattern
+- Fluorescent flicker uses `Math.random()`. Baseline a non-flickering fixture or mask only the affected pool.
+- Rats move and choose random timing. Exclude them from the acceptance area or add a narrow dev-only rat freeze if the rat itself is the subject.
+- Water scrolls and deforms with elapsed time. Use a modest diff ratio or a targeted mask that leaves shoreline geometry visible.
+- CCTV refreshes at 4 Hz. Wait for one update when the monitor is part of the screenshot.
+- Physics debris settles differently across runs. Place it deterministically or baseline a static scene.
+- The flashlight beam and shadow depend on view pose. Fix the camera and inventory state before capture.
 
-Use the project's existing Playwright setup. Generated games include `tests/visual-regression.template.ts` as an optional starting point. Copy it to `tests/visual-regression.spec.ts` when the project is ready for baselines.
+Never mask a region that contains the asset, framing, collision alignment, or HUD behavior under test.
 
-Suggested commands after copying:
+## Playwright pattern
 
-```bash
-npx playwright test tests/visual-regression.spec.ts --update-snapshots
-npx playwright test tests/visual-regression.spec.ts
+Use one worker for WebGL:
+
+```ts
+import { expect, test } from '@playwright/test'
+
+test('warehouse spawn remains framed at 4:3', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/')
+  await page.locator('canvas').waitFor({ state: 'visible' })
+  await page.evaluate(() => {
+    window.__devLock?.(true)
+    window.__teleport?.(-18.3, 1.6, -1.35)
+  })
+  await page.waitForTimeout(750)
+  await expect(page.locator('.viewport')).toHaveScreenshot('warehouse-spawn.png', {
+    animations: 'disabled',
+    maxDiffPixelRatio: 0.01,
+  })
+})
 ```
 
-Use thresholds carefully:
+Choose the initial threshold from repeated local runs. Tighten it until real layout, asset, light, and HUD changes fail while known shader motion passes. Keep the exact threshold and masks in version control.
 
-- Prefer low `maxDiffPixelRatio` for stable UI/menu states.
-- Allow slightly higher thresholds for WebGL antialiasing/post-processing differences.
-- Do not set thresholds so high that real layout or asset failures pass.
+## Contact sheets
 
-## Asset Visibility Checks
+Contact sheets are broad layout artifacts, not direct visual baselines for the shipping view. `__sheet()` changes ambient and fog during capture and writes files through dev middleware. Use them for:
 
-For generated/imported assets:
+- missing or displaced scene nodes;
+- zone coverage;
+- large composition changes;
+- review outside the browser.
 
-- Assert the asset path is loaded or listed in diagnostics.
-- Capture screenshot with the asset in active gameplay, not isolated in a showroom.
-- Check scale, orientation, bounds, material readability, and collision proxy through diagnostics or visible state.
-- Keep temporary provider URLs and API keys out of baseline paths and client code.
+Use normal player screenshots for fog, darkness, dither, flashlight, and HUD acceptance.
 
-## Report Requirements
+## Editor baselines
 
-Report:
+The editor renders at device pixel ratio with antialiasing and does not mount `PS2Pipeline`. Give it separate snapshots. Stabilize selected node, expanded hierarchy rows, inspector scroll, camera, and asset-thumbnail completion.
 
-- Visual harness decision: added / extended / skipped.
-- States covered.
-- Determinism hooks used.
-- Desktop/mobile projects covered.
-- Screenshot update command and compare command.
-- Baseline artifact paths.
-- Thresholds/masks and why they are safe.
-- Remaining flake risks.
+## Reporting
+
+Report the decision, states, coordinates, viewport, update and compare commands, snapshot paths, thresholds, masks, repeat-run stability, and any dynamic systems left unprotected.

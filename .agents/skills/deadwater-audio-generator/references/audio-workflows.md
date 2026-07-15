@@ -1,127 +1,92 @@
-# Three.js Audio Workflows
+# DEADWATER audio workflow
 
-Use this reference before generating or integrating audio for a game.
+## Event matrix
 
-## Audio Planning
+Write the relevant rows before producing sound:
 
-Create an audio matrix before generating files:
+| Event | Current key/source | Trigger owner | Frequency | Variants | Loop | Acceptance read |
+| --- | --- | --- | --- | ---: | --- | --- |
+| Concrete step | `step`, Kenney CC0 | `AudioSystem` distance accumulator | high | 5 | no | grounded cadence without teleport clomp |
+| Landing | `land`, Kenney CC0 | grounded transition | medium | 1 | no | body weight after airtime |
+| Use/relay/door | `click`, `clunk`, `door` | owning interaction | low | 1 each | no | state change is audible once |
+| Carry/impact | `pickup`, `thunk` | inventory/carry owner | medium | 1 each | no | object weight and confirmation |
+| Flashlight | `torch` | inventory/flashlight transition | low | 1 | no | equip or toggle is distinct |
+| Crowbar swing | `swing`, synthesized | crowbar action | medium | pitch-varied | no | fast air movement before impact |
+| Interior ambience | `hum`, synthesized | zone selection | continuous | 1 | yes | electrical interior bed |
+| Harbor ambience | `wash`, synthesized | zone selection | continuous | 1 | yes | water movement outside |
 
-| Category | Required events | Asset count | Loop? | Runtime group |
-| --- | --- | ---: | --- | --- |
-| UI | hover, confirm, cancel, pause, fail | 3-8 | no | ui |
-| Movement | jump, dash, boost, landing, drift | 3-10 | sometimes | sfx |
-| Interaction | pickup, hit, shield, score, checkpoint | 4-12 | no | sfx |
-| Threat | enemy attack, warning, impact, boss cue | 4-12 | no | sfx |
-| Ambience | room tone, wind, engines, crowd, weather | 1-4 | yes | ambience |
-| Voice | announcer, boss, tutorial, combat barks | optional | no | voice |
+Add new rows; do not replace this with a generic minimum asset count.
 
-For a first premium pass, generate at least:
+## Source decisions
 
-- 1 ambience loop.
-- 3 UI sounds.
-- 5 gameplay SFX tied to real events.
-- Optional voice only if the design benefits from dialogue or callouts.
+Prefer existing sounds and CC0 sources. CC BY is allowed only with exact author, source URL, license URL, and credit text. Reject NC or ND material. Generated audio must record its tool, prompt, input sources, and processing and must be safe to ship under that tool's terms.
 
-## Prompting
+Before downloading, inspect `docs/ASSETS.md` and `public/models/CREDITS.md`. Keep audio attribution in the existing credits file until the project deliberately splits it.
 
-Good prompts specify source, transient, tail, mix density, genre, and gameplay use:
+## Processing recipe
+
+For imported one-shots:
+
+1. Keep the untouched source outside the runtime path when edits are destructive.
+2. Trim leading silence without cutting the attack.
+3. Remove DC offset and obvious background contamination.
+4. Add a short tail fade; avoid a hard discontinuity.
+5. Downmix to mono when stereo width does not matter in play.
+6. Normalize a family consistently, then tune actual gain in context.
+7. Encode browser assets as OGG and keep filenames stable and descriptive.
+8. Record the exact command or editor operation.
+
+For loops, audition at least ten consecutive boundaries. A low numeric seam does not prove that modulation, rhythm, or environmental motion loops naturally.
+
+## Synthesis recipe
+
+Simple sources are good candidates for reproducible synthesis:
+
+- filtered noise plus a fast envelope for a whoosh;
+- short noise and low sine layers for a mechanical impact;
+- periodic sine layers plus low-passed noise for electrical hum;
+- slowly modulated filtered noise for water wash;
+- short frequency modulation for a creature chirp.
+
+Keep the source small, deterministic when regenerated, and documented beside the code or command. Avoid building a general synthesizer when one focused buffer recipe is clearer.
+
+## Runtime integration
+
+`src/game/audio.ts` owns one lazy `AudioContext`, one master gain, decoded buffers, procedural buffers, the `play()` helper, and crossfaded zone ambience.
+
+- Add imported variants to `SAMPLES`.
+- Bake small procedural cues once after context creation.
+- Trigger through `play()` at the state transition owner.
+- Use an event or cooldown for repeated state, never an unguarded frame callback.
+- Resume audio only from a valid user gesture.
+- Stop and disconnect replaced loop sources after the fade.
+- Handle fetch/decode failure visibly during development instead of silently claiming the cue loaded.
+
+## Browser verification
+
+Check the relevant subset:
+
+- first pointer gesture unlocks without an autoplay error;
+- every referenced `/sounds/` request returns successfully and decodes;
+- the named interaction emits one cue per transition;
+- repeated events vary without phasey stacking or excessive gain;
+- steps stop in air and do not fire for teleports;
+- ambience crosses between interior and harbor without stacking or a gap;
+- remount, pointer-lock release/re-entry, and hidden-tab return do not duplicate beds;
+- production preview resolves the same asset paths;
+- browser console and network contain no audio errors.
+
+## Report template
 
 ```text
-short [event] sound for [game genre], [material/source], clear transient, [tail length], no music, no voice, readable under gameplay mix
+Audio event matrix:
+Source and license or synthesis/generation record:
+Original files:
+Processing commands:
+Shipped files and formats:
+Runtime keys and trigger owners:
+Unlock and cleanup behavior:
+Browser path exercised:
+Production result:
+Remaining mix or device risks:
 ```
-
-Examples:
-
-- `short shield absorb impact for sci-fi boss fight, glassy plasma hit, bright transient, low sub thump, 0.8s tail, no music, no voice`
-- `looping abandoned cathedral ambience for dark fantasy arena, distant wind through stone arches, subtle torch crackle, no melody, seamless loop`
-- `tiny premium menu confirm click, soft mechanical latch, warm sparkle tail, no harsh beep`
-
-Avoid prompts that are only mood words (`epic`, `AAA`, `cool`). Name the gameplay event.
-
-## Generation Strategy
-
-- Generate short SFX individually instead of one long mixed file.
-- Make loops deliberately with `--loop`; test them looping in the game.
-- Avoid music inside SFX prompts unless the user asked for music.
-- Keep UI sounds quieter and shorter than gameplay SFX.
-- Generate variants for high-frequency events to avoid repetition.
-- Normalize in the game through volume groups, not by editing every file manually during early iteration.
-
-## Voice Strategy
-
-Use TTS when the line can be generated from text and exact acting is less important.
-
-Use voice-change when:
-
-- The user or agent can record a scratch performance.
-- Timing, breaths, laughter, anger, fear, or delivery need to be preserved.
-- A boss, announcer, narrator, or character line needs stronger acting than text prompt alone.
-
-Clean noisy scratch recordings with `isolate` before conversion unless `voice-change --remove-background-noise` is sufficient.
-
-Do not generate or convert voices that imply impersonation of a real private person. For characters, describe a fictional voice style or use a licensed/available voice ID.
-
-## Runtime Integration
-
-Use a small audio manager instead of ad hoc `new Audio()` calls once a game has more than a few sounds:
-
-- Load sounds after user gesture unlock.
-- Maintain groups: `master`, `sfx`, `ui`, `ambience`, `voice`, `music`.
-- Expose mute and per-group volume.
-- Loop ambience through `AudioBufferSourceNode` or a library wrapper that handles loop restarts.
-- Stop/dispose old sources when restarting scenes.
-- Do not trigger the same high-volume SFX every frame; add cooldowns or variant pools.
-- Pause/resume audio with the game pause state and page visibility.
-
-Minimal Web Audio shape:
-
-```ts
-class GameAudio {
-  private ctx = new AudioContext();
-  private buffers = new Map<string, AudioBuffer>();
-  private gains = new Map<string, GainNode>();
-
-  async unlock() {
-    if (this.ctx.state !== 'running') await this.ctx.resume();
-  }
-
-  async load(id: string, url: string) {
-    const data = await fetch(url).then(r => r.arrayBuffer());
-    this.buffers.set(id, await this.ctx.decodeAudioData(data));
-  }
-
-  play(id: string, group = 'sfx', volume = 1) {
-    const buffer = this.buffers.get(id);
-    if (!buffer) return;
-    const source = this.ctx.createBufferSource();
-    const gain = this.ctx.createGain();
-    gain.gain.value = volume;
-    source.buffer = buffer;
-    source.connect(gain).connect(this.gains.get(group) ?? this.ctx.destination);
-    source.start();
-  }
-}
-```
-
-## Verification Checklist
-
-Report pass/fail:
-
-- Files exist under `assets/audio/...`.
-- Main gameplay events trigger the expected sounds.
-- Ambience loop starts, loops, and stops cleanly.
-- Pause/restart does not stack duplicate loops.
-- Browser autoplay/user gesture unlock is handled.
-- Volume/mute controls affect groups.
-- Mobile Safari/Chrome are considered when audio context unlock is needed.
-- Console has no decode/load errors.
-
-## Final Evidence
-
-Include:
-
-- Audio matrix with generated file paths.
-- Prompt/text/input/source for every generated or processed file.
-- Duration, loop flag, output format, voice ID when applicable.
-- Runtime trigger mapping.
-- Verification notes and remaining gaps.

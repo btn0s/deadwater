@@ -13,35 +13,23 @@ specific pack page before shipping. Attribution goes in
 | [ambientCG](https://ambientcg.com) | CC0 | All tileable textures (concrete, steel, plaster, brick) | Direct zip URLs (recipes below) |
 | [Wikimedia Commons](https://commons.wikimedia.org) | varies (CC BY 4.0 in use) | Trash-pile photo texture | API search + crop/downscale |
 
-## Vetted itch.io packs (PS1/PS2 style)
+## Vetted industrial and low-poly itch.io packs
 
 | Pack | Creator | License | Contents |
 |---|---|---|---|
-| [PSX Industrial Environment Asset Pack](https://godgoldfear.itch.io/psx-industrial-environment-asset-pack) | godgoldfear | CC BY 4.0 | Industrial models, fbx/glb + textures w/ normals — strongest fit for this project |
 | [Free CC0 Industrial 3D Models](https://3dmodelscc0.itch.io/free-cc0-industrial-3d-models) | 3dmodelscc0 | CC0 | Industrial props |
 | [Free CC0 3D Industrial Props Pack #2](https://3dmodelscc0.itch.io/free-cc0-3d-industrial-props-pack-2) | 3dmodelscc0 | CC0 | 9 industrial props |
 | [Free CC0 City Environment Pack #2](https://3dmodelscc0.itch.io/free-cc0-city-environment-pack-2) | 3dmodelscc0 | CC0 | City/street environment pieces |
-| [Paquete de modelos low poly estilo PSX](https://elbolilloduro.itch.io/objetos-low-poly-estilo-psx) | Elbolilloduro | CC0 | PSX-style object grab-bag; creator has more CC0 packs (house, characters) |
-| [PSX Mega Pack](https://pizzadoggy.itch.io/psx-mega-pack) | Pizza Doggy | paid (~€10), own license | Huge: props, pickups, tools, weapons; Mega Pack II adds modular interiors/exteriors |
-| [100 PSX Mega House Pack](https://postdev.itch.io/100-psx-mega-house-pack) | postdev | check page | 100 house/interior models |
 
-Creator pages worth trawling: [3dmodelscc0](https://itch.io/profile/3dmodelscc0) (everything CC0),
-[Elbolilloduro](https://elbolilloduro.itch.io) (CC0 PSX packs).
-
-## Curated collections (indexes of indexes)
-
-- [Miziziziz/Retro3DGraphicsCollection](https://github.com/Miziziziz/Retro3DGraphicsCollection)
-  — commercially usable PS1-style assets by category: urban kit (100 models),
-  industrial buildings, furniture, vehicles, weapons, barrels/crates/barriers,
-  office & plumbing props. All CC0-or-equivalent, hosted on itch/OpenGameArt.
+Creator page worth trawling: [3dmodelscc0](https://itch.io/profile/3dmodelscc0)
+(everything CC0).
 
 ## Discovery searches (itch.io tag URLs)
 
-- https://itch.io/game-assets/free/tag-3d/tag-psx — free 3D + PSX
-- https://itch.io/game-assets/free/tag-horror/tag-psx — horror + PSX
 - https://itch.io/game-assets/tag-3d/tag-industrial — industrial 3D
 - https://itch.io/game-assets/free/tag-3d/tag-cc0 — free 3D + CC0
-- https://itch.io/game-assets/tag-ps1 / tag-psx / tag-retro — general era tags
+- https://itch.io/game-assets/free/tag-3d/tag-low-poly — free low-poly 3D
+- https://itch.io/game-assets/free/tag-3d/tag-horror — free horror 3D
 
 ## Other standing sources
 
@@ -76,12 +64,19 @@ packs), unzip into `public/models/<pack>/`, convert to GLTF if needed
 
 ## Integration checklist
 
-1. Textures to 256px (`sips -Z 256`) — PS2 budget.
-2. Register in `MODELS` map in `src/game/Prop.tsx`.
-3. Place with `<Prop>` (single) or `<SplitProp>` (multi-piece, per-piece grab).
-4. Flags: `grabbable` for junk, `physics="trimesh"` for hollow containers,
-   `physics="none"` for ceiling-mounted decor, `collide` for player-blocking.
-5. Add attribution to `public/models/CREDITS.md` (required for CC BY).
+1. Record source, license, and attribution in this index and
+   `public/models/CREDITS.md` before shipping.
+2. Reduce runtime textures to 256px on the long side (`sips -Z 256`) unless a
+   measured exception is approved.
+3. Register one canonical loader entry in `MODEL_REGISTRY` in
+   `src/engine/models.ts`.
+4. Place the asset through a `model` component in `src/engine/scene.json`;
+   keep that file authoritative for world layout.
+5. Add a deliberate physics component: cuboid for simple stable bodies, hull
+   for movable solid props, trimesh for static concave/hollow geometry, or no
+   Rapier collider with `blockPlayer` only when the custom player path needs it.
+6. Verify the editor thumbnail/stage, in-game PS2 material conversion, scale,
+   pivot, player collision, Rapier behavior, contact sheet, and production URL.
 
 ## CLI download tool (works)
 
@@ -94,9 +89,12 @@ Alternative: [itch-dl](https://github.com/DragoonAethis/itch-dl) (needs API key)
 
 ## Audio
 
-All sound is **synthesized in-engine** (`src/game/audio.ts`): filtered-noise
-foley (clicks, clunks, whooshes, thunks, footsteps), FM rat chirps, and
-looped noise beds for ambience (interior hum / harbor wash). No sample
-files, no licenses. To swap in sourced samples later, replace the baked
-AudioBuffers — good CC0 sources: Kenney (kenney.nl/assets, audio packs),
-OpenGameArt (CC0 filter), Sonniss GDC bundles (royalty-free).
+One-shots under `public/sounds/` come from Kenney's CC0 Impact Sounds and
+Interface Sounds packs: concrete footsteps, landing, pickup, relay and door
+clunks, crowbar impact, switch click, and torch click. Exact credits live in
+`public/models/CREDITS.md`.
+
+`src/game/audio.ts` still synthesizes the seamless interior hum and harbor
+wash beds, crowbar whoosh, and rat squeak. New audio should reuse those paths
+or follow `.agents/skills/deadwater-audio-generator/` for provenance,
+processing, integration, and browser verification.

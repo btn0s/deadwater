@@ -1,17 +1,14 @@
-# Visual Test Harness Checklist
+# Visual test harness checklist
 
-Use when visual regression testing is added, extended, or intentionally skipped for a meaningful Three.js game change.
-
-- Harness decision is explicit: added / extended / skipped.
-- Decision is justified by milestone risk: premium/release/UI/generated assets/visual style vs prototype/non-deterministic smoke only.
-- Active-play desktop state is covered or a reason is reported.
-- Active-play mobile state is covered when mobile is in scope or a reason is reported.
-- Important menu/HUD/fail/retry/generated-asset states are covered when those surfaces changed.
-- Randomness, camera shake, particles, time, debug UI, and dynamic overlays are seeded, paused, hidden, or intentionally excluded.
-- Fonts, textures, GLTFs, and first rendered frames are awaited before screenshots.
-- `toHaveScreenshot()` thresholds are narrow enough to catch real regressions.
-- Masks are used only for dynamic areas that are not acceptance criteria.
-- Canvas pixel/nonblank smoke checks still run; screenshot baselines do not replace interaction checks.
-- Baseline update command and comparison command are reported.
-- Artifacts/snapshot paths are reported.
-- Flake risks and unsupported states are listed.
+- Decision is explicit: added, updated, run, or skipped.
+- Baselines protect a stable, valuable DEADWATER state rather than a generic title screen.
+- Fixed viewport, DPR 1, game URL, and player pose are recorded.
+- Setup uses `__devLock`, `__teleport`, and `__playerPos`; no nonexistent generic scaffold hooks are assumed.
+- Dynamic flicker, water, CCTV refresh, flashlight beam, physics debris, and random rat motion are stabilized, masked narrowly, or excluded with a reason.
+- Baselines cover the changed player-height view and relevant HUD state.
+- Contact sheets may supplement baselines but do not replace the shipping camera.
+- The editor receives separate baselines when editor UI or placement behavior changed.
+- Fonts, GLTF/FBX models, textures, and first rendered frames are awaited.
+- Screenshot thresholds are low enough to detect framing, asset, lighting, and UI regressions.
+- Canvas nonblank smoke and interaction tests remain in the suite.
+- Update command, compare command, snapshot paths, masks, thresholds, and flake risks are reported.

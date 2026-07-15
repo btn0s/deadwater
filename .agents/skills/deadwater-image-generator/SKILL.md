@@ -1,116 +1,72 @@
 ---
 name: deadwater-image-generator
-description: "Generate and edit 2D image assets for Three.js games using Google's Gemini image API. Use for concept sheets, image-to-3D inputs, texture references, sky/background plates, decals, logos, icons, GUI art, title/menu art, thumbnails, marketing stills, and source images that feed deadwater-3d-asset-pipeline. Also use for direct image editing when the user provides an image path."
+description: Use when creating, editing, sourcing, preparing, or integrating DEADWATER concept art, diffuse textures, emissive maps, signs, decals, UI art, photo sources, or 3D-model reference images.
 ---
 
-# Three.js Image Generator
+# DEADWATER image generator
 
 ## Purpose
 
-Create game-useful 2D assets and references for Three.js projects. This skill is the image-generation layer for the Three.js game system: it produces concepts, textures, decals, UI art, and 2D inputs that can be handed to `deadwater-3d-asset-pipeline` for image-to-3D model creation.
+Create or source images that survive DEADWATER's 512x448, gamma-space, diffuse-plus-emissive PS2 pipeline. Use Codex's built-in image generation or editing capability when available. No external provider or API key is required.
 
-Provider: Google's Gemini image API.
+## Choose the source
 
-Resolve `<this-skill-dir>` in the commands below in this order: `~/.claude/skills/deadwater-image-generator`, `~/.codex/skills/deadwater-image-generator`, `~/.agents/skills/deadwater-image-generator`, or repo `skills/deadwater-image-generator`.
+1. Reuse project art when it already meets the brief.
+2. For tileable materials, search ambientCG or another approved CC0 source through `asset-search` and `docs/ASSETS.md`.
+3. For photo textures, search Wikimedia Commons and record the asset-level license.
+4. Generate or edit with the built-in image tool for concepts, bespoke diffuse art, signs, decals, icons, or UI.
+5. Ask for user-supplied art when identity, typography, or rights require it.
 
-## When To Use
+Prefer CC0. Put CC BY attribution in `public/models/CREDITS.md`. Reject NC/ND sources. Record tool, prompt, source URLs, source-image rights, edits, date, and output path.
 
-Use this skill before procedural-only fallback when a Three.js game needs:
+## Runtime contracts
 
-- 2D-to-3D reference images for `deadwater-3d-asset-pipeline`: characters, creatures, buildings, ships, cars, weapons, props, pickups, terrain modules.
-- Texture and material references: terrain, road, rock, sand, metal, sci-fi panels, trim sheets, decals, hazard labels, signs.
-- Environment images: skies, backdrops, city horizons, nebula plates, menu backgrounds, parallax layers.
-- UI art: logos, faction marks, icons, item cards, ability badges, cockpit decals, GUI panels, title art.
-- Existing-image edits, style variants, cleanup, palette alignment, or concept sheet refinements.
+- Runtime textures belong under `public/textures/`, `public/models/<asset>/textures/`, or the existing UI asset location.
+- Reduce runtime images to at most 256 pixels on the longest edge unless a measured exception is approved.
+- Keep PNG for alpha, hard-edged signs, decals, icons, and emissive masks. Use JPEG for opaque photographic diffuse textures when appropriate.
+- Treat color as raw display values. Do not author a linear-PBR workflow around the image.
+- Supply diffuse color and optional emissive only. Normal, metallic, roughness, and AO maps do not affect `PS2Material`.
+- Avoid baked directional light and glossy highlights in tileable diffuse textures.
+- Make signs and UI readable after reduction and at the normal 4:3 viewing distance.
+- Check seams with a 3x3 tile preview before registration.
 
-For premium/AAA/showcase graphics work, generate at least one relevant image for high-value 2D surfaces or image-to-3D inputs unless the credential probe or a real generation attempt shows a blocker.
+## Workflow
 
-## API Key
-
-Never store API keys in skill files or browser/game code, and never paste a key value into a report. The script reads `--api-key` or `GEMINI_API_KEY`.
-
-Step 0, before declaring the key unavailable: run this skill's own probe and paste its literal output into the report.
-
-```bash
-uv run <this-skill-dir>/scripts/generate_image.py probe   # prints GEMINI_API_KEY=SET|MISSING
-```
-
-`GEMINI_API_KEY=MISSING` is only a valid skip/blocker reason when this output is shown. Keys defined only in a shell profile can be absent from the process env; if the plain probe prints MISSING unexpectedly, wrap it: `zsh -lc 'source ~/.zprofile 2>/dev/null || true; source ~/.zshrc 2>/dev/null || true; uv run <this-skill-dir>/scripts/generate_image.py probe'`. When the director skill is loaded, prefer `deadwater-game-director/scripts/probe_asset_credentials.sh`, which probes all three asset keys at once.
-
-## Tool Script
-
-Run from the user's current project directory so output lands in the game project:
+1. Define use, dimensions, alpha, tiling, palette, readable distance, and license.
+2. Generate, edit, or source the image. When editing an existing image, inspect it first and preserve only rights-cleared source material.
+3. Keep a higher-resolution working source outside the runtime path when future edits need it.
+4. Prepare the runtime copy:
 
 ```bash
-uv run <this-skill-dir>/scripts/generate_image.py --prompt "your image description" --filename assets/concepts/output.png --resolution 2K
+python3 .agents/skills/deadwater-image-generator/scripts/generate_image.py inspect path/to/image.png
+python3 .agents/skills/deadwater-image-generator/scripts/generate_image.py prepare \
+  path/to/source.png public/textures/Output.png --max 256
 ```
 
-Edit an existing image:
+5. For a world texture, register its name in `TEXTURE_URLS` in `src/engine/textures.ts`. For model art, update the model's relative texture URI or FBX registry texture.
+6. Verify the asset in `/editor.html`, then in the game with `__teleport()` and a player-height screenshot. Use the relevant `__sheet()` area for coverage.
+7. Run the production build and check console/network errors.
 
-```bash
-uv run <this-skill-dir>/scripts/generate_image.py \
-  --input-image assets/concepts/ship.png \
-  --prompt "turn this into a battle-worn red racing livery with clearer material zones" \
-  --filename assets/concepts/ship-red-livery.png \
-  --resolution 2K
-```
+## Prompt patterns
 
-Resolution mapping:
-
-- `1K`: quick concepts, icons, draft sheets.
-- `2K`: default production reference for image-to-3D, textures, backgrounds, UI panels. This is also the script default when `--resolution` is omitted.
-- `4K`: hero splash/title art, high-detail texture references, large sky/background plates.
-
-## Prompt Patterns
-
-Image-to-3D reference:
+Diffuse texture:
 
 ```text
-Create a clean 3D-generation reference image of [asset]. Centered single object, full object visible, plain light background, readable silhouette, clear material zones, game-ready [genre/style], no motion blur, no cropped parts, no text.
+Square seamless diffuse color texture of [surface] for DEADWATER, muted worn industrial palette, broad readable stains and wear, flat even illumination, no perspective, no baked highlights, no normal-map shading, no text.
 ```
 
-Riggable character/creature reference:
+Sign or decal:
 
 ```text
-Create a full-body [T-pose/A-pose/side-view creature] reference for 3D rigging: [details]. Symmetric stance, visible hands/feet/limbs, plain background, readable costume/anatomy layers, no weapon fused to hands.
+Front-facing [sign/decal] for a grim dock warehouse, simple large shapes, weathered paint, readable at low resolution, limited muted palette, exact text: "[TEXT]", no perspective, transparent or flat background as specified.
 ```
 
-Texture/material reference:
+Concept/reference:
 
 ```text
-Create a seamless game texture reference for [surface]. Orthographic/top-down, PBR-friendly albedo, clear material variation, no perspective, no baked strong shadows, [style/material details].
+Single [asset] for DEADWATER, full silhouette visible, worn industrial construction, broad material zones that can be modeled and read without PBR maps, neutral background, no motion blur, no cropped parts.
 ```
 
-Logo/icon/UI art:
+## Verification and report
 
-```text
-Create a crisp game UI [logo/icon/badge/panel] for [faction/item/ability]. Transparent-friendly silhouette, high contrast at small size, [genre styling], no tiny unreadable text.
-```
-
-Sky/background:
-
-```text
-Create a wide game background plate of [environment]. Layered depth, readable horizon, [time/weather/style], suitable behind a real-time Three.js scene, no foreground subject.
-```
-
-## Three.js Integration Rules
-
-- Save concepts and image-to-3D sources under `assets/concepts/`.
-- Save textures, decals, icons, and GUI source images under `assets/textures/`, `assets/decals/`, or `assets/ui/`.
-- For image-to-3D, hand the saved image path to `deadwater-3d-asset-pipeline` and record the chain in the external asset ledger.
-- Do not call the image API from client-side game code.
-- Convert generated PNGs into runtime formats deliberately: PNG for alpha/UI, JPG/WebP/KTX2 for larger opaque textures where the project pipeline supports it.
-- Verify how the image appears in game, not only that the file exists.
-
-## Required Report
-
-Report:
-
-- Credential probe output or command blocker.
-- Prompt and purpose.
-- Output path.
-- Resolution.
-- Whether the image was used directly, edited further, or handed to `deadwater-3d-asset-pipeline`.
-- Any remaining integration work such as compression, UV assignment, alpha cleanup, or atlas packing.
-
-Do not mark a premium graphics phase complete if the needed image outputs are missing and the only justification is "procedural is enough" for high-value UI, texture, sky, decal, logo, or image-to-3D surfaces.
+Report source/provenance, prompt or search URL, working and runtime paths, final dimensions/format/alpha, tiling result, registry change, build result, game/editor screenshots, credits change, and remaining integration risks. A generated file is not complete until the runtime copy appears correctly in the game.

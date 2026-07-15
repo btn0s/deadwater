@@ -1,61 +1,98 @@
 ---
 name: deadwater-qa-release
-description: "Verify and release Three.js browser games. Combines playtest QA, automated bot playtests, mobile/responsive checks, production builds, preview verification, static-hosting base paths, debug gating, bundle review, screenshots, visual test harness decisions, packaged canvas-pixel inspection with measured metrics, console checks, and release risk reports."
+description: Use when verifying DEADWATER gameplay, editor behavior, rendering, scene data, browser regressions, production builds, release readiness, screenshots, Playwright baselines, or scripted playtests.
 ---
 
-# Three.js QA Release
+# DEADWATER QA and release
 
 ## Purpose
 
-Prove the game works as a player encounters it, then prepare a shippable browser build with known risks.
+Prove the game and editor work through their real browser entry points. Treat DEADWATER's dark PS2 image as intentional. Objective smoke checks can prove that the canvas rendered, assets loaded, controls moved the player, collision responded, and budgets did not drift. They cannot grade art direction.
 
-## QA Workflow
+## Required references
 
-Load `references/qa-release-checklists.md` as the first action before broad QA, mobile verification, bug reporting, production preview, static-hosting checks, or release preparation. Track it in a reference ledger with yes/no, path, and failure reason. Do not mark QA/release complete while this reference is skipped for QA or release work.
+Before broad QA, load `references/qa-release-checklists.md` and the checklists relevant to the change:
 
-Load `references/checklists/visual-verification.md` for screenshot/canvas verification, `references/checklists/playtest-qa.md` for player-loop QA, and `references/checklists/release.md` for production release checks. Load `references/prompt-templates.md` only when the user asks for reusable QA/release prompts or a task template.
+- `references/checklists/visual-verification.md` for screenshots and canvas inspection.
+- `references/checklists/playtest-qa.md` for gameplay and interaction changes.
+- `references/checklists/release.md` for production output.
+- `references/visual-test-harness.md` plus its checklist for visual baselines.
+- `references/playtest-bot.md` plus its checklist for scripted playtests.
+- `references/prompt-templates.md` only when reusable task prompts are requested.
 
-Load `references/visual-test-harness.md` and `references/checklists/visual-test-harness.md` when the game warrants screenshot baselines, visual regression testing, release-ready visual evidence, UI/generated-asset regression protection, or premium visual QA. If a harness is not warranted, report the skip reason.
+Record each loaded reference and any deliberate skip. Do not claim release readiness without the main checklist.
 
-Load `references/playtest-bot.md` and `references/checklists/bot-playtest.md` for release-ready gameplay claims, difficulty/fairness verification, or when the playable loop has never been driven by scripted input. Report the bot playtest decision as added/extended/skipped with reason.
+## Project truth
 
-1. Install dependencies if needed.
-2. Run build/typecheck.
-3. Start dev or preview server.
-4. Open browser target.
-5. Capture console/page/network errors.
-6. Verify nonblank canvas pixels.
-7. Capture desktop and mobile screenshots.
-8. Trigger main input, objective progression, fail/retry, and recent risky paths.
-9. Check HUD text fit, safe areas, touch targets, responsive layout.
-10. Decide whether to add or extend a visual test harness. For premium/release UI or generated-asset work, prefer a harness unless determinism is a real blocker.
-10b. Decide whether to run the bot playtest (`tests/bot-playtest.template.ts` in scaffold games). For release-ready gameplay claims, run it and report the metrics JSON.
-11. If audio changed, verify user-gesture unlock, SFX triggers, ambience loop start/stop, pause/restart cleanup, mute/volume behavior, and decode/load errors.
-12. Record artifacts and issues.
+- Dev game: `http://127.0.0.1:5173/`
+- Dev editor: `http://127.0.0.1:5173/editor.html`
+- Scene source: `src/engine/scene.json`
+- Production command: `npm run build`
+- Production preview: `npm run preview -- --host 127.0.0.1`
+- Game presentation: fixed 512x448 internal render target, bilinear upscale, fixed 4:3 projection and 4:3 viewport.
+- Contact sheets: `window.__sheet()`, or `__sheet('office' | 'dock' | 'sewer')` in dev.
+- Player hooks: `__devLock(true)`, `__teleport(x, z, yaw)`, `__playerPos()` in dev.
+- Diagnostics: `__testCollision(x, z, dx, dz, radius)`, `__lightSlots()` in dev.
+- Editor diagnostics: `__sceneStore` and `__lightSlots()` in dev.
 
-## Packaged Canvas Inspector
+Do not invent `__THREE_GAME_TEST_HOOKS__` or generic score/state diagnostics. Add a new hook only when a test needs a stable fact the existing hooks cannot expose.
 
-Use the bundled inspector when the target project does not already include one:
+## QA workflow
+
+1. Inspect the diff, `package.json`, `vite.config.ts`, affected scene nodes, and asset paths.
+2. Run `npm run build`. Run `npm run lint` when source code changed.
+3. Start the dev server. Verify `/` and `/editor.html` separately.
+4. Capture console errors, page errors, failed requests, canvas dimensions, nonblank pixels, hook availability, and an objective render sample.
+5. Wait for the boot fade and bounded Rapier settle window before visual or steady-state performance conclusions; test that window separately when load settling changed.
+6. Use `__devLock(true)` before scripted keyboard input. Compare `__playerPos()` before and after movement.
+7. Use targeted teleports for the warehouse, office, dock, and sewer. Capture views at player height as well as contact sheets.
+8. Call `__testCollision()` for changed walls, doors, props, or boundaries. Inspect `__lightSlots()` after light or scene changes.
+9. Exercise interactions affected by the change: pickup, carry, throw, flashlight, crowbar, doors, switches, audio, and editor save/undo/placement as applicable.
+10. Decide whether to add or update Playwright visual baselines and a scripted playtest. Report each decision as added, updated, run, or skipped with a concrete reason.
+11. Run the production build through the preview server. Expect dev-only hooks to be absent there. Repeat canvas, console, network, and main-interaction smoke checks.
+12. Report pass/fail, evidence, changed risks, and untested scope.
+
+Mobile is not a default target. Test narrow or touch layouts only when the current task adds that target. A mobile screenshot alone does not establish support.
+
+## Canvas inspector
+
+Use the bundled inspector after the server is ready:
 
 ```bash
-node <this-skill-dir>/scripts/inspect-threejs-canvas.mjs --url http://127.0.0.1:5188
+node .agents/skills/deadwater-qa-release/scripts/inspect-deadwater-canvas.mjs \
+  --url http://127.0.0.1:5173/ --mode game --lock \
+  --teleport=-18.3,1.6,-1.35
+
+node .agents/skills/deadwater-qa-release/scripts/inspect-deadwater-canvas.mjs \
+  --url http://127.0.0.1:5173/editor.html --mode editor
 ```
 
-For mobile emulation, add `--mobile`. Add `--state <name>` (and optionally `--seed <n>`) to drive the game's `__THREE_GAME_TEST_HOOKS__` before capture, so every named state (active-play, fail, stress) can be measured deterministically without live play — outputs are suffixed per state. Generated games from the packaged scaffold also include their own `scripts/inspect-threejs-canvas.mjs` and `npm run inspect:canvas`.
+The inspector writes a screenshot and JSON report. It fails on a blank or tiny canvas, console/page errors, failed asset requests, wrong game framing, missing expected dev hooks, or an invalid collision/light diagnostic. Pixel distribution and WebGL counters are descriptive evidence. Never convert entropy, edge density, brightness, or triangle count into a generic visual-quality score.
 
-The inspector JSON includes a `metrics` block (color entropy, edge density, luminance contrast, dominant-color share) and a `renderBudget` comparison against starting-point tier budgets. Cite these as the Measured Evidence in the visual scorecard (`deadwater-ps2-graphics-builder/references/visual-scorecard.md`); over-budget rows need a documented tradeoff, and blank-canvas or error conditions still exit nonzero.
+Game inspection enters through the real CLOCK IN button before reading gameplay hooks. Add `--menu` to keep and capture the initial harbor menu instead.
 
-## Release Workflow
+Useful options:
 
-1. Inspect package scripts, Vite config, base path, public/assets.
-2. Gate debug UI/logging/test helpers.
-3. Run production build and preview/static server.
-4. Verify built output desktop/mobile.
-5. Review bundle and large assets.
-6. Document deploy command, host assumptions, and residual risks.
+```bash
+--sheet office
+--menu
+--collision=-18,1,1,0,0.35
+--keys=KeyW:800,KeyD:400
+--production
+--viewport=1280x960
+```
 
-## Final Response
+Read `--help` for the complete interface.
 
-Lead with pass/fail. Include the reference ledger, QA matrix/checklist result, commands, URL, controls, screenshots/artifacts, issues found/fixed, deployment notes, and risks.
-When visual baselines are in scope, include the harness decision, states covered, update/compare commands, artifact paths, thresholds/masks, and flake risks.
-When the bot playtest ran, include its metrics JSON (frames, score progression, distance, softlock windows, seed) and the added/extended/skipped decision.
+## Release evidence
+
+Lead with pass or fail. Include:
+
+- commands, URLs, browser mode, and commit/diff scope;
+- game and editor results;
+- controls and paths exercised;
+- hook outputs, canvas report, contact sheets, screenshots, and baseline artifacts;
+- build output and production-preview result;
+- console, page, network, asset, scene-data, light-slot, collision, and audio findings;
+- visual-harness and bot-playtest decisions;
+- residual risks and anything not tested.

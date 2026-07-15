@@ -1,236 +1,160 @@
-# Three.js AAA Graphics Prompt Templates
+# DEADWATER graphics prompt templates
 
-Reusable prompt templates packaged with this skill. Use only templates relevant to the current request, and adapt placeholders to the game/project context.
+Adapt only the template that matches the task. Keep repository paths exact and remove unused sections.
 
----
+## Broad graphics pass
 
-# AAA Graphics Production Pass Prompt
+```text
+Use $deadwater-ps2-graphics-builder for a renderer-conformant graphics pass on DEADWATER.
 
-Use `deadwater-ps2-graphics-builder` to upgrade this Three.js game from basic prototype visuals to premium browser-game graphics.
+Visible problem:
+Affected areas and gameplay states:
+Target read:
 
-Current screenshot blockers:
-- 
+Preserve these DEADWATER policies:
+- Gamma/display-space color.
+- Diffuse plus emissive only.
+- Ordinary per-vertex lighting.
+- Fixed 512x448 internal target and 4:3 presentation.
+- Core 5-bit ordered dither.
+- Bilinear magnification, hard mip transitions, anisotropy 1.
+- Runtime PBR stripping for glTF/FBX.
 
-Target art direction:
-- 
+Classify every renderer claim as hardware fact, DEADWATER policy, or modern cheat. Treat the flashlight shadow, water foam, texture bombing, glass sheen, CCTV, and CRT cues as modern cheats.
 
-Required pass:
-- Score current screenshots with `deadwater-ps2-graphics-builder/references/visual-scorecard.md`.
-- Add or improve the graphics architecture from `references/implementation-blueprint.md`.
-- Add the technical art brief from `references/technical-art.md`: material kit, shader/VFX purpose, instancing/LOD/culling, imported asset cleanup, renderer budget, mobile tradeoffs.
-- Build material library, procedural texture/decal helpers, model factories, world prop kit, VFX system, lighting/render pipeline, and diagnostics.
-- Use `deadwater-3d-asset-pipeline` for high-value hero/player, character, creature, vehicle, building, weapon, pickup, boss, rigging, animation, texture, or conversion needs when procedural code is not enough.
-- Use `deadwater-image-generator` for 2D concepts, T-pose/A-pose references, texture references, decals, logos, icons, GUI art, skies, backgrounds, or image-to-3D inputs.
-- Upgrade hero/player, obstacles/enemies, rewards/interactables, world kit, HUD cohesion, lighting, effects, and renderer metrics.
+Inspect src/ps2/, src/engine/render.tsx, src/engine/scene.json, the affected live canvas, and contact sheets. Write the technical-art contract, improve the smallest correct owner, and complete the visual scorecard.
 
-Do not count as completion:
-- Recolored boxes/cones/spheres.
-- Glow, fog, or darkness hiding missing detail.
-- One improved object while world/obstacles/UI remain placeholders.
-- Idle/showroom screenshots only.
-- Missing renderer diagnostics after visual density changes.
+Verify with npm run build, npm run lint, refreshed contact sheets, a live 4:3 final-pipeline frame, relevant gameplay states, per-pass renderer counts, frame time, and window.__lightSlots() when lighting changes.
+```
 
-Verification:
-- Capture active gameplay desktop and mobile screenshots.
-- Report visual score before/after.
-- Report draw calls, triangles, geometries, textures, material count, DPR cap, shadow/post settings, and instancing/LOD/culling decisions when available.
-- Run build, browser, console/page error, nonblank canvas, interaction, and responsive checks.
-- Continue until every scorecard category is at least 2, or report exactly why the target was not reached.
+## Screenshot critique and implementation plan
 
----
-
-# Before/After Visual Critique Prompt
-
-Use `deadwater-ps2-graphics-builder` to critique this Three.js game's current screenshots with the visual scorecard and produce a prioritized graphics plan.
-
-Evidence to gather:
-- Desktop screenshot.
-- Mobile screenshot.
-- Optional before/after screenshots if a pass was already completed.
-- Renderer diagnostics if available.
-- Notes on the game genre, core verb, and target mood.
-
-Critique dimensions:
-- Gameplay readability.
-- UI hierarchy and text fit.
-- Procedural model silhouette and fidelity.
-- Material, lighting, shadows, color, and contrast.
-- Camera composition and motion clarity.
-- Mobile framing and touch/control readability.
-- Performance risk from proposed upgrades.
-
-Output:
-- Pass/fail on whether the game looks polished enough for the current milestone.
-- Top five blockers ordered by player impact.
-- Recommended next skill/phase: `deadwater-ps2-graphics-builder`, `deadwater-game-ui-designer`, `deadwater-debug-profiler`, or `deadwater-qa-release`.
-- Concrete acceptance criteria for the next pass.
-
----
-
-# Material, Lighting, and Render Quality Pass Prompt
-
-Use `deadwater-ps2-graphics-builder` for scene-level render quality, material libraries, model materials, geometry factories, and visual scoring.
-
-Current problem:
-- 
-
-Target look:
-- 
-
-Work areas:
-- Renderer color space, tone mapping, exposure, shadow settings, DPR cap.
-- Key/fill/rim/environment lighting.
-- Material roughness, metalness, emissive accents, vertex colors, generated textures, and decals.
-- Fog, background, post-processing, and feedback effects only where they improve readability.
-- Camera composition and gameplay-distance readability.
-
-Constraints:
-- Improve lighting and materials before adding heavy post-processing.
-- Keep threats, pickups, player, and objective readable during motion.
-- Avoid excessive bloom, low-contrast fog, and particle clutter.
-- Re-measure renderer info if visual complexity changes.
-
-Verification:
-- Capture desktop and mobile screenshots.
-- Check console/page errors and nonblank canvas pixels.
-- Compare renderer calls/triangles/textures before and after when practical.
-- Play the core loop and confirm effects do not hide gameplay information.
-
----
-
-# Technical Art Pass Prompt
-
-Use `deadwater-ps2-graphics-builder` for a technical-art pass on this Three.js game.
-
-Current visual/performance risk:
-- 
-
-Target art direction:
-- 
-
-Required pass:
-- Load `references/technical-art.md`.
-- Write a technical art brief: hero surfaces, support surfaces, material kit, VFX language, lighting stack, render budget, asset strategy, mobile constraint.
-- Convert art direction into renderable systems: materials, decals/trim, shaders, VFX, LOD, instancing, culling, imported asset cleanup.
-- Make threats, rewards, player state, and objectives readable by shape/motion/value, not color alone.
-- Keep API/generated asset calls out of browser runtime.
-
-Verification:
-- Capture active desktop and mobile screenshots.
-- Report renderer diagnostics: calls, triangles, geometries, textures, material count when available, DPR cap, shadow/post settings.
-- Report imported/generated asset diagnostics when relevant: file size, bounds, scale, orientation, collision proxy, triangles/materials/textures/clips when available.
-- Report VFX readability: trigger, duration, player-facing meaning, and reduced-motion concern if applicable.
-- State what was optimized, what was intentionally left rich, and remaining performance risks.
-
----
-
-# Procedural Hero Asset Pass Prompt
-
-Use `deadwater-ps2-graphics-builder` to create or upgrade a high-fidelity scratch-built Three.js hero asset.
-
-Asset brief:
-- Role:
-- Silhouette:
-- Scale:
-- Camera distance:
-- Style references:
-- Performance budget:
-
-Requirements:
-- Build a reusable model factory that returns a named `THREE.Group`.
-- Establish a recognizable silhouette before adding small detail.
-- Add secondary and tertiary detail through bevels, trims, panels, ridges, tubes, decals, emissive elements, and material contrast.
-- Add visible subassemblies, not just a few primitives: shell/body, core/cockpit, trims/rails, engines/emitters, decals/surface marks, and state feedback when relevant.
-- Use shared geometries/materials where possible.
-- Use PBR-style materials, shadows, color management, and lighting intentionally.
-- Keep collision or gameplay proxies simpler than the visual mesh.
-
-Avoid:
-- Placeholder stacks of primitives.
-- Detail visible only from a showroom camera.
-- Excessive segment counts, unique materials, or draw calls without gameplay value.
-- Glow-only upgrades that leave the silhouette primitive.
-
-Verification:
-- Build and run locally.
-- Capture gameplay-camera screenshot and one inspection screenshot if useful.
-- Report renderer info before/after when available.
-- Verify the asset reads clearly at desktop and mobile gameplay distances.
-
----
-
-# Visual Polish Prompt
-
-Use `deadwater-ps2-graphics-builder` to improve the game's visual clarity and identity.
-
-Use focused prompts instead when the main problem is narrower:
-- Use `deadwater-game-ui-designer/references/prompt-templates.md` for HUD/menu/interface quality prompts.
-- Use the procedural hero asset or world prop kit sections in this file for scratch-built model fidelity inside the AAA graphics phase.
-- Use the before/after visual critique section in this file when priorities are unclear.
-
-Target feel:
-- 
-
-Constraints:
-- Keep the game readable during motion.
-- Avoid generic purple gradients, excessive bloom, particle clutter, and static showroom composition.
-- Prefer purposeful lighting, color contrast, silhouettes, material variation, and procedural geometry that supports gameplay.
-- Hand off substantial UI craft to `deadwater-game-ui-designer`; keep model/world/render construction under `deadwater-ps2-graphics-builder`.
-- Keep performance visible while polishing.
-
-Verification:
-- Capture before/after screenshots where possible.
-- Check desktop and mobile framing.
-- Confirm the game remains interactive and no console errors were introduced.
-
----
-
-# World Prop Detail Kit Pass Prompt
-
-Use `deadwater-ps2-graphics-builder` to create a reusable procedural prop/detail kit for this Three.js game's world.
-
-World role:
-- 
-
-Kit requirements:
-- Define 4-8 reusable prop factories with shared materials.
-- Include scale variants, color/material variants, and clear placement rules.
-- Use instancing or shared geometry/materials for repeated details.
-- Add visual detail that supports navigation, danger, reward, or atmosphere.
-- Keep the kit coherent with the existing game UI and world lighting.
-- For city/runner worlds, include skyline modules with setbacks/window bands/roof details, foreground speed props, track hardware, signage/cables/supports, and distant parallax layers.
-
-Performance constraints:
-- Avoid unique material explosions.
-- Keep repeated props instanced or pooled when practical.
-- Track draw calls, triangles, geometries, textures, and frame impact.
-
-Verification:
-- Capture before/after screenshots from gameplay camera.
-- Check desktop and mobile readability.
-- Report renderer diagnostics.
-- Confirm no console/page errors and no obvious collision/occlusion issues.
-- If the world is still dominated by stretched boxes, continue the prop-kit pass.
-
----
-
-# Fresh-Eyes Scorecard Review Prompt
-
-Use for the independent review pass required by `references/visual-scorecard.md` for premium/AAA/showcase claims. Give the reviewer ONLY the inputs below — no build history, no prior scores, no description of the work performed.
+```text
+Use $deadwater-ps2-graphics-builder to critique DEADWATER's current live frame and relevant contact sheets, then produce a prioritized implementation plan.
 
 Inputs:
-- The COMPLETE screenshot capture set — every captured state, desktop and mobile, never a hand-picked subset: <paths>
-- Scorecard rubric: `deadwater-ps2-graphics-builder/references/visual-scorecard.md`
-- Calibration anchors: `deadwater-ps2-graphics-builder/assets/scorecard-anchors/`
-- Inspector metrics JSON: <paths>
+- Live .viewport canvas capture:
+- Relevant contact sheets:
+- Player pose and gameplay state:
+- Flashlight and light-circuit state:
+- Available renderer metrics:
 
-Task:
-- Score all ten scorecard categories from the screenshots alone, using the 0-3 anchors and calibration images.
-- Cross-check scores against the metrics (colorEntropyBits, edgeDensity, luminance.contrast, dominantColorShare, renderBudget) and flag any score the numbers contradict.
-- List every automatic failure you can see in the screenshots.
-- Do not give benefit of the doubt: if a surface could be a 1 or a 2, score it 1 and say what visible change would earn the 2.
+Score references/visual-scorecard.md. Separate visible art problems from renderer-contract problems. For each recommendation, name the exact owner under src/ps2/, src/engine/, src/game/, src/index.css, or src/engine/scene.json; classify it as hardware fact, DEADWATER policy, or modern cheat; estimate cost; and define identical before/after evidence.
 
-Report:
-- Ten category scores with one-sentence visual evidence each.
-- Automatic failures observed.
-- The three highest-impact changes to raise the lowest scores.
+Do not recommend stock PBR, tone mapping, environment maps, PSX wobble, nearest-only magnification, or generic post-processing.
+```
+
+## Lighting and darkness pass
+
+```text
+Use $deadwater-ps2-graphics-builder for a DEADWATER lighting pass.
+
+Affected locations:
+Current readability failure:
+Desired player read:
+
+Keep ordinary lighting in the vertex shader in src/ps2/PS2Material.ts. Work through light placement, radius, intensity, shaded-fixture cone, surface segments, normals, visible fixture emissive/fullbright faces, ambient, and fog. Reserve one of the 20 project light slots for the flashlight. Do not describe 20 as a PS2 hardware limit.
+
+Inspect window.__lightSlots(), circuit-off and circuit-on states, flashlight stowed and equipped, player movement through the area, and the affected contact-sheet tiles. Record per-pass and frame-time changes.
+```
+
+## Texture and material pass
+
+```text
+Use $deadwater-ps2-graphics-builder to improve DEADWATER's diffuse/emissive material language.
+
+Affected surfaces:
+Current defect:
+Target material read:
+
+Use createPS2Material and prepTexture from src/ps2/PS2Material.ts. Preserve raw display-space sampling, diffuse plus emissive, bilinear magnification, hard mip transitions, anisotropy 1, linear fog, and ordered dither. Fix source image, 256px working scale, UV repeat, tint, normals, and lighting before enabling texture bombing. Treat bombing and glass sheen as modern cheats with measured cost.
+
+Do not add runtime roughness, metalness, normal, AO, clearcoat, transmission, PMREM, or environment reflections.
+```
+
+## Imported asset adaptation
+
+```text
+Use $deadwater-ps2-graphics-builder to adapt this glTF or FBX asset to DEADWATER.
+
+Asset path and license:
+Registry role:
+Gameplay camera distance:
+Collision role:
+
+Register it in src/engine/models.ts and place it through src/engine/scene.json. Route it through applyPS2Materials in src/engine/render.tsx. Keep diffuse and justified emissive maps; strip PBR channels. Verify source material arrays, glass naming, scale, pivot, bounds, normals, texture dimensions, material collapse, collision, attribution, darkness, flashlight response, live gameplay silhouette, and contact-sheet coverage.
+
+Report source and shipped diagnostics. A PBR model-viewer render is not acceptance evidence.
+```
+
+## Procedural set-piece pass
+
+```text
+Use $deadwater-ps2-graphics-builder to build a reusable DEADWATER set piece.
+
+Area and function:
+Player route and negative space:
+Focal object:
+Supporting prop family:
+Lighting role:
+Collision needs:
+
+Prefer scene nodes, existing MODEL_REGISTRY assets, primitive components, instances, and current generators. Add a generator in src/engine/render.tsx and schema support in src/engine/types.ts only when repeated parametrized construction warrants it. Keep visual and collision geometry separate. Spend vertices on silhouette and Gouraud light sampling visible at 512x448.
+
+Follow docs/WAREHOUSE-LAYOUT.md. Verify all affected gameplay paths and contact-sheet cameras, renderer deltas, and build/lint.
+```
+
+## Modern-cheat review
+
+```text
+Use $deadwater-ps2-graphics-builder to review this proposed or changed modern cheat in DEADWATER.
+
+Cheat:
+Player-facing purpose:
+Canonical owner:
+Consumers:
+Coverage or activation state:
+Expected samples/passes/memory/transparency cost:
+
+Confirm it does not replace gamma/display-space diffuse/emissive Gouraud rendering. Compare the same live frame with the cheat enabled and disabled. Measure per-pass cost and frame time. Define a fallback. Reject the change if scene composition, geometry, normals, diffuse art, emissive art, UV scale, or vertex density solves the problem more cheaply.
+```
+
+## Flashlight and shadow pass
+
+```text
+Use $deadwater-ps2-graphics-builder to tune DEADWATER's flashlight without generalizing its modern-cheat path.
+
+Current defect:
+Affected surfaces and occluders:
+
+Keep ownership split across src/game/Flashlight.tsx, src/ps2/torchShadow.ts, the torch fragment branch in src/ps2/PS2Material.ts, and scheduling in src/ps2/PS2Pipeline.tsx. Preserve the single hard depth tap and 512x512 shadow target unless measurements justify a DEADWATER policy change.
+
+Verify crosshair convergence, circular pool, hard edge, bias, stow/equip slot lifecycle, viewmodel exclusion, water exclusion, darkness without the torch, draw/triangle counts per pass, and frame-time delta.
+```
+
+## Water pass
+
+```text
+Use $deadwater-ps2-graphics-builder to tune DEADWATER's sewer water.
+
+Current defect:
+Affected channel and intersections:
+
+Work in src/game/SewerWater.tsx and the existing depth contract in src/ps2/sceneDepth.ts and src/ps2/PS2Pipeline.tsx. Preserve per-vertex scene lighting, dual scrolling diffuse layers, small vertex motion, fog, local quantization, transparency, and bounded depth-aware foam. Treat foam as a modern cheat.
+
+Do not add reflection, refraction, SSR, planar mirrors, transmission, or PBR water. Verify flow in motion, banks, pilings, grates, foam enabled in gameplay, foam disabled in direct review renders, light response, mip behavior, transparency, and pass cost.
+```
+
+## Fresh-eyes scorecard review
+
+```text
+Independently score this DEADWATER graphics pass using references/visual-scorecard.md.
+
+Inputs:
+- Complete before and after live 4:3 capture set:
+- Complete relevant contact sheets:
+- Technical-art metrics:
+- Renderer diff for contract-fidelity review:
+
+Do not assume the implementation intent is correct. Score all ten categories, list automatic failures, identify claims mislabeled as hardware fact, DEADWATER policy, or modern cheat, and name the three most important visible or technical fixes. Contact sheets do not prove final CRT presentation.
+```

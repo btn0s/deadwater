@@ -1,78 +1,89 @@
 ---
 name: deadwater-gameplay-systems
-description: "Build and iterate playable Three.js game systems. Combines starter scaffold creation, architecture, game design, level design, gameplay implementation, combat/encounter design, and game-feel tuning (hitstop, screenshake, easing, impact feedback). Use for first playable slices, new Vite/TypeScript/Three.js game setup, design briefs, core loops, level/arena/track/wave/hole/puzzle design, game loops, entity systems, input, collision/physics, scoring, objectives, audio hooks, camera, controls, difficulty, feedback, juice, and maintainable structure."
+description: Use when building or changing DEADWATER gameplay, scene components, first-person controls, interactions, inventory, carrying, Rapier bodies, deterministic actors, audio hooks, level flow, or the game/editor runtime boundary.
 ---
 
-# Three.js Gameplay Systems
+# DEADWATER gameplay systems
 
-## Purpose
+## Core contract
 
-Create or evolve a playable browser game loop with clear ownership, responsive controls, deterministic update order, strong design intent, playable spaces, and verified player-facing behavior.
+Extend the existing React 19 and `@react-three/fiber` game. Keep `src/engine/scene.json` as the authored-world source of truth, keep gameplay inside the game entry, and use the existing component renderers and stores. Do not introduce a standalone Three.js loop, a second renderer, a second scene graph, or a new starter project.
 
-## Use When
+## Required references
 
-Starting a new game, repairing a weak prototype, adding mechanics/entities, designing architecture, defining a game design brief, planning levels/arenas/tracks/waves/holes/puzzles, tuning camera/controls, implementing rules/objectives, building encounters, or improving game feel.
+Load only the references needed by the request, then report a ledger with `yes/no`, path, and any load failure.
+
+- Load `references/gameplay-workflows.md` for every implementation task.
+- Load `references/game-design-level-design.md` for new mechanics, level flow, encounter pacing, objectives, progression, or broad game changes.
+- Load `references/physics-engine-selection.md` for Rapier bodies, colliders, custom player blocking, carrying, high-speed motion, or collision bugs.
+- Load `references/game-feel.md` for controls, camera, prompts, feedback, audio timing, interaction weight, or polish.
+- Load `references/checklists/new-game-definition-of-done.md` before calling a first playable or major slice complete.
+- Load `references/checklists/game-design-level-design.md` before calling a mechanic or level-flow pass complete.
+- Load `references/checklists/game-feel.md` before calling feel or feedback work complete.
+- Load `references/checklists/first-person-exploration-quality.md` before calling first-person exploration, interaction, inventory, or carry work complete.
+- Load `references/prompt-templates.md` only for reusable prompt requests.
+
+## Architecture map
+
+| Concern | Owner |
+| --- | --- |
+| React and R3F composition | `src/App.tsx`, `src/main.tsx` |
+| Authored scene schema | `src/engine/types.ts` |
+| Authored world data | `src/engine/scene.json` through `src/engine/scene.ts` |
+| Scene indexing and component renderers | `src/engine/render.tsx`, `indexScene`, `NodeView`, `SceneRoot` |
+| Editor state and authoring operations | `src/engine/sceneStore.ts` |
+| Inspector field definitions and defaults | `src/engine/inspector.ts` |
+| First-person camera and movement | `src/game/PlayerController.tsx`, `src/game/playerState.ts` |
+| Player blocking and debris contact | `src/game/collision.ts`, `src/game/PlayerBody.tsx`, `@react-three/rapier` |
+| Boot-only rigid-body settling | `SettleSim` in `src/App.tsx` |
+| Reticle use, prompts, and transitions | `src/game/interactions.ts` |
+| Inventory and equipment | `src/game/inventory.ts`, `Flashlight.tsx`, `Crowbar.tsx` |
+| Hands and floating carry | `src/game/Carry.tsx`, `src/game/grabbables.ts` |
+| Runtime audio | `src/game/audio.ts` |
+| Fixed PS2-era output | `src/ps2/PS2Pipeline.tsx`, `src/ps2/PS2Material.ts` |
+| Agent-visible verification | `src/game/DevViews.tsx` and development `window.__*` hooks |
+
+## Non-negotiable boundaries
+
+- Mount gameplay systems as React components below the existing `<Canvas>`. R3F hooks such as `useFrame` and `useThree` must stay inside Canvas ownership.
+- Let R3F own frame scheduling. `PS2Pipeline` already takes render ownership with positive `useFrame` priority and performs the render-target passes.
+- Preserve the camera contract in `PlayerController`: 60 degree vertical FOV, 4:3 aspect, `manual = true`, near `0.1`, far `120`.
+- Represent authored world additions as flat `SceneNode[]` entries with unique ids, parent references, transforms, and typed components. Do not hide level geometry in a parallel JSX-only map.
+- When adding a component type, update the discriminated union, renderer, inspector fields, inspector default, game/editor mode behavior, and representative `scene.json` data together.
+- Keep `sceneStore` for editor CRUD, selection, history, prefab operations, placement, and save. Runtime state belongs in focused game stores or mounted systems.
+- Keep gameplay side effects behind `EngineMode === 'game'`. Editor mode renders visuals and lights with physics paused and must not collect pickups, move actors, trigger doors, or mutate inventory.
+- Keep Rapier under the existing `<Physics>` tree. Reuse `RigidBody` and collider components from `@react-three/rapier`; do not create a separate imperative physics world.
+- Preserve `SettleSim` as a bounded boot-only exception: it temporarily pins Rapier to 1/60 and advances 90 steps when the body count changes during the first five seconds. Do not call `world.step()` from ordinary gameplay systems or include the boot burst in steady-state profiles.
+- Keep player navigation's custom XZ AABB collision and the kinematic Rapier capsule in their existing roles. The AABB path controls movement; the capsule pushes debris.
+- Route interaction through the center reticle and first solid hit. Preserve occlusion, reach limits, pointer-lock gating, and cleanup returned by registration functions.
+- Route equipment through `inventory`, grabbables through `registerGrabbable`, and carried state through `carry`. Preserve carry lock for two-handed objects.
+- Call `play()` on the state transition that owns the sound. Keep `AudioContext` creation and resume tied to a user gesture.
+- Use `mulberry32(seed)` for authored procedural geometry and seeded actor behavior. Store stable seeds in `scene.json`. Preserve the development contact-sheet and teleport hooks.
+- Keep the editor as the separate `editor.html` Vite entry. Game code must not import the editor app or ship editor chrome.
 
 ## Workflow
 
-Load `references/gameplay-workflows.md` as the first action when the task includes first playable setup, architecture, mechanics, entities, input, camera, collision/physics, scoring, objectives, feedback, or feel tuning.
+1. Inspect the relevant schema, renderer, game system, editor field definitions, scene nodes, and current dev hooks.
+2. State the player-facing behavior and identify the owning module before editing.
+3. For broad changes, write the compact player promise, core loop, level-flow beats, failure or setback, and non-goals.
+4. Add or change the smallest coherent vertical path: data, runtime behavior, visual response, HUD prompt or inventory state, audio event, editor authoring support, and diagnostic hook.
+5. Clamp variable render delta where the current systems do. Keep per-frame state in refs or stable objects and avoid React state writes on every frame.
+6. Test cleanup for event listeners, registrations, Rapier bodies, material resources, and external-store subscriptions.
+7. Run `npm run build`, then verify the real game URL with the affected input path. Inspect console errors and capture a relevant contact sheet when the change affects the world.
+8. Open `/editor.html` when schema, components, models, prefabs, or scene data changed. Confirm selection, inspector editing, undo/redo, save, and game/editor behavior separation.
 
-Load `references/game-design-level-design.md` before broad new-game creation, major gameplay changes, level/arena/track/wave/hole/puzzle design, combat/encounter design, progression/difficulty work, or any claim that gameplay is premium, polished, complete, or less generic.
+## Common mistakes
 
-Load `references/physics-engine-selection.md` before adding or changing physics, collision-heavy gameplay, vehicle movement, rolling balls, mini-golf, pool/snooker, pinball, rigid-body puzzles, character controllers, sensors, high-speed projectiles, moving platforms, or physics QA.
+- Adding a standalone `Game` class, manual animation loop, or second app beside the R3F runtime.
+- Editing `scene.json` without keeping `types.ts`, `render.tsx`, and `inspector.ts` aligned.
+- Mounting gameplay effects in editor mode.
+- Calling `gl.render` from an ordinary gameplay `useFrame` callback and bypassing `PS2Pipeline`.
+- Changing camera aspect or renderer DPR to fix CSS layout, which breaks the fixed output contract.
+- Using detailed visual meshes as dynamic colliders or making the player capsule the navigation controller.
+- Raycasting through occluders, registering without cleanup, or handling the same key in competing listeners.
+- Mutating inventory directly from UI or duplicating carry/equipment state.
+- Using unseeded randomness for authored geometry that appears in contact-sheet comparisons.
 
-Load `references/game-feel.md` before feel/juice/impact tuning, or before claiming gameplay is premium or polished. Track every loaded reference in a reference ledger with yes/no, path, and failure reason. Do not mark the gameplay phase complete while a required reference is skipped.
+## Completion report
 
-Load `references/checklists/new-game-definition-of-done.md` before claiming a new game or first playable slice is complete.
-
-Load `references/checklists/game-design-level-design.md` before claiming a new game, major gameplay upgrade, level/encounter pass, premium gameplay, or polished gameplay is complete.
-
-Load `references/checklists/game-feel.md` before claiming feel/impact tuning or premium gameplay is complete.
-
-Load `references/checklists/endless-runner-premium-quality.md` for endless runner work.
-
-Load `references/prompt-templates.md` only when the user asks for reusable prompts, starter prompts, or a task template.
-
-Load `deadwater-audio-generator` when implementing real SFX, ambience, UI sounds, voice/TTS, or audio cleanup beyond simple placeholder hooks. Gameplay code should emit audio events; the audio skill should generate or process the actual assets and define the runtime audio matrix.
-
-1. Inspect project structure, scripts, dependencies, current loop, input, camera, entities, state, UI, and diagnostics.
-2. Write the compact game design brief: player promise, target feeling, primary verb, objective, pressure, reward, fail/retry, skill expression, non-goals.
-3. Define the core loop contract: verb, objective, pressure, reward/progression, fail/retry.
-4. Define the level/encounter plan before implementation: start, first decision, first threat, first reward, landmarks, escalation, recovery beats, readability, and tuning knobs.
-5. Choose small architecture boundaries: `core`, `game`, `entities`, `systems`, `assets`, `ui`, `tests`.
-6. Implement mechanics in playable increments: input, state, entity, collision/physics, feedback, HUD/audio hook, diagnostics.
-7. Tune feel with `references/game-feel.md`: movement, acceleration, camera follow/FOV/shake, hitstop, impact feedback, cooldowns, difficulty, restart loop.
-8. Keep hot paths allocation-light and update order explicit.
-9. Verify with build, browser, screenshot, canvas pixels, console/page errors, and one real input path.
-
-## Packaged Scaffold
-
-Use the bundled scaffold when starting a new project or when the user asks for a starter game:
-
-```bash
-python3 <this-skill-dir>/scripts/create_threejs_game.py ./my-game
-```
-
-The script copies `assets/threejs-vite-game/`, rewrites the project name in `package.json` and `package-lock.json`, and keeps generated games self-contained with their own visual test and canvas-inspection script. Use `--force` only when the target directory may be overwritten.
-
-## Library Guidance
-
-- Use TypeScript, Vite, Three.js modules.
-- Physics/collision engine choice (custom collision vs Rapier vs cannon-es), timestep, and collider strategy: follow `references/physics-engine-selection.md`.
-- `lil-gui` for live-tuned constants when useful.
-- Web Audio for runtime playback and procedural feedback; `deadwater-audio-generator` for generated game audio assets.
-
-## Common Failure Modes
-
-- Static demo instead of playable loop.
-- Static scene with mechanics bolted on after the fact, instead of a design brief plus level/encounter plan driving implementation.
-- Core loop is described but not proven through real input, pressure, reward/progression, and fail/retry.
-- Level/track/arena/map is decorative and does not shape player decisions.
-- Mechanic compiles but cannot be triggered by real input.
-- Camera/controls feel delayed or hide the next decision.
-- State changes do not drive UI/audio/VFX.
-- Architecture abstractions appear before mechanics need them.
-
-## Final Response
-
-Report the reference ledger, game design brief, core loop contract, level/encounter plan, gameplay checklist outcome, behavior, controls, changed files, architecture choices, tuned values, verification evidence, artifacts, and remaining edge cases.
+Lead with the player-visible outcome. Include the reference ledger, changed ownership paths, schema or scene-data changes, controls and state transitions, physics/collider notes, deterministic seeds or hooks, editor impact, build and active-play evidence, contact-sheet artifacts, and unresolved edge cases.

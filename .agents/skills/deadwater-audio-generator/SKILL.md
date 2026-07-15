@@ -1,129 +1,69 @@
 ---
 name: deadwater-audio-generator
-description: "Generate, convert, clean, and prepare audio assets for Three.js browser games using ElevenLabs. Use for sound effects, looping ambience, UI sounds, impact/weapon/vehicle audio, creature or boss stingers, announcer/dialogue TTS, scratch-performance voice conversion, voice cleanup/isolation, audio manifests, and game-ready web audio integration."
+description: Use when sourcing, synthesizing, editing, integrating, or verifying DEADWATER sound effects, footsteps, interactions, ambience, spatial cues, and Web Audio behavior.
 ---
 
-# Three.js Audio Generator
+# DEADWATER audio production
 
 ## Purpose
 
-Create game-ready audio assets for Three.js projects. This skill consolidates game sound generation, voice generation/conversion, audio cleanup, credential probing, and runtime integration into one Three.js-focused production workflow.
+Own the path from a named gameplay event to a licensed or reproducible sound that works through DEADWATER's existing Web Audio system. Reuse the current Kenney CC0 sample kit and in-engine synthesis before adding another source. No external generator, account, or credential is required.
 
-Provider: ElevenLabs.
+## Required reference
 
-Resolve `<this-skill-dir>` in the commands below in this order: `~/.claude/skills/deadwater-audio-generator`, `~/.codex/skills/deadwater-audio-generator`, `~/.agents/skills/deadwater-audio-generator`, or repo `skills/deadwater-audio-generator`.
+Load `references/audio-workflows.md` for every audio task. Record the reference, source provenance, processing commands, runtime trigger, and browser verification in the final report.
 
-## When To Use
+## Project truth
 
-Use this skill for:
+- Runtime owner: `src/game/audio.ts`
+- Imported one-shots: `public/sounds/*.ogg`
+- Attribution: `public/models/CREDITS.md`
+- Source index and acquisition policy: `docs/ASSETS.md`
+- Existing imported families: concrete footsteps, landing, relay/door/carry impacts, pickup, switch, and torch clicks from Kenney CC0 packs
+- Existing synthesized sounds: crowbar swing, rat squeak, interior hum, and harbor wash
+- Public API: `play(name, volume, rate)` plus the mounted `AudioSystem`
+- Unlock boundary: first pointer gesture and pointer-lock entry
 
-- SFX: jumps, hits, weapons, explosions, coins, pickups, collisions, UI clicks, confirms, errors.
-- Ambience: wind, rain, city bed, engine hum, portal loop, dungeon room tone, battle arena beds.
-- Voice: announcer barks, boss lines, tutorial prompts, menu narration, generated placeholder dialogue.
-- Voice conversion: convert a scratch performance into a target character voice while preserving timing and emotion.
-- Cleanup: isolate or denoise dialogue before voice conversion, TTS replacement, or transcription.
-- Three.js integration: Web Audio loading, looping, sprite/manifest mapping, volume groups, pause/resume, user gesture unlock.
+Do not add scattered `new Audio()` calls, a second `AudioContext`, or a parallel audio manager.
 
-For premium/AAA/showcase game work, audio is not cosmetic. Generate or integrate at least a minimal interaction audio set for the main loop unless the user explicitly requests mute/offline-only output or credentials/API attempts are blocked.
+## Workflow
 
-## API Key
+1. Name the gameplay state transition, listener location, expected frequency, priority, maximum duration, variation need, and whether the cue loops.
+2. Inspect the current `SAMPLES` map, `play()` call sites, synth buffers, ambience transition, and credits before creating anything.
+3. Choose the source in this order:
+   - reuse or retune an existing sample or synth;
+   - source a CC0 or approved CC BY asset through the repo's asset-search workflow;
+   - synthesize a simple mechanical, tonal, noise, or ambience cue reproducibly;
+   - use an available generation tool only when the user requests it or the first three options cannot meet the brief.
+4. Record source URL, author, license, original filename, processing, shipped path, and credit change before integration. Generated output records the tool and prompt as provenance.
+5. Trim silence, remove DC offset, create intentional fades, downmix when spatial width has no value, and encode short browser cues as OGG. Make at least three variants for rapid repeated Foley when practical.
+6. Add imported files under `public/sounds/` and one canonical entry in `SAMPLES`. Keep seamless procedural beds in `bakeSynth()` when that is smaller and easier to tune with the scene.
+7. Call `play()` from the state transition that owns the cue. Never trigger a one-shot every frame. Preserve gesture unlock, random pitch bounds, and ambience cleanup.
+8. Verify the real action with audio unlocked, then test rapid repetition, pause/re-entry, zone transition, hidden-tab return, missing/decode errors, and production asset URLs as relevant.
 
-Never store API keys in skill files or browser/game code, and never paste a key value into a report. The script reads `--api-key` or `ELEVENLABS_API_KEY`.
+## Local production helper
 
-Step 0, before declaring the key unavailable: run this skill's own probe and paste its literal output into the report.
-
-```bash
-python3 <this-skill-dir>/scripts/threejs_audio_asset.py probe   # prints ELEVENLABS_API_KEY=SET|MISSING
-```
-
-`ELEVENLABS_API_KEY=MISSING` is only a valid skip/blocker reason when this output is shown. Keys defined only in a shell profile can be absent from the process env; if the plain probe prints MISSING unexpectedly, wrap it: `zsh -lc 'source ~/.zprofile 2>/dev/null || true; source ~/.zshrc 2>/dev/null || true; python3 <this-skill-dir>/scripts/threejs_audio_asset.py probe'`. When the director skill is loaded, prefer `deadwater-game-director/scripts/probe_asset_credentials.sh`, which probes all three asset keys at once.
-
-Audio-specific: add `--validate` to the probe to call ElevenLabs `GET /user` and confirm the key actually works (prints `VALID_USER=...`); use it when a key is present but a generation still fails. A valid key can still be blocked by an out-of-credit or plan-tier limit — those surface as an `HTTP 4xx` from a real generation attempt. Report that as a purchase/plan blocker, do not silently skip.
-
-## Required Reference
-
-Load `references/audio-workflows.md` before building a game audio plan, generating multiple assets, wiring runtime audio, cleaning/converting voices, or claiming premium game audio.
-
-Track it in the reference ledger. Do not mark the audio phase complete while this reference is skipped.
-
-## Tool Script
-
-Run from the user's current game project directory:
+The bundled script audits project references, inspects audio metadata, creates reproducible WAV starting points, and checks WAV loop seams:
 
 ```bash
-python3 <this-skill-dir>/scripts/threejs_audio_asset.py --help
+python3 .agents/skills/deadwater-audio-generator/scripts/deadwater_audio_asset.py audit-project .
+python3 .agents/skills/deadwater-audio-generator/scripts/deadwater_audio_asset.py inspect public/sounds/*.ogg
+python3 .agents/skills/deadwater-audio-generator/scripts/deadwater_audio_asset.py synth /tmp/deadwater-hum.wav --kind hum --duration 2 --seed 7
+python3 .agents/skills/deadwater-audio-generator/scripts/deadwater_audio_asset.py loop-check /tmp/deadwater-hum.wav
 ```
 
-Probe:
+`inspect` uses `ffprobe` when available and falls back to WAV metadata or file size. `synth` produces a source WAV, not an automatically approved shipping asset; audition and process it before integration.
 
-```bash
-python3 <this-skill-dir>/scripts/threejs_audio_asset.py probe
-```
+## Mix and runtime rules
 
-Generate SFX:
+- Keep interaction cues short and transient-led so they read under the hum or harbor wash.
+- Use conservative gain. `play()` feeds the shared master and applies bounded pitch variation.
+- Avoid random pitch on authored voice or musically tuned material unless deliberately designed.
+- Keep footsteps grounded and distance-driven; test walk, sprint, jump, landing, and teleport suppression.
+- Crossfade ambience changes and stop the old source. Do not stack loops across remounts or restarts.
+- Treat synthesized randomness used to bake a buffer as an authored source decision. Use a stable seed when repeatable output matters.
+- Add spatial audio only for a gameplay reason and define attenuation, maximum voices, and cleanup first.
 
-```bash
-python3 <this-skill-dir>/scripts/threejs_audio_asset.py sfx \
-  --prompt "tight futuristic boost pickup, bright transient, short sparkling tail, arcade racing game" \
-  --duration 1.2 \
-  --prompt-influence 0.65 \
-  --out assets/audio/sfx/boost-pickup.mp3
-```
+## Completion evidence
 
-Generate looping ambience:
-
-```bash
-python3 <this-skill-dir>/scripts/threejs_audio_asset.py sfx \
-  --prompt "seamless cyber resort mini golf ambience, distant surf, soft neon transformer hum, gentle crowd bed" \
-  --duration 12 \
-  --loop \
-  --prompt-influence 0.45 \
-  --out assets/audio/ambience/cyber-resort-loop.mp3
-```
-
-Generate TTS/announcer line:
-
-```bash
-python3 <this-skill-dir>/scripts/threejs_audio_asset.py tts \
-  --text "Perfect shot." \
-  --voice-id JBFqnCBsd6RMkjVDRZzb \
-  --out assets/audio/voice/perfect-shot.mp3
-```
-
-Clean dialogue:
-
-```bash
-python3 <this-skill-dir>/scripts/threejs_audio_asset.py isolate \
-  --input assets/audio/source/noisy-boss-line.wav \
-  --out assets/audio/voice/boss-line-clean.mp3
-```
-
-Convert a scratch performance to a target voice:
-
-```bash
-python3 <this-skill-dir>/scripts/threejs_audio_asset.py voice-change \
-  --input assets/audio/source/scratch-boss-line.wav \
-  --voice-id JBFqnCBsd6RMkjVDRZzb \
-  --remove-background-noise \
-  --out assets/audio/voice/boss-line-final.mp3
-```
-
-## Game Audio Defaults
-
-- SFX: `mp3_44100_128`, 0.5-2.5s, prompt influence `0.55-0.8`.
-- UI: 0.15-0.8s, high prompt influence, keep transients clear.
-- Ambience loops: 8-30s, `--loop`, prompt influence `0.3-0.55`.
-- Voice: TTS for clean generated lines; voice-change when timing/acting from a scratch performance matters.
-- Cleanup: isolate noisy speech before voice-change or final dialogue use.
-- Runtime: generate locally, commit/import files, and load them via Web Audio/Three.js integration. Never put API keys in browser code.
-
-## Required Report
-
-Report:
-
-- Credential probe output or real blocker.
-- Reference ledger.
-- Generated/processed file paths.
-- Prompts/text/input files, voice IDs, durations, loop flags, and output formats.
-- Runtime integration notes: audio groups, trigger events, loop behavior, unlock gesture, pause/resume, volume/mute controls.
-- Remaining audio gaps and any licensing/plan assumptions tied to the user's ElevenLabs account.
+Report the event matrix, source/provenance, original and shipped files, processing commands, durations and formats, variants or loop decision, `SAMPLES` key and trigger owner, unlock behavior, runtime path exercised, console/network result, production check, and remaining mix risks. A file existing on disk is not evidence that the cue works in play.

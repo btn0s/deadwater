@@ -1,55 +1,38 @@
-# Three.js Image Generator Pairing
+# Image workflows for 3D assets
 
-Use `deadwater-image-generator` when a strong 2D input improves `deadwater-3d-asset-pipeline` output or when the final asset is 2D rather than 3D. The current image provider is Google's Gemini image API.
+Use `deadwater-image-generator` when a concept, diffuse texture, sign, decal, or reference sheet will reduce ambiguity. Codex's built-in image generation and editing capability is preferred when available. No external provider or API key is required.
 
-## 2D To 3D Reference Images
+## Useful outputs
 
-Generate clean reference images before image-to-3D for:
+- single-prop concept with clear silhouette and material zones;
+- front, side, and back reference for manual modeling;
+- T-pose or A-pose reference for a rigged character;
+- orthographic diffuse source for a sign, screen, panel, or decal;
+- seamless color texture for broad material variation;
+- palette and wear reference for an asset family.
 
-- Characters: full-body T-pose or A-pose, neutral expression, visible hands/feet, no cropped limbs.
-- Creatures: side/front silhouettes, clear limb count, readable anatomy.
-- Vehicles: front/side/three-quarter concepts, clear wheels/thrusters/wings, material zones.
-- Buildings: front elevation, roof silhouette, doors/windows, scale cues.
-- Weapons/tools: side view, readable handle/blade/barrel proportions, material callouts.
-- Props/pickups: centered object, plain background, strong silhouette, no text baked in unless wanted.
-- Terrain/world modules: tileable rocks, cliffs, rails, gates, arena pieces, modular set dressing.
+Generated images are references or source art, not automatic 3D. If an optional image-to-3D tool is available and the user wants it, record the tool and prompt, then send the resulting mesh through the normal inspection, cleanup, license, texture, registry, collider, and in-game workflow.
 
-For the actual prompt wording (image-to-3D reference, riggable character/creature, texture/material, logo/icon/UI, sky/background), use the templates in `deadwater-image-generator`'s SKILL.md under "Prompt Patterns" — that skill is the canonical source. The notes here cover only how those references pair into the 3D pipeline.
+## Prompt contracts
 
-## Texture And Material References
+Prop concept:
 
-Use `deadwater-image-generator` for:
+```text
+One worn industrial [asset] for DEADWATER, full object visible, plain neutral background, readable low-poly silhouette, broad diffuse color zones, corrosion and grime at 512x448 game distance, no text, no glossy studio reflections.
+```
 
-- Terrain albedo references: rock, sand, mud, snow, moss, cracked asphalt.
-- Sci-fi trim sheets, panel lines, decals, hazard stripes, window bands.
-- Metal, leather, fabric, glass, ceramic, wood, painted plastic, worn armor.
-- Sky, clouds, nebula, city haze, horizon plates, menu backgrounds.
-- Faction marks, logos, numbers, signs, pickup icons, hazard labels.
+Modeling sheet:
 
-## UI And Logo Use Cases
+```text
+Orthographic front, side, and back views of the same [asset], aligned scale, neutral pose, unobstructed outline, consistent proportions and details, plain background.
+```
 
-Use `deadwater-image-generator` directly, not 3D generation, for:
+Diffuse source:
 
-- Logos and faction marks.
-- HUD icons, item icons, ability icons, pickup symbols.
-- Menu backgrounds and loading illustrations.
-- Button/icon textures, decals, title art, achievement badges.
-- 2D sky/backdrop cards when a 3D model is unnecessary.
+```text
+Flat diffuse color source for [surface], square and seamless, muted worn industrial palette, broad stains and wear, no directional light, no perspective, no normal-map shading, no baked highlights.
+```
 
-## 3D Generator Handoff
+## Handoff
 
-After generating a 2D reference:
-
-1. Save the image in the working project, usually `assets/concepts/`.
-2. Use the `deadwater-3d-asset-pipeline` `image` command with `--image <path>`.
-3. Use `--enable-image-autofix` for rough images.
-4. Use `--texture-alignment original_image` when visual match matters.
-5. Use `--texture-alignment geometry` when structural accuracy matters.
-6. Download generated 3D outputs immediately after success.
-
-## Avoid
-
-- Crowded scene images for single-object 3D generation.
-- Cropped limbs, hidden backs, extreme perspective, motion blur, or heavy depth of field.
-- Tiny UI/logo text in 3D model textures unless text fidelity is noncritical.
-- Using 3D generation for pure 2D UI assets.
+Record the image path, prompt, generation/edit tool, source-image rights, intended mesh or material use, and whether it ships. Prepare shipping textures through `deadwater-image-generator`; concepts may stay at higher resolution outside runtime texture paths.

@@ -1,51 +1,66 @@
-# Three.js Gameplay Systems Prompt Templates
+# DEADWATER gameplay prompt templates
 
-Reusable prompt templates packaged with this skill. Use only templates relevant to the current request, and adapt placeholders to the game/project context.
+Use only the template that matches the request. Replace every placeholder with project facts.
 
----
+## Gameplay-system change
 
-# Gameplay System Prompt
+```text
+Use $deadwater-gameplay-systems to change this DEADWATER gameplay path.
 
-Use `deadwater-gameplay-systems` to add or modify this gameplay system:
+Player-visible behavior:
+Owning scene component or game system:
+Input and pointer-lock behavior:
+State transition:
+Rapier or custom-blocking needs:
+Inventory, carry, prompt, and audio effects:
+Editor fields and scene.json authoring needs:
+Deterministic seed or dev hook:
+Failure and cleanup paths:
 
-System:
-- Player-facing behavior:
-- Entities affected:
-- State changes:
-- Collision/physics needs:
-- Audio/visual/HUD feedback:
-- Edge cases:
+Keep React 19, R3F, the fixed 4:3 camera, PS2Pipeline render ownership, scene.json as the authored-world source, and game/editor separation. Verify build, real input, console, the editor when data changes, and a relevant contact sheet.
+```
 
-Constraints:
-- Preserve existing controls and camera unless the task asks to change them.
-- Keep update order deterministic.
-- Use simple custom collision unless the mechanics justify a physics library.
-- Add debug controls only when they speed tuning.
-- Verify through build, local browser run, console check, screenshot, canvas-pixel check, and interaction test.
+## Scene-component addition
 
----
+```text
+Use $deadwater-gameplay-systems to add this authorable DEADWATER component.
 
-# Game Design And Level Design Prompt
+Component purpose:
+Fields and valid values:
+Visual behavior in game and editor:
+Game-only side effects:
+Physics, interaction, inventory, or audio behavior:
+Representative scene node:
 
-Use `deadwater-gameplay-systems` to design or improve this game's player-facing loop before implementation:
+Update the Component union, renderer, inspector field schema, inspector default, scene data, and mode gating as one change. Do not create a parallel scene format or JSX-only level path.
+```
 
-Game:
-- Target fantasy / player promise:
-- Primary verb:
-- Desired feeling:
-- Genre:
-- Target session length:
-- Target devices:
+## First-person area pass
 
-Produce and then implement:
-- Compact game design brief.
-- Core loop contract: verb -> objective -> pressure -> reward/progression -> fail/retry.
-- Level/encounter plan: start, first decision, first threat, first reward, landmarks, escalation, recovery beats, readability.
-- Difficulty curve and tuning constants.
-- Fun-factor rejection tests.
+```text
+Use $deadwater-gameplay-systems to improve this DEADWATER area.
 
-Constraints:
-- Build a playable loop first.
-- Do not treat a static scene as a game.
-- Make the level/arena/track/wave/hole/puzzle shape player decisions.
-- Verify with real input, active-play screenshot, canvas-pixel check, and fail/retry or setback path when relevant.
+Player promise and target feeling:
+Arrival frame and orientation landmark:
+First choice and teaching beat:
+Pressure and payoff:
+Carry, inventory, lighting, or route tradeoff:
+Recovery and return path:
+
+Author the space in scene.json and the in-browser editor. Judge readability from the fixed 4:3 player camera and 512x448 output. Verify the active route, interaction occlusion, relevant dev hooks, and named contact sheets.
+```
+
+## Physics and carry investigation
+
+```text
+Use $deadwater-gameplay-systems to fix this DEADWATER physics or carry issue.
+
+Reproduction:
+Expected body and collider state:
+Actual state:
+Custom AABB or Rapier owner:
+Held mode and inventory-lock state:
+Frame-rate or tunneling conditions:
+
+Preserve custom AABB player navigation plus the kinematic Rapier push capsule. Use the existing Physics provider and declarative bodies. Verify every release and cleanup path, low-FPS behavior, editor pause, and body registration cleanup.
+```

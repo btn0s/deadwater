@@ -1,66 +1,59 @@
-# Three.js Debug/Profile Prompt Templates
+# DEADWATER debug and profile prompt templates
 
-Reusable prompt templates packaged with this skill. Use only templates relevant to the current request, and adapt placeholders to the game/project context.
+## Runtime or editor bug
 
----
+```text
+Use $deadwater-debug-profiler to diagnose this DEADWATER issue.
 
-# Mobile Input Prompt
+Entry and URL:
+Build mode:
+Exact reproduction and state:
+Expected:
+Actual:
+First console, network, shader, or audio error:
+Recent change:
 
-Use `deadwater-debug-profiler` for mobile render/input bugs, or `deadwater-game-ui-designer` when the main issue is touch-control/HUD layout.
+Identify the R3F, PS2Pipeline, raw-color shader, scene schema/store, asset loader, collision, pointer-lock, audio, or UI owner before editing. Retest the exact path plus the neighboring game/editor and production-preview paths.
+```
 
-Target devices:
-- 
+## Multipass or shader bug
 
-Current issue:
-- 
+```text
+Use $deadwater-debug-profiler to isolate this render problem.
 
-Requirements:
-- Use pointer/touch handling that does not fight page scrolling.
-- Keep HUD and controls inside safe areas.
-- Verify portrait and landscape if both are supported.
-- Check canvas sizing, device pixel ratio, hit target sizes, and virtual controls.
-- Use Playwright mobile emulation and, when available, a real device smoke test.
+Visible symptom:
+Affected pass: CCTV, depth, torch shadow, main target, final blit, or unknown:
+Torch and water state:
+Shader compile/link log:
+Target and uniform observations:
 
----
+Preserve R3F frame ownership, the positive-priority PS2Pipeline callback, raw color, and 512x448 output. Check pass order and restoration before changing global lighting or color settings.
+```
 
-# Performance Pass Prompt
+## Production performance pass
 
-Use `deadwater-debug-profiler` to profile and improve this game.
+```text
+Use $deadwater-debug-profiler to profile DEADWATER.
 
-Target device or budget:
-- FPS/frame-time target:
-- Target viewport:
-- Known bottleneck:
+Target device/browser:
+Entry, viewport, DPR, camera, and scene area:
+Frame-time goal:
+Torch, CCTV, water, physics, and editor state:
+Known metrics:
 
-Measure:
-- frame time
-- renderer draw calls
-- geometry/material/texture counts
-- texture dimensions and formats
-- shader/post-processing cost
-- bundle size
-- memory/disposal behavior during state transitions
+Build and use production preview. Record frame-time distribution, multipass-aware renderer metrics, targets, bodies, colliders, textures, memory, and asset sizes. Change one measured bottleneck and rerun the identical scenario.
+```
 
-Implement only changes justified by measurements, then rerun the same checks.
+## Scene or editor data bug
 
----
+```text
+Use $deadwater-debug-profiler to diagnose this scene.json or editor issue.
 
-# Scene Debug Prompt
+Node ids and parents involved:
+Components involved:
+Editor operation and save response:
+Game behavior:
+Expected undo, prefab, or instance behavior:
 
-Use `deadwater-debug-profiler` to diagnose this Three.js issue:
-
-Symptom:
-- Blank canvas, black frame, frozen frame, bad resize, asset failure, bad animation timing, collision issue, or mobile input problem:
-
-Recent changes:
-- 
-
-Expected behavior:
-- 
-
-Debugging requirements:
-- Reproduce locally.
-- Inspect console and page errors.
-- Check canvas size, renderer size, camera aspect, near/far planes, lights, material visibility, asset paths, async loading, and animation loop ownership.
-- Make the smallest fix that addresses the root cause.
-- Verify with a browser screenshot and canvas-pixel sample.
+Validate the flat node graph, schema/renderer/inspector alignment, sceneStore history, dev-only /__scene save path, and game/editor mode separation. Verify reload in both entries.
+```

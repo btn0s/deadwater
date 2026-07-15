@@ -1,4 +1,4 @@
 interface:
-  display_name: "Three.js Audio Generator"
-  short_description: "Generate SFX, ambience, voice, and cleaned audio assets for Three.js games"
-  default_prompt: "Load deadwater-audio-generator/SKILL.md (try ~/.codex/skills/deadwater-audio-generator/SKILL.md, then ~/.claude/skills, ~/.agents/skills, or repo skills/) and follow it exactly. Non-negotiables: run the probe before declaring the key unavailable; load the audio workflow reference; report the audio matrix, output paths, runtime trigger mapping, and verification notes."
+  display_name: "DEADWATER Audio Production"
+  short_description: "Produce and integrate DEADWATER audio through its existing Web Audio system"
+  default_prompt: "Use deadwater-audio-generator to source, synthesize, process, integrate, and verify the requested DEADWATER cue. Preserve src/game/audio.ts as the single runtime owner, record provenance, and prove the real trigger and browser unlock path."

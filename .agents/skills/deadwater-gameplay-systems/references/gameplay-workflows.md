@@ -1,207 +1,155 @@
-# Gameplay Workflows
+# DEADWATER gameplay workflows
 
-Use this reference for first playable slices, architecture, mechanics, entities, controls, camera, physics, audio hooks, and game-feel iteration. For broad game creation, level/arena/track/wave/hole/puzzle work, encounter design, progression, difficulty, or premium gameplay claims, also load `references/game-design-level-design.md`.
+Use this reference for every gameplay implementation task. DEADWATER is an existing React 19, React Three Fiber 9, Drei, and `@react-three/rapier` application. Follow its ownership boundaries instead of installing a starter or inventing a separate runtime.
 
-## First Playable Slice
+## Read the owning path first
 
-The first slice must be playable, not just rendered.
+| Change | Read before editing |
+| --- | --- |
+| World-authored mechanic | `src/engine/types.ts`, `render.tsx`, `inspector.ts`, related `scene.json` nodes |
+| Player movement or camera | `PlayerController.tsx`, `collision.ts`, `playerState.ts`, `PS2Pipeline.tsx` |
+| Rapier debris or collider | `render.tsx`, `PlayerBody.tsx`, `Carry.tsx`, `grabbables.ts` |
+| Door, switch, pickup, prompt | `interactions.ts`, the matching component renderer, `App.tsx` HUD |
+| Inventory or equipment | `inventory.ts`, `Flashlight.tsx`, `Crowbar.tsx`, `Carry.tsx`, `App.tsx` |
+| Runtime sound | `audio.ts` and the system that owns the state transition |
+| Procedural prop or actor | `rand.ts`, generator or actor component, inspector seed field, scene seed |
+| Editor-authored content | `sceneStore.ts`, `EditorApp.tsx`, `ScenePlacer.tsx`, `inspector.ts` |
+| Agent verification | `DevViews.tsx`, `vite.config.ts`, existing `window.__*` hooks |
 
-1. Inspect folder, scripts, dependencies, current renderer, app entrypoint, CSS, assets, and tests.
-2. Define the design brief and core loop contract from `references/game-design-level-design.md`.
-3. Define the level/encounter plan: first decision, first threat, first reward, escalation, recovery beats, and readability.
-4. Implement only the mechanics needed for that loop:
-   - renderer and scene
-   - camera and resize
-   - update/render loop
-   - input intents
-   - player entity
-   - one obstacle/enemy or challenge
-   - one reward/progress path
-   - collision/trigger checks
-   - score/status state
-   - fail/retry state
-   - minimal HUD state
-   - one audio/VFX feedback hook
-5. Add diagnostics when possible:
-   - `window.__THREE_GAME_DIAGNOSTICS__`
-   - renderer info
-   - game state snapshot
-   - input state
-   - active entity counts
-6. Verify build, browser, console/page errors, screenshot, nonblank canvas, and one real input path.
+## Runtime shape
 
-Reject a slice that cannot be controlled or restarted. Also reject a slice where the level/arena/track/wave/table/puzzle is purely decorative and does not shape the player's decisions.
-
-## Architecture Boundaries
-
-Prefer simple modules once the prototype grows beyond one file:
-
-- `main`: DOM bootstrap, app lifecycle, CSS imports.
-- `core`: renderer, loop, resize, input, diagnostics.
-- `game`: orchestration, state transitions, update order, scoring/objectives.
-- `entities`: player, enemies, pickups, projectiles, obstacles.
-- `systems`: camera, collision/physics, spawning, animation, audio, UI bridge, debug.
-- `assets`: material libraries, procedural textures, model factories, loaders, disposal.
-- `tests`: browser, visual, interaction, mobile, performance smoke checks.
-
-Keep update order explicit:
+`App.tsx` owns the game Canvas. Its mounted systems cooperate through React, R3F hooks, focused external stores, refs, and registration sets:
 
 ```text
-input -> fixed physics if any -> gameplay systems -> animation/VFX -> camera -> UI bridge -> render
+scene.json -> scene.ts -> SceneRoot(game) -> NodeView -> component renderers
+                                           -> Rapier bodies and game-only effects
+
+keyboard/pointer -> PlayerController -> player state -> collision and camera
+reticle ray       -> InteractionSystem -> interactable or grabbable action
+pickup/action     -> inventory/carry/light group/player teleport -> HUD and audio
+
+useFrame updates at priority 0 -> PS2Pipeline render passes at priority 1
 ```
 
-Do not invent abstractions before the mechanics need them. Do extract duplicated entity, input, collision, and asset logic once multiple features share it.
+Do not add a `requestAnimationFrame` loop, imperative `Game` singleton, duplicate Three scene, duplicate player state, or second render pipeline.
 
-## Imported Generated 3D Assets And Animation
+## Add a scene component
 
-When gameplay uses `deadwater-3d-asset-pipeline` GLB/FBX assets:
+Use a component when designers or agents must author repeated world behavior in `scene.json`.
 
-- Load GLB assets with `GLTFLoader` from `three/addons/loaders/GLTFLoader.js`.
-- Keep imported model loading in the asset layer, not inside entity update loops.
-- Wrap imported scenes in game entities with explicit scale, bounds, collision proxy, and state hooks.
-- Use `AnimationMixer` for rigged/animated GLBs and update mixers with `deltaSeconds`.
-- Map gameplay states to clips: idle, walk/run, jump, attack/slash/shoot, hurt, fall, turn.
-- Decide whether root motion is used. For arcade games, prefer in-place animation and move the entity in code.
-- Keep simple collision proxies independent from the detailed imported mesh.
-- Add fallback placeholders or loading states if an asset fails to load.
-- Report file size, clip names, approximate triangles, and texture count after import.
+1. Add a narrow interface to the `Component` discriminated union in `src/engine/types.ts`.
+2. Add fields to `COMPONENT_FIELDS` and a valid value to `COMPONENT_DEFAULTS` in `src/engine/inspector.ts`.
+3. Read it with `componentOf` inside `NodeView`.
+4. Render visuals in both modes when they are safe and useful.
+5. Mount physics, interaction registration, inventory mutations, actor updates, and other side effects only in `game` mode.
+6. Keep cleanup in `useEffect` return functions. Registries must not retain an unmounted node.
+7. Add a representative node to `scene.json` and verify the inspector can edit every field.
+8. Verify game behavior and editor behavior separately.
 
-## Input And Intent
+Prefer one component for one authoring concept. Do not encode a one-off room name inside a general renderer.
 
-- Convert keyboard, pointer, touch, and gamepad where relevant into game intents.
-- Keep input collection separate from simulation.
-- Support both desktop and mobile when the user asks for a browser game unless explicitly desktop-only.
-- Handle pointer release/cancel/blur so controls do not stick.
-- Keep CSS `touch-action` intentional and scoped.
-- Preserve focus and restart controls after fail/pause.
+## Add a world interaction
 
-## Camera And Controls
+The reticle uses a center-screen ray against the `level` group. The first solid hit decides the result, so geometry blocks use through walls.
 
-Tune controls and camera together.
+1. Attach behavior to a node-owned group through `NodeGroupContext` or an existing renderer effect.
+2. Register with `registerInteractable` and return its unregister function from `useEffect`.
+3. Choose a short uppercase prompt and a truthful reach distance.
+4. Use `fadeThrough` only for area transitions. Immediate toggles and pickups should set `fade: false`.
+5. Keep locked or inert interactions visible by omitting the action while retaining the prompt.
+6. Fire audio and state changes inside the action, not in a polling frame callback.
+7. Test while aimed, while occluded, just outside reach, with pointer lock released, and after remount.
 
-- Movement: acceleration, deceleration, friction, turn rate, max speed, jump/gravity/boost.
-- Camera: follow lag, look-ahead, FOV, height, distance, shake, collision/framing.
-- Readability: next decision visible, player centered enough, threats not hidden by UI.
-- Feedback: hit pause, camera impulse, FOV kick, meter pulse, audio pitch, VFX socket.
-- Accessibility: avoid excessive shake, strobe, and uncontrollable motion.
+If the target is a dynamic prop, use the existing grabbable path rather than adding a second pickup ray.
 
-Use `lil-gui` for live constants when repeated tuning is likely, but gate debug UI from release.
+## Add inventory or equipment
 
-## Collision And Physics
+`inventory.ts` is the single source for four slots, active slot, stowed state, and two-handed carry lock.
 
-Choose the lightest reliable approach:
+- Add item ids and labels to `ItemId` and `ITEM_DEFS`.
+- Let the scene pickup component call `inventory.add` through its existing renderer effect.
+- Mount equipment visuals as Canvas children that read `useInventory`.
+- Keep digit switching and `F` stow in `InventoryKeys` unless the input design changes as one coordinated pass.
+- Respect `carryLock`; equipment must not draw or switch while a large object fills both hands.
+- Use stable HUD containers so labels do not shift the 4:3 composition.
 
-- Simple custom collision: arcade triggers, lanes, runners, pickups, bullets, simple arenas.
-- Rapier: default robust choice for serious browser-game physics: balls, pinball, mini-golf, pool/snooker, moving platforms, sensors, rigid bodies, slopes/ramps, high-speed collisions, many contacts, and WASM-backed simulation.
-- `cannon-es`: lightweight JS fallback for small/simple rigid-body scenes when avoiding WASM matters.
+Test full inventory, selection, stow, pickup while carrying, large-object lock, drop, and unlock.
 
-When physics is in scope, also load `references/physics-engine-selection.md` before choosing an engine.
+## Add carryable physics
 
-Rules:
+`GrabbableBody` owns the Rapier body and registers its visual root, body handle, radius, and size. `CarrySystem` temporarily changes that body to `KinematicPositionBased`.
 
-- Keep collision proxies simple and visible in debug mode.
-- Do not use detailed visual meshes for collision.
-- Clamp delta or use fixed-step simulation for physics.
-- Reconcile physics transforms and visual transforms in one place.
-- Test high-speed movement against tunneling and camera loss.
-- Report engine choice, package installed, timestep, body count, collider count, CCD use, sensors, and risky colliders.
-- For Rapier, initialize WASM once, step with a fixed accumulator, use primitive/compound colliders, enable CCD only for fast bodies, and dispose bodies/colliders on restart.
+- Use dynamic hulls for ordinary loose props. Use simple explicit colliders when the hull is unstable or expensive.
+- Keep density, damping, and CCD intentional. Cargo should settle, and ordinary throws should not tunnel.
+- Small hand-carried objects use the left-hand anchor so equipment can remain visible.
+- Objects over `BIG_SIZE` use the centered two-handed anchor and lock inventory.
+- Right mouse hold uses floating carry; left click releases or tosses with capped velocity.
+- Restore dynamic body type and inventory state on every release path and unmount path.
+- Clamp held targets through `worldBounds.ts`; do not let kinematic objects cross walls or leave the playable vertical range.
 
-## Gameplay Implementation Loop
+## Change player movement or camera
 
-For each mechanic:
+The player path is deliberately hybrid:
 
-1. Add state/data.
-2. Add simulation/update.
-3. Add visual representation.
-4. Add feedback: UI, audio, VFX, camera, animation.
-5. Add diagnostics.
-6. Verify with real input and one failing edge case.
+- `PlayerController` owns keyboard intent, pointer-lock look, acceleration, jump, head bob, XZ position, AABB sliding collision, and the fixed camera projection.
+- `PlayerBody` follows that position with a kinematic Rapier capsule so the player pushes debris.
+- `playerState.ts` is the small shared bridge used by interaction, audio, zone, and equipment systems.
 
-Examples:
+Preserve this split. A movement change should update `player` every frame before dependent systems read it. Clamp `rawDt` as the existing code does. Clear pressed keys when pointer lock is lost. Test pointer-lock entry, Escape release, re-entry, blur, spawn, teleport, collision sliding, step height, jump, and debris contact.
 
-- Pickup: spawn data, collision trigger, score/meter state, collect VFX/audio, HUD pulse, respawn/cleanup.
-- Hazard: telegraph, movement/update, collision proxy, damage/fail state, hit feedback, restart.
-- Combo: timer/state, reward multiplier, UI badge, audio ramp, reset rules.
-- Weapon/action: cooldown, projectile/hit, impact feedback, ammo/charge UI, target readability.
+Do not make the R3F default camera responsive to the browser aspect. The final image is fixed to 4:3 inside a letterboxed DOM viewport.
 
-## Game Feel Pass
+## Add deterministic procedural content or actors
 
-Run several short loops and tune one axis at a time:
+Use `mulberry32(seed)` from `src/game/rand.ts` inside `useMemo` or stable actor state. Store the seed on a generator or behavior component in `scene.json` and expose it through the inspector.
 
-- Movement speed and acceleration.
-- Camera distance, follow, and look-ahead.
-- Reaction windows and obstacle spacing.
-- Jump/boost/attack cooldowns.
-- Pickup magnetism and reward timing.
-- Hit feedback and restart speed.
-- Difficulty ramp and pacing.
+- Same seed and parameters must create the same geometry, placement, or initial behavior.
+- Do not consume the random stream during render in a way that depends on React remount count.
+- Keep random results in memoized geometry or refs.
+- Runtime-only ambience variation may remain non-deterministic if it does not change authored layout, collision, objective state, or a comparison artifact.
+- If a changing light or actor makes a visual baseline noisy, add a narrow development control rather than replacing the whole random model.
 
-Record meaningful constants changed. If the game feels worse after a pass, revert or reduce the last tuning change instead of layering compensating changes.
+## Add audio hooks
 
-## Design And Level Iteration
+`audio.ts` lazily creates and resumes its `AudioContext` on user gesture. `play(name, volume, rate)` is the common one-shot hook; `AudioSystem` owns footsteps, landing, ambience, and occasional actor sounds.
 
-When a prototype is technically playable but bland, iterate the design before adding more art:
+- Register sample URLs in the existing sound map.
+- Trigger one-shots on the owning state transition, never on every frame that a condition is true.
+- Keep pitch and volume variation restrained.
+- Avoid a second AudioContext or a component-local master gain graph.
+- Make failed fetch/decode paths observable when adding new assets.
+- Test first click unlock, pointer-lock entry, repeated actions, tab visibility, and remount cleanup.
 
-- Tighten the player promise and primary verb.
-- Add a decision in the first 30 seconds.
-- Move hazards/rewards so the player chooses between safety, speed, score, or resource gain.
-- Add a learning beat before a punishing combination.
-- Add one recovery beat after high pressure.
-- Replace random placement with authored pacing rules or seeded patterns.
-- Tune the camera to frame the next decision, not only the player object.
-- Report what changed in the design brief, level plan, or difficulty curve.
+## Keep editor and game behavior separate
 
-## Audio Hooks
+`SceneRoot` receives `mode="game"` from `App.tsx` and `mode="editor"` from `EditorApp.tsx`. Editor physics is mounted paused. The editor should show the same authored visuals and light configuration without running gameplay.
 
-Use lightweight Web Audio or project audio utilities:
+For every new component, answer both questions:
 
-- UI click/pause/retry.
-- Pickup/score.
-- Damage/fail.
-- Boost/speed.
-- Combo/milestone.
-- Ambient loop or procedural drone when appropriate.
+1. What should a designer see and edit in `/editor.html`?
+2. What behavior must only exist in the game?
 
-Audio should reflect state, not play random decoration. Respect mute and reduced-motion/accessibility settings when present.
+Do not import `sceneStore` into gameplay merely to read the authored scene. The game reads `sceneNodes` from `scene.ts`.
 
-## Diagnostics
+## Verification loop
 
-Expose:
+1. Run `npm run build`.
+2. Start the game and inspect console and failed network requests.
+3. Enter pointer lock through a real click and exercise the changed input path.
+4. Use `window.__playerPos()` and `window.__teleport(...)` for repeatable positions when useful.
+5. Use `window.__testCollision(...)`, `window.__colliders()`, `window.__inventory`, or other existing hooks when they cover the change.
+6. Run `await window.__sheet()` or a named set such as `await window.__sheet('office')` for world-facing work.
+7. Open `/editor.html` for schema or world changes. Edit the field, undo and redo, save, then reload the game.
+8. Confirm the game bundle has no editor behavior and the editor does not run gameplay effects.
 
-- FPS/frame time if available.
-- Renderer info.
-- Current state.
-- Player position/velocity.
-- Entity counts.
-- Active collisions/hits.
-- Input intents.
-- Tunable constants when using debug GUI.
+## Failure patterns
 
-Diagnostics should be easy to disable or gate for release.
-
-## Verification
-
-Minimum evidence after meaningful gameplay work:
-
-- `npm run build` or equivalent.
-- Local browser run.
-- Console/page error check.
-- Nonblank canvas pixel check.
-- Desktop screenshot.
-- Mobile screenshot when in scope.
-- Main input path tested.
-- Objective progression tested.
-- Fail/retry tested when relevant.
-
-## Common Failures
-
-- Static scene instead of game.
-- Multiple loops fighting.
-- Camera clips, points away, or hides the next decision.
-- Mechanic cannot be triggered from real input.
-- HUD/audio/VFX do not reflect state changes.
-- Faster movement breaks collision or camera framing.
-- Restart leaves stale entities, timers, listeners, or effects.
-- Mobile input works visually but does not emit game intents.
-- Imported model loads but has wrong scale, pivot, orientation, animation root motion, or no collision proxy.
+- A JSX-only prop appears in game but cannot be authored or inspected.
+- A component exists in types but has no default or inspector field.
+- A hook runs outside Canvas or a positive-priority `useFrame` steals render ownership.
+- Interaction state lives in both the world renderer and HUD.
+- Rapier and the custom player blocker both try to resolve navigation.
+- A body stays kinematic or the hotbar stays locked after an interrupted carry.
+- Audio creates before a user gesture or fires once per frame.
+- `Math.random()` changes authored geometry between contact sheets.
+- Editor mode collects, teleports, animates AI, or mutates inventory.
