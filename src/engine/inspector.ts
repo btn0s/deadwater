@@ -45,6 +45,7 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
     { key: 'repeat', kind: 'vec', dims: 2, step: 0.5 },
     { key: 'tint', kind: 'color' },
     { key: 'bombing', kind: 'number', step: 0.25 },
+    { key: 'glass', kind: 'check' },
   ],
   primitive: [
     { key: 'shape', kind: 'select', options: ['box', 'cylinder', 'torus', 'plane'] },

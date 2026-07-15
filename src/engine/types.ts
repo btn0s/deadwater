@@ -96,6 +96,8 @@ export interface SurfaceComponent {
   repeat: [number, number]
   tint?: string
   bombing?: number
+  /** render as grimy translucent glass (texture becomes the dirt layer) */
+  glass?: boolean
 }
 
 /** Parametric mesh with a PS2 material — the primitive-assembly vocabulary

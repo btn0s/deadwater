@@ -8,6 +8,7 @@ import {
   prepTexture,
   rawColor,
   rawColorFromString,
+  sharedLightUniforms,
   ambientColor,
   fogSettings,
   lightPositions,
@@ -179,17 +180,75 @@ function SplitModel({ c, physics }: { c: ModelComponent; physics?: PhysicsCompon
   )
 }
 
+/** grimy translucent glass: the texture is the dirt layer; a facing-ratio
+ * sheen fakes the reflection, alpha varies with the grime so it reads
+ * streaky and nasty rather than clean */
+function createGlassMaterial(map: THREE.Texture, repeat: [number, number], tint?: string): THREE.ShaderMaterial {
+  return new THREE.ShaderMaterial({
+    vertexShader: /* glsl */ `
+      varying vec2 vUv;
+      varying vec3 vN;
+      varying vec3 vV;
+      varying float vFogDepth;
+      void main() {
+        vUv = uv;
+        vN = normalMatrix * normal;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vV = -mv.xyz;
+        vFogDepth = -mv.z;
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform sampler2D map;
+      uniform vec2 uRepeat;
+      uniform vec3 uColor;
+      uniform vec3 uAmbient;
+      uniform vec3 fogColor;
+      uniform float fogNear;
+      uniform float fogFar;
+      varying vec2 vUv;
+      varying vec3 vN;
+      varying vec3 vV;
+      varying float vFogDepth;
+      void main() {
+        vec3 grime = texture2D(map, vUv * uRepeat).rgb;
+        float dirt = dot(grime, vec3(0.333));
+        // glancing views catch a dull sheen — never a clean mirror
+        float sheen = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0) * 0.35;
+        vec3 color = grime * uColor * (uAmbient * 2.5 + 0.25) + vec3(sheen * 0.5);
+        float alpha = 0.22 + dirt * 0.4 + sheen;
+        float fogFactor = clamp((vFogDepth - fogNear) / (fogFar - fogNear), 0.0, 1.0);
+        color = mix(color, fogColor, fogFactor);
+        gl_FragColor = vec4(color, clamp(alpha, 0.0, 0.85));
+      }
+    `,
+    uniforms: {
+      ...sharedLightUniforms,
+      map: { value: map },
+      uRepeat: { value: new THREE.Vector2(...repeat) },
+      uColor: { value: tint ? rawColorFromString(tint) : new THREE.Color(0.72, 0.78, 0.72) },
+    },
+    transparent: true,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  })
+}
+
 function SurfaceVisual({ c }: { c: SurfaceComponent }) {
   const map = useWorldTexture(c.texture)
   const material = useMemo(
-    () => createPS2Material({ map, repeat: c.repeat, color: c.tint, bombing: c.bombing ?? 0 }),
+    () =>
+      c.glass
+        ? createGlassMaterial(map, c.repeat, c.tint)
+        : createPS2Material({ map, repeat: c.repeat, color: c.tint, bombing: c.bombing ?? 0 }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [map, c.repeat[0], c.repeat[1], c.tint, c.bombing],
+    [map, c.repeat[0], c.repeat[1], c.tint, c.bombing, c.glass],
   )
   useEffect(() => () => material.dispose(), [material])
   const segs = c.segments ?? [Math.max(1, Math.round(c.width)), Math.max(1, Math.round(c.height))]
   return (
-    <mesh material={material}>
+    <mesh material={material} renderOrder={c.glass ? 1 : 0}>
       <planeGeometry args={[c.width, c.height, segs[0], segs[1]]} />
     </mesh>
   )

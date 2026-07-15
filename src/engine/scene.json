@@ -9516,6 +9516,63 @@
      "label": "TAKE TORCH"
     }
    ]
+  },
+  {
+   "id": "office-structure/glass-n",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -18,
+     1.6,
+     -2.9
+    ]
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 2,
+     "height": 1.2,
+     "segments": [
+      2,
+      2
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      1.6,
+      1
+     ],
+     "glass": true
+    }
+   ]
+  },
+  {
+   "id": "office-structure/glass-e",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.8,
+     1.6,
+     0.7
+    ],
+    "rot": -1.5707963267948966
+   },
+   "components": [
+    {
+     "type": "surface",
+     "width": 2,
+     "height": 1.2,
+     "segments": [
+      2,
+      2
+     ],
+     "texture": "Concrete036",
+     "repeat": [
+      1.6,
+      1
+     ],
+     "glass": true
+    }
+   ]
   }
  ]
 }
