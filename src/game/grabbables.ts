@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import type { RapierRigidBody } from '@react-three/rapier'
+import type { AcousticMaterial } from '../engine/types'
 
 export interface Grabbable {
   /** visual root, used for raycasting */
@@ -10,6 +11,7 @@ export interface Grabbable {
   radius: number
   /** largest AABB dimension — how bulky the thing is to carry */
   size: number
+  material: AcousticMaterial
 }
 
 const items = new Set<Grabbable>()

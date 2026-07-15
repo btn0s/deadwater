@@ -95,12 +95,31 @@ Alternative: [itch-dl](https://github.com/DragoonAethis/itch-dl) (needs API key)
 
 ## Audio
 
-One-shots under `public/sounds/` come from Kenney's CC0 Impact Sounds and
-Interface Sounds packs: concrete footsteps, landing, pickup, relay and door
-clunks, crowbar impact, switch click, and torch click. Exact credits live in
-`public/models/CREDITS.md`.
+Runtime audio under `public/sounds/` is built from isolated CC0 recordings.
+The untouched archives and extracted sources live in the ignored
+`.cache/deadwater-audio/` production directory. Retrieval date: 2026-07-14.
 
-`src/game/audio.ts` still synthesizes the seamless interior hum and harbor
-wash beds, crowbar whoosh, and rat squeak. New audio should reuse those paths
-or follow `.agents/skills/deadwater-audio-generator/` for provenance,
-processing, integration, and browser verification.
+| Source | Author | License | Original archive | SHA-256 |
+| --- | --- | --- | --- | --- |
+| [Sound Effects Pack](https://opengameart.org/content/sound-effects-pack) | OwlishMedia | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | `Owlish Media Sound Effects.zip` | `57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18` |
+| [100 CC0 SFX #2](https://opengameart.org/content/100-cc0-sfx-2) | rubberduck | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | `sfx_100_v2.zip` | `0fc61b4494e2e893c0c015ced4877b3f689c7d84a48cb61daecd7ddb52db797b` |
+| [Metal footsteps on concrete](https://opengameart.org/content/metal-footsteps-on-concrete) | Thimras | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | `metal_steps_48k24b.7z` | `3df6f81f669dd2f5bf83b8dab46cd0942bd86e7d33cc4409f1ba8470a9df488d` |
+| [The Shop](https://opengameart.org/content/the-shop) | LEGIT Audio | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | `legit_audio_-_the_shop_free_sfx_wav.zip` | `87d49c4431fdf5647f3c434455b3bcd402fc757f97f2640b2ef84e2e5db9d86e` |
+| [Squeaky Rat](https://opengameart.org/content/squeaky-rat) | Iwan "qubodup" Gabovitch | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | `qubodupSqueakyRat.7z` | `966649ba0e136ec2d473623e15d11710b7fcc8f73a30897758453e8d43bb75a7` |
+
+Run `npm run audio:build` to regenerate the shipping files. The deterministic
+recipe in `scripts/build-deadwater-audio.mjs` records every source file,
+source hash, trim, processing profile, and FFmpeg command in
+`.cache/deadwater-audio/production-record.json`. It trims and fades one-shots,
+applies family-specific filtering and dynamics, level-matches variants, and
+encodes 44.1 kHz OGG Vorbis at quality 5.
+
+Run `npm run audio:stage-candidates`, `npm run audio:audition`, and
+`npm run dev`, then open `/audio-audition.html` to compare level-matched source
+candidates. `npm run test:audio` validates licenses, catalog bounds, minimum
+variant counts, shipped paths, acoustic surface rules, and zone selection.
+
+`src/game/audio.ts` owns the only `AudioContext`, five mix buses, decoding,
+voice limits, HRTF world playback, listener tracking, guarded stingers, and
+crossfaded warehouse, sewer, and harbor beds. Acoustic materials, floor types,
+and sparse environmental emitters live in `src/engine/scene.json`.

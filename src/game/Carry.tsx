@@ -7,6 +7,7 @@ import { player } from './playerState'
 import { clampHeldTarget } from './worldBounds'
 import { inventory } from './inventory'
 import { play } from './audio'
+import { handlingCueFor } from './acoustics'
 
 /**
  * Two ways to hold a prop:
@@ -59,7 +60,7 @@ export const carry = {
   /** E on a grabbable: into the hands */
   pickUp(grab: Grabbable) {
     if (!held) {
-      play('pickup', 0.7)
+      play(handlingCueFor(grab.material))
       take(grab, 'hands')
     }
   },

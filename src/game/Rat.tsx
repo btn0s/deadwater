@@ -5,6 +5,7 @@ import { createPS2Material } from '../ps2/PS2Material'
 import { moveWithCollision } from './collision'
 import { player } from './playerState'
 import { mulberry32 } from './rand'
+import { playAt } from './audio'
 
 // room interior bounds for waypoint picking
 const BOUND_X = 19.2
@@ -83,6 +84,10 @@ export function Rat({ seed, spawn }: RatProps) {
     }
     s.phase = 'dash'
     s.runTime = 0
+    if (player.locked) {
+      playAt('rat_scurry', { x: pos.current.x, y: 0.06, z: pos.current.z })
+      if (fleeFrom || rand() < 0.3) playAt('rat_squeak', { x: pos.current.x, y: 0.08, z: pos.current.z })
+    }
   }
 
   useFrame((_, rawDt) => {

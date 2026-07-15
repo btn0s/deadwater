@@ -8,12 +8,17 @@ All assets CC0 (public domain).
   wooden_crate_01, old_military_crate, metal_trash_can, trashbag
 - old_military_compressor, portable_generator, propane_tank, crowbar_01
 
-## Sounds — [Kenney](https://kenney.nl) (CC0)
-- Impact Sounds pack: concrete footsteps, landing, pickup, relay clunk,
-  door, crowbar impact (`public/sounds/`)
-- Interface Sounds pack: switch click, torch click
-- The ambience beds (hum/wash), crowbar whoosh and rat squeak are
-  synthesized in `src/game/audio.ts`
+## Sounds — OpenGameArt (CC0)
+- [Sound Effects Pack](https://opengameart.org/content/sound-effects-pack) by OwlishMedia: cloth, handling, impacts, scurries, and one stinger layer
+- [100 CC0 SFX #2](https://opengameart.org/content/100-cc0-sfx-2) by rubberduck: wet footsteps, tools, contacts, switches, doors, machinery, water, and ambience
+- [Metal footsteps on concrete](https://opengameart.org/content/metal-footsteps-on-concrete) by Thimras: concrete and metal-sole footstep families
+- [The Shop](https://opengameart.org/content/the-shop) by LEGIT Audio: electrical room-tone details
+- [Squeaky Rat](https://opengameart.org/content/squeaky-rat) by Iwan "qubodup" Gabovitch: rat vocalizations
+
+All five sound sources are dedicated to the public domain under
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Exact archives,
+hashes, processing, and shipped filenames are documented in `docs/ASSETS.md`
+and `scripts/build-deadwater-audio.mjs`.
 
 ## Textures — [ambientCG](https://ambientcg.com) (CC0)
 - Cardboard002, Cardboard004, Concrete016, Concrete034, CorrugatedSteel005,

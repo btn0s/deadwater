@@ -7,7 +7,7 @@ import { PlayerController } from './game/PlayerController'
 import { PlayerBody } from './game/PlayerBody'
 import { CarrySystem } from './game/Carry'
 import { ZoneCulling } from './game/zoneCulling'
-import { AudioSystem } from './game/audio'
+import { AudioSystem, playOnce, prepareAudio } from './game/audio'
 import { Cctv } from './game/Cctv'
 import { DevViews } from './game/DevViews'
 import { InteractionSystem, usePrompt, useFade } from './game/interactions'
@@ -152,6 +152,7 @@ export default function App() {
     // one raw frame of the warehouse. The delayed pointer-lock request is
     // still inside the click's transient activation window.
     setCover(true)
+    void prepareAudio(10_000).then(() => playOnce('stinger_clock_in'))
     setTimeout(() => {
       setPhase('game')
       resume()
@@ -195,7 +196,7 @@ export default function App() {
           )}
           <CarrySystem />
           <ZoneCulling />
-          <AudioSystem />
+          <AudioSystem active={phase === 'game'} />
           <InteractionSystem />
           <InventoryKeys />
           <Flashlight />

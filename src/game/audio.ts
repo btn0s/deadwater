@@ -1,174 +1,393 @@
 import { useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
+import * as THREE from 'three'
+import { CUE_CATALOG, type AudioBus, type CueDefinition, type CueName } from './audioCatalog'
+import { activeAcousticEmitters, audioZoneAt, footstepSurfaceAt, type AcousticEmitter } from './acoustics'
 import { player } from './playerState'
 
-/**
- * Sound kit: real CC0 samples (Kenney impact + interface packs, see
- * public/models/CREDITS.md) decoded into WebAudio buffers on first
- * pointer-down. A name can map to several variant files — play() picks one
- * at random. The two looped ambience beds (interior hum, harbor wash) and
- * the rat squeak stay synthesized: beds need seamless loops, and the wash
- * is tuned to the water shader's swell so what you hear matches what the
- * shore is doing.
- *
- * play(name) for one-shots; AudioSystem runs grounded-only footsteps,
- * jump/land cues and the zone ambience.
- */
+export interface AudioPosition {
+  x: number
+  y: number
+  z: number
+}
 
-const SAMPLES: Record<string, string[]> = {
-  step: [0, 1, 2, 3, 4].map((i) => `/sounds/footstep_concrete_00${i}.ogg`),
-  land: ['/sounds/land.ogg'],
-  click: ['/sounds/click.ogg'],
-  clunk: ['/sounds/clunk.ogg'],
-  door: ['/sounds/door.ogg'],
-  pickup: ['/sounds/pickup.ogg'],
-  thunk: ['/sounds/thunk.ogg'],
-  torch: ['/sounds/torch.ogg'],
+interface Voice {
+  name: CueName
+  bus: AudioBus
+  priority: number
+  startedAt: number
+  source: AudioBufferSourceNode
+  gain: GainNode
+  panner?: PannerNode
+}
+
+const BUS_LEVELS: Record<AudioBus, number> = {
+  foley: 0.9,
+  interaction: 0.88,
+  world: 0.72,
+  ambience: 0.7,
+  stinger: 0.78,
 }
 
 let ctx: AudioContext | null = null
 let master: GainNode | null = null
-const buffers = new Map<string, AudioBuffer[]>()
+const buses = new Map<AudioBus, GainNode>()
+const buffers = new Map<CueName, AudioBuffer[]>()
+const voices = new Set<Voice>()
+const lastPlayed = new Map<CueName, number>()
+const lastVariant = new Map<CueName, number>()
+const cueStarts = new Map<CueName, number>()
+const reportedFailures = new Set<string>()
+const playedOnce = new Set<CueName>()
+const emitterSchedule = new Map<AcousticEmitter, number>()
+let loadPromise: Promise<void> | null = null
 
-function ac(): AudioContext {
+function reportFailure(name: CueName, url: string, cause: unknown) {
+  const key = `${name}:${url}`
+  if (!import.meta.env.DEV || reportedFailures.has(key)) return
+  reportedFailures.add(key)
+  console.error(`[audio] ${name} failed to load ${url}`, cause)
+}
+
+function audioContext(): AudioContext {
   if (!ctx) {
     ctx = new AudioContext()
     master = ctx.createGain()
-    master.gain.value = 0.5
+    master.gain.value = 0.55
     master.connect(ctx.destination)
-    bakeSynth()
-    void loadSamples()
+    for (const [name, level] of Object.entries(BUS_LEVELS) as [AudioBus, number][]) {
+      const gain = ctx.createGain()
+      gain.gain.value = level
+      gain.connect(master)
+      buses.set(name, gain)
+    }
+    loadPromise = loadSamples(ctx)
   }
-  if (ctx.state === 'suspended') void ctx.resume()
   return ctx
 }
 
-async function loadSamples() {
-  const c = ctx!
+async function loadSamples(context: AudioContext) {
   await Promise.all(
-    Object.entries(SAMPLES).map(async ([name, urls]) => {
+    (Object.entries(CUE_CATALOG) as [CueName, CueDefinition][]).map(async ([name, cue]) => {
       const decoded = await Promise.all(
-        urls.map(async (u) => c.decodeAudioData(await (await fetch(u)).arrayBuffer())),
+        cue.urls.map(async (url) => {
+          try {
+            const response = await fetch(url)
+            if (!response.ok) throw new Error(`HTTP ${response.status}`)
+            return await context.decodeAudioData(await response.arrayBuffer())
+          } catch (cause) {
+            reportFailure(name, url, cause)
+            return null
+          }
+        }),
       )
-      buffers.set(name, decoded)
+      const available = decoded.filter((buffer): buffer is AudioBuffer => buffer !== null)
+      if (available.length) buffers.set(name, available)
     }),
   )
 }
 
-function makeBuffer(name: string, dur: number, fill: (t: number, i: number, n: number) => number) {
-  const c = ctx!
-  const n = Math.floor(c.sampleRate * dur)
-  const buf = c.createBuffer(1, n, c.sampleRate)
-  const data = buf.getChannelData(0)
-  for (let i = 0; i < n; i++) data[i] = fill(i / c.sampleRate, i, n)
-  buffers.set(name, [buf])
+export async function prepareAudio(timeoutMs = 1500): Promise<void> {
+  const context = audioContext()
+  if (context.state === 'suspended') await context.resume()
+  const ready = loadPromise ?? Promise.resolve()
+  await Promise.race([ready, new Promise<void>((resolve) => setTimeout(resolve, timeoutMs))])
 }
 
-/** the synthesized stragglers: whoosh, rat, and the two ambience beds */
-function bakeSynth() {
-  let lp = 0
-  const noiseLP = (cut: number) => {
-    lp += (Math.random() * 2 - 1 - lp) * cut
-    return lp
+function between([low, high]: [number, number]) {
+  return low + Math.random() * (high - low)
+}
+
+function pickBuffer(name: CueName, available: AudioBuffer[]): AudioBuffer {
+  if (available.length === 1) return available[0]
+  const previous = lastVariant.get(name) ?? -1
+  let index = Math.floor(Math.random() * available.length)
+  if (index === previous) index = (index + 1 + Math.floor(Math.random() * (available.length - 1))) % available.length
+  lastVariant.set(name, index)
+  return available[index]
+}
+
+function releaseVoice(voice: Voice) {
+  if (!voices.delete(voice)) return
+  voice.source.disconnect()
+  voice.gain.disconnect()
+  voice.panner?.disconnect()
+}
+
+function stopVoice(voice: Voice) {
+  voice.source.onended = null
+  try {
+    voice.source.stop()
+  } catch {
+    // The source already ended; cleanup is still required.
   }
-  // crowbar whoosh — filtered noise sweep
-  makeBuffer('swing', 0.22, (_t, i, n) => noiseLP(0.08 + 0.25 * Math.sin((Math.PI * i) / n)) * Math.sin((Math.PI * i) / n) * 2.0)
-  // rat chirp
-  makeBuffer('squeak', 0.09, (t) => Math.sin(2 * Math.PI * (2800 + Math.sin(t * 260) * 700) * t) * Math.exp(-t * 40) * 0.25)
-  // interior hum bed (looped)
-  makeBuffer('hum', 2.0, (t) => Math.sin(2 * Math.PI * 58 * t) * 0.05 + Math.sin(2 * Math.PI * 117 * t) * 0.02 + noiseLP(0.01) * 0.35)
-  // harbor wash bed (looped): one full surge per loop, period matched to the
-  // water shader's slow swell term (uTime * 0.6 rad/s → 2π/0.6 s)
-  const SWELL = 2 * Math.PI / 0.6
-  makeBuffer('wash', SWELL, (t) => noiseLP(0.015) * (2.2 + Math.sin((2 * Math.PI * t) / SWELL) * 1.4))
+  releaseVoice(voice)
 }
 
-export function play(name: string, volume = 1, rate = 1) {
-  const c = ac()
-  const variants = buffers.get(name)
-  if (!variants?.length || !master) return
-  const src = c.createBufferSource()
-  src.buffer = variants[Math.floor(Math.random() * variants.length)]
-  src.playbackRate.value = rate * (0.94 + Math.random() * 0.12)
-  const g = c.createGain()
-  g.gain.value = volume
-  src.connect(g).connect(master)
-  src.start()
+function makeRoomFor(name: CueName, cue: CueDefinition): boolean {
+  const sameCue = [...voices].filter((voice) => voice.name === name).sort((a, b) => a.startedAt - b.startedAt)
+  if (sameCue.length >= cue.maxVoices) stopVoice(sameCue[0])
+
+  if (cue.bus !== 'world') return true
+  const world = [...voices].filter((voice) => voice.bus === 'world').sort((a, b) => a.priority - b.priority || a.startedAt - b.startedAt)
+  if (world.length < 6) return true
+  if (world[0].priority > cue.priority) return false
+  stopVoice(world[0])
+  return true
 }
 
-let ambient: { src: AudioBufferSourceNode; gain: GainNode; name: string } | null = null
-function setAmbience(name: string | null, volume: number) {
+function setPannerPosition(panner: PannerNode, position: AudioPosition, at: number) {
+  panner.positionX.setValueAtTime(position.x, at)
+  panner.positionY.setValueAtTime(position.y, at)
+  panner.positionZ.setValueAtTime(position.z, at)
+}
+
+function startCue(name: CueName, volume: number, rate: number, position?: AudioPosition): boolean {
+  // Physics can generate impacts on the title screen. Do not create a suspended
+  // context there and queue a burst of stale sounds for the first user gesture.
+  if (!ctx) return false
+  const context = ctx
+  if (context.state === 'suspended') void context.resume()
+  const cue = CUE_CATALOG[name]
+  const available = buffers.get(name)
+  const bus = buses.get(cue.bus)
+  if (!available?.length || !bus) return false
+
+  const now = context.currentTime
+  if (now - (lastPlayed.get(name) ?? -Infinity) < cue.cooldown) return false
+  if (!makeRoomFor(name, cue)) return false
+  lastPlayed.set(name, now)
+
+  const source = context.createBufferSource()
+  source.buffer = pickBuffer(name, available)
+  source.playbackRate.value = rate * between(cue.rate)
+
+  const gain = context.createGain()
+  gain.gain.value = Math.max(0, volume) * between(cue.gain)
+  source.connect(gain)
+
+  let panner: PannerNode | undefined
+  if (position && cue.spatial) {
+    panner = context.createPanner()
+    panner.panningModel = 'HRTF'
+    panner.distanceModel = 'inverse'
+    panner.refDistance = cue.spatial.refDistance
+    panner.maxDistance = cue.spatial.maxDistance
+    panner.rolloffFactor = cue.spatial.rolloff
+    setPannerPosition(panner, position, now)
+    gain.connect(panner).connect(bus)
+  } else {
+    gain.connect(bus)
+  }
+
+  const voice: Voice = { name, bus: cue.bus, priority: cue.priority, startedAt: now, source, gain, panner }
+  voices.add(voice)
+  cueStarts.set(name, (cueStarts.get(name) ?? 0) + 1)
+  source.onended = () => releaseVoice(voice)
+  source.start()
+  return true
+}
+
+export function play(name: CueName, volume = 1, rate = 1) {
+  return startCue(name, volume, rate)
+}
+
+export function playAt(name: CueName, position: AudioPosition, volume = 1, rate = 1) {
+  return startCue(name, volume, rate, position)
+}
+
+export function playOnce(name: CueName, volume = 1, rate = 1) {
+  if (playedOnce.has(name)) return false
+  const started = play(name, volume, rate)
+  if (started) playedOnce.add(name)
+  return started
+}
+
+let ambient: { name: CueName; source: AudioBufferSourceNode; gain: GainNode } | null = null
+
+function stopAmbience(fadeSeconds = 0.8) {
+  if (!ambient || !ctx) return
+  const previous = ambient
+  ambient = null
+  previous.gain.gain.cancelScheduledValues(ctx.currentTime)
+  previous.gain.gain.setValueAtTime(previous.gain.gain.value, ctx.currentTime)
+  previous.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + fadeSeconds)
+  setTimeout(() => {
+    try {
+      previous.source.stop()
+    } catch {
+      // Already stopped during teardown.
+    }
+    previous.source.disconnect()
+    previous.gain.disconnect()
+  }, fadeSeconds * 1000 + 50)
+}
+
+function setAmbience(name: CueName | null) {
   if (ambient?.name === name) return
-  if (ambient) {
-    ambient.gain.gain.linearRampToValueAtTime(0, ac().currentTime + 0.8)
-    const old = ambient.src
-    setTimeout(() => old.stop(), 900)
-    ambient = null
+  if (!name) {
+    stopAmbience()
+    return
   }
-  if (name) {
-    const c = ac()
-    const buf = buffers.get(name)?.[0]
-    if (!buf || !master) return
-    const src = c.createBufferSource()
-    src.buffer = buf
-    src.loop = true
-    const g = c.createGain()
-    g.gain.value = 0
-    g.gain.linearRampToValueAtTime(volume, c.currentTime + 1.2)
-    src.connect(g).connect(master)
-    src.start()
-    ambient = { src, gain: g, name }
+
+  const cue = CUE_CATALOG[name]
+  const context = audioContext()
+  const buffer = buffers.get(name)?.[0]
+  const bus = buses.get('ambience')
+  if (!cue.loop || !buffer || !bus) return
+
+  const previous = ambient
+  const source = context.createBufferSource()
+  source.buffer = buffer
+  source.loop = true
+  const gain = context.createGain()
+  gain.gain.value = 0
+  gain.gain.linearRampToValueAtTime(between(cue.gain), context.currentTime + 1.2)
+  source.connect(gain).connect(bus)
+  source.start()
+  ambient = { name, source, gain }
+
+  if (previous) {
+    previous.gain.gain.cancelScheduledValues(context.currentTime)
+    previous.gain.gain.setValueAtTime(previous.gain.gain.value, context.currentTime)
+    previous.gain.gain.linearRampToValueAtTime(0, context.currentTime + 1.2)
+    setTimeout(() => {
+      try {
+        previous.source.stop()
+      } catch {
+        // Already stopped during teardown.
+      }
+      previous.source.disconnect()
+      previous.gain.disconnect()
+    }, 1250)
   }
 }
 
-/** footsteps from travel distance (grounded only), landing thumps,
- * zone ambience; mount once in the Canvas */
-export function AudioSystem() {
+export function stopAudio() {
+  stopAmbience(0.15)
+  for (const voice of [...voices]) stopVoice(voice)
+  lastPlayed.clear()
+  playedOnce.clear()
+  emitterSchedule.clear()
+}
+
+const listenerForward = new THREE.Vector3()
+function updateListener(camera: THREE.Camera, context: AudioContext) {
+  camera.getWorldDirection(listenerForward)
+  const listener = context.listener
+  const at = context.currentTime
+  listener.positionX.setValueAtTime(camera.position.x, at)
+  listener.positionY.setValueAtTime(camera.position.y, at)
+  listener.positionZ.setValueAtTime(camera.position.z, at)
+  listener.forwardX.setValueAtTime(listenerForward.x, at)
+  listener.forwardY.setValueAtTime(listenerForward.y, at)
+  listener.forwardZ.setValueAtTime(listenerForward.z, at)
+  listener.upX.setValueAtTime(camera.up.x, at)
+  listener.upY.setValueAtTime(camera.up.y, at)
+  listener.upZ.setValueAtTime(camera.up.z, at)
+}
+
+function ambienceAt(x: number, z: number): CueName {
+  return `ambience_${audioZoneAt(x, z)}`
+}
+
+const STEP_CUES = {
+  concrete: 'step_concrete',
+  wetConcrete: 'step_wet',
+  metal: 'step_metal',
+} as const
+
+function updateEmitters(now: number) {
+  const active = activeAcousticEmitters()
+  const activeSet = new Set(active)
+  for (const emitter of emitterSchedule.keys()) if (!activeSet.has(emitter)) emitterSchedule.delete(emitter)
+  for (const emitter of active) {
+    let next = emitterSchedule.get(emitter)
+    if (next === undefined) {
+      next = now + emitter.minInterval + Math.random() * (emitter.maxInterval - emitter.minInterval)
+      emitterSchedule.set(emitter, next)
+    }
+    if (now < next) continue
+    playAt(emitter.cue, emitter.position, emitter.gain)
+    emitterSchedule.set(emitter, now + emitter.minInterval + Math.random() * (emitter.maxInterval - emitter.minInterval))
+  }
+}
+
+export function AudioSystem({ active = true }: { active?: boolean }) {
   const last = useRef({ x: player.x, z: player.z })
   const travelled = useRef(0)
+  const clothTravelled = useRef(0)
   const wasGrounded = useRef(true)
-  const squeakTimer = useRef(20)
+  const airTime = useRef(0)
 
   useEffect(() => {
-    // the first pointer-lock click unlocks audio
-    const unlock = () => ac()
+    const unlock = () => void prepareAudio()
     window.addEventListener('pointerdown', unlock, { once: true })
     return () => window.removeEventListener('pointerdown', unlock)
   }, [])
 
-  useFrame((_, rawDt) => {
-    if (!ctx || !player.locked) return
-    const dt = Math.min(rawDt, 0.05)
+  useEffect(() => {
+    if (!active) {
+      stopAudio()
+      last.current = { x: player.x, z: player.z }
+      travelled.current = 0
+      clothTravelled.current = 0
+      wasGrounded.current = player.grounded
+      airTime.current = 0
+    }
+  }, [active])
 
+  useFrame(({ camera }, rawDt) => {
+    if (!ctx || !active) return
+    updateListener(camera, ctx)
+    if (!player.locked) return
+
+    const dt = Math.min(rawDt, 0.05)
     const dx = player.x - last.current.x
     const dz = player.z - last.current.z
     last.current.x = player.x
     last.current.z = player.z
 
     if (player.grounded) {
-      if (!wasGrounded.current) play('land', 0.7) // touchdown
-      const d = Math.hypot(dx, dz)
-      if (d < 1) travelled.current += d // teleports don't clomp
-      // one step per stride — ~2/sec at walk speed; sprint cadence falls
-      // out naturally from covering ground faster
-      if (travelled.current > 2.0) {
+      if (!wasGrounded.current) {
+        play('land', 0.85 + Math.min(airTime.current * 0.18, 0.4))
+        airTime.current = 0
+      }
+      const distance = Math.hypot(dx, dz)
+      if (distance < 1) {
+        travelled.current += distance
+        clothTravelled.current += distance
+      }
+      if (travelled.current > 2) {
         travelled.current = 0
-        play('step', 0.5)
+        play(STEP_CUES[footstepSurfaceAt(player.x, player.z)])
+      }
+      if (clothTravelled.current > 4.4) {
+        clothTravelled.current = 0
+        play('cloth_move')
       }
     } else {
-      travelled.current = 0 // no footsteps in the air
+      travelled.current = 0
+      airTime.current += dt
     }
     wasGrounded.current = player.grounded
-
-    setAmbience(player.x < 20 ? 'hum' : 'wash', player.x < 20 ? 0.5 : 0.7)
-
-    // a rat somewhere, now and then
-    squeakTimer.current -= dt
-    if (squeakTimer.current <= 0) {
-      squeakTimer.current = 14 + Math.random() * 25
-      if (player.x < 20) play('squeak', 0.3, 0.9 + Math.random() * 0.3)
-    }
+    const zone = audioZoneAt(player.x, player.z)
+    setAmbience(ambienceAt(player.x, player.z))
+    if (zone === 'sewer') playOnce('stinger_sewer')
+    updateEmitters(ctx.currentTime)
   })
 
   return null
+}
+
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  ;(window as unknown as Record<string, unknown>).__audioState = () => ({
+    contextState: ctx?.state ?? 'uninitialized',
+    loadedCues: buffers.size,
+    loadedBuffers: [...buffers.values()].reduce((sum, entries) => sum + entries.length, 0),
+    activeVoices: voices.size,
+    ambience: ambient?.name ?? null,
+    failures: [...reportedFailures],
+    starts: Object.fromEntries(cueStarts),
+  })
 }

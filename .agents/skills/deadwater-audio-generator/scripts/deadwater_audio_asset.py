@@ -50,6 +50,7 @@ def inspect_one(source: Path) -> dict[str, object]:
 
 def audit_project(root: Path) -> int:
     audio_source = root / "src/game/audio.ts"
+    catalog_source = root / "src/game/audioCatalog.ts"
     sounds = root / "public/sounds"
     credits = root / "public/models/CREDITS.md"
     errors: list[str] = []
@@ -58,6 +59,10 @@ def audit_project(root: Path) -> int:
         source_text = ""
     else:
         source_text = audio_source.read_text(encoding="utf-8")
+    if catalog_source.is_file():
+        source_text += "\n" + catalog_source.read_text(encoding="utf-8")
+    else:
+        errors.append("missing src/game/audioCatalog.ts")
     if not sounds.is_dir():
         errors.append("missing public/sounds")
         shipped: list[Path] = []
@@ -65,7 +70,13 @@ def audit_project(root: Path) -> int:
         shipped = sorted(path for path in sounds.iterdir() if path.is_file())
 
     patterns = re.findall(r"/sounds/([^`'\"]+)", source_text)
-    normalized = [re.sub(r"\$\{[^}]+\}", "*", pattern) for pattern in patterns]
+    normalized = [
+        re.sub(r"\$\{[^}]+\}", "*", pattern)
+        for pattern in patterns
+        if "${String" not in pattern
+    ]
+    for stem, count_text in re.findall(r"variants\('([^']+)',\s*(\d+)\)", source_text):
+        normalized.extend(f"{stem}_{index:02}.ogg" for index in range(1, int(count_text) + 1))
     referenced = [path for path in shipped if any(fnmatch.fnmatch(path.name, pattern) for pattern in normalized)]
     unreferenced = [path.name for path in shipped if path not in referenced]
     missing_patterns = [pattern for pattern in normalized if not any(fnmatch.fnmatch(path.name, pattern) for path in shipped)]

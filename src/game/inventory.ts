@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react'
 import { useEffect } from 'react'
 import { player } from './playerState'
 import { play } from './audio'
+import { handlingCueFor, type AcousticMaterial } from './acoustics'
 
 /**
  * Player inventory: a 4-slot hotbar, Minecraft-style. Digit keys 1-4 pick
@@ -14,11 +15,12 @@ export type ItemId = 'flashlight' | 'crowbar'
 export interface InvItem {
   id: ItemId
   label: string
+  material: AcousticMaterial
 }
 
 export const ITEM_DEFS: Record<ItemId, InvItem> = {
-  flashlight: { id: 'flashlight', label: 'TORCH' },
-  crowbar: { id: 'crowbar', label: 'CROWBAR' },
+  flashlight: { id: 'flashlight', label: 'TORCH', material: 'plastic' },
+  crowbar: { id: 'crowbar', label: 'CROWBAR', material: 'metal' },
 }
 
 export const SLOT_COUNT = 4
@@ -58,7 +60,8 @@ export const inventory = {
     if (state.carryLock) return
     if (i < 0 || i >= SLOT_COUNT) return
     if (i !== state.active || state.stowed) {
-      play('click', 0.4)
+      const item = state.slots[i]
+      if (item) play(handlingCueFor(item.material), 0.7)
       emit({ active: i, stowed: false })
     }
   },
@@ -66,7 +69,7 @@ export const inventory = {
   toggleStowed() {
     if (state.carryLock) return
     if (state.slots[state.active]) {
-      play('torch', 0.6)
+      play(handlingCueFor(state.slots[state.active]!.material), 0.8)
       emit({ stowed: !state.stowed })
     }
   },

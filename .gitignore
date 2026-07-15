@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 contact-sheet*.png
 .vercel
+.cache/deadwater-audio/
+public/__audio-audition/

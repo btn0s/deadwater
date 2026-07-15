@@ -92,6 +92,14 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
     { key: 'item', kind: 'text' },
     { key: 'label', kind: 'text' },
   ],
+  acoustics: [
+    { key: 'material', kind: 'select', options: ['metal', 'wood', 'plastic', 'concrete', 'wetConcrete', 'cloth'], allowEmpty: true },
+    { key: 'footstepSurface', label: 'footstep surface', kind: 'select', options: ['concrete', 'wetConcrete', 'metal'], allowEmpty: true },
+    { key: 'emitter.cue', label: 'emitter', kind: 'select', options: ['world_machinery', 'world_chain', 'world_drip', 'world_water', 'roomtone_fridge'], allowEmpty: true },
+    { key: 'emitter.minInterval', label: 'interval min', kind: 'number', step: 1 },
+    { key: 'emitter.maxInterval', label: 'interval max', kind: 'number', step: 1 },
+    { key: 'emitter.gain', label: 'emitter gain', kind: 'number', step: 0.05 },
+  ],
 }
 
 /** defaults used by the inspector's "add component" menu */
@@ -108,6 +116,7 @@ export const COMPONENT_DEFAULTS: Record<Exclude<ComponentType, 'environment'>, C
   door: { type: 'door', target: [0, 0], label: 'USE' },
   switch: { type: 'switch', group: 'warehouse' },
   pickup: { type: 'pickup', item: 'flashlight', label: 'TAKE' },
+  acoustics: { type: 'acoustics', material: 'metal' },
 }
 
 // dot-path helpers for nested fields (environment.fog.near)

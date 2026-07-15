@@ -155,7 +155,7 @@ export function PlayerController({ onLockChange, spawn = [0, 8], initialYaw = 0 
     if (grounded.current && locked.current && k.Space) {
       yVel.current = JUMP_SPEED
       grounded.current = false
-      play('step', 0.35, 1.25) // takeoff scuff
+      play('jump')
     }
     if (!grounded.current) {
       yVel.current += GRAVITY * dt

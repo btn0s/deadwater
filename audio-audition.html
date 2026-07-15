@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DEADWATER audio audition</title>
+    <style>
+      :root { color: #e7e4da; background: #101212; font: 15px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+      body { max-width: 1080px; margin: 0 auto; padding: 32px 20px 80px; }
+      h1 { margin: 0; font-size: 22px; letter-spacing: .12em; }
+      .intro { max-width: 720px; color: #aaa; }
+      section { margin-top: 36px; }
+      h2 { border-bottom: 1px solid #3b3f3f; padding-bottom: 8px; font-size: 16px; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px; }
+      article { border: 1px solid #333838; background: #171a1a; padding: 14px; }
+      h3 { margin: 0 0 10px; font-size: 14px; }
+      audio { width: 100%; height: 34px; }
+      dl { display: grid; grid-template-columns: 72px 1fr; margin: 12px 0 0; font-size: 12px; color: #aeb3b3; }
+      dt, dd { margin: 0; padding: 2px 0; overflow-wrap: anywhere; }
+      a { color: #d7c99b; }
+      #error { color: #ff9d8d; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>DEADWATER AUDIO AUDITION</h1>
+    <p class="intro">Level-matched source candidates. Compare one family at a time. Starting a preview stops every other player so loud overlaps cannot bias the choice.</p>
+    <main id="families"></main>
+    <pre id="error"></pre>
+    <script type="module">
+      const target = document.querySelector('#families')
+      const error = document.querySelector('#error')
+      const escape = (value) => String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c])
+      try {
+        const response = await fetch('/__audio-audition/manifest.json')
+        if (!response.ok) throw new Error(`manifest request failed: ${response.status}`)
+        const { candidates } = await response.json()
+        const families = Map.groupBy(candidates, (candidate) => candidate.family)
+        for (const [family, entries] of families) {
+          const section = document.createElement('section')
+          section.innerHTML = `<h2>${escape(family.replaceAll('_', ' '))}</h2><div class="grid"></div>`
+          const grid = section.querySelector('.grid')
+          for (const candidate of entries) {
+            const article = document.createElement('article')
+            article.innerHTML = `<h3>${escape(candidate.label)}</h3><audio controls preload="metadata" src="${escape(candidate.audioUrl)}"></audio><dl><dt>Author</dt><dd>${escape(candidate.author)}</dd><dt>License</dt><dd><a href="${escape(candidate.licenseUrl)}">${escape(candidate.license)}</a></dd><dt>Source</dt><dd><a href="${escape(candidate.sourcePage)}">${escape(candidate.originalFile)}</a></dd></dl>`
+            grid.append(article)
+          }
+          target.append(section)
+        }
+        document.addEventListener('play', (event) => {
+          for (const audio of document.querySelectorAll('audio')) if (audio !== event.target) audio.pause()
+        }, true)
+      } catch (cause) {
+        error.textContent = `${cause}\nRun: npm run audio:audition -- --init`
+      }
+    </script>
+  </body>
+</html>

@@ -109,6 +109,10 @@
      ],
      "tint": "#6e6e6e",
      "bombing": 0
+    },
+    {
+     "type": "acoustics",
+     "footstepSurface": "concrete"
     }
    ]
   },
@@ -946,6 +950,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -971,6 +979,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -996,6 +1008,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -1021,6 +1037,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -1058,6 +1078,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -1083,6 +1107,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -1108,6 +1136,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -1145,6 +1177,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -1170,6 +1206,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -1195,6 +1235,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -1746,6 +1790,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "cloth"
     }
    ]
   },
@@ -1798,6 +1846,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -1823,6 +1875,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -1848,6 +1904,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -1874,6 +1934,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -1893,6 +1957,15 @@
      "source": "fbx",
      "url": "/models/industrial-pack/ElectricalBox/ElectricalBox.fbx",
      "texture": "/models/industrial-pack/ElectricalBox/ElectricalBox_Base_Color.png"
+    },
+    {
+     "type": "acoustics",
+     "emitter": {
+      "cue": "roomtone_fridge",
+      "minInterval": 28,
+      "maxInterval": 55,
+      "gain": 0.42
+     }
     }
    ]
   },
@@ -1937,6 +2010,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -1962,6 +2039,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -1987,6 +2068,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2014,6 +2099,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "cloth"
     }
    ]
   },
@@ -2315,6 +2404,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2340,6 +2433,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2365,6 +2462,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2490,6 +2591,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2515,6 +2620,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2566,6 +2675,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -2641,6 +2754,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2666,6 +2783,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -2693,6 +2814,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "cloth"
     }
    ]
   },
@@ -2720,6 +2845,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "cloth"
     }
    ]
   },
@@ -2799,6 +2928,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2825,6 +2958,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2851,6 +2988,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2916,7 +3057,7 @@
      0,
      -2.6
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -2929,6 +3070,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2954,6 +3099,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -2979,6 +3128,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -3032,6 +3185,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "cloth"
     }
    ]
   },
@@ -3082,6 +3239,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -3135,6 +3296,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -3160,6 +3325,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -3238,6 +3407,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "cloth"
     }
    ]
   },
@@ -3263,6 +3436,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -3338,6 +3515,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -3467,6 +3648,15 @@
      "body": "fixed",
      "collider": "hull",
      "blockPlayer": true
+    },
+    {
+     "type": "acoustics",
+     "emitter": {
+      "cue": "world_machinery",
+      "minInterval": 12,
+      "maxInterval": 28,
+      "gain": 0.8
+     }
     }
    ]
   },
@@ -3492,6 +3682,15 @@
      "body": "fixed",
      "collider": "hull",
      "blockPlayer": true
+    },
+    {
+     "type": "acoustics",
+     "emitter": {
+      "cue": "world_machinery",
+      "minInterval": 17,
+      "maxInterval": 36,
+      "gain": 0.72
+     }
     }
    ]
   },
@@ -3692,6 +3891,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -3742,6 +3945,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -3769,6 +3976,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "cloth"
     }
    ]
   },
@@ -3923,6 +4134,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -3948,6 +4163,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -4000,6 +4219,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "cloth"
     }
    ]
   },
@@ -4027,6 +4250,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "cloth"
     }
    ]
   },
@@ -4071,6 +4298,10 @@
       5
      ],
      "tint": "#6e6e6e"
+    },
+    {
+     "type": "acoustics",
+     "footstepSurface": "wetConcrete"
     }
    ]
   },
@@ -4290,6 +4521,10 @@
      ],
      "tint": "#686868",
      "bombing": 1
+    },
+    {
+     "type": "acoustics",
+     "footstepSurface": "wetConcrete"
     }
    ]
   },
@@ -4324,6 +4559,10 @@
      ],
      "tint": "#686868",
      "bombing": 1
+    },
+    {
+     "type": "acoustics",
+     "footstepSurface": "wetConcrete"
     }
    ]
   },
@@ -4861,6 +5100,15 @@
      "type": "water",
      "width": 24.2,
      "height": 2.25
+    },
+    {
+     "type": "acoustics",
+     "emitter": {
+      "cue": "world_water",
+      "minInterval": 14,
+      "maxInterval": 30,
+      "gain": 0.65
+     }
     }
    ]
   },
@@ -5500,6 +5748,15 @@
       6,
       1
      ]
+    },
+    {
+     "type": "acoustics",
+     "emitter": {
+      "cue": "world_drip",
+      "minInterval": 8,
+      "maxInterval": 24,
+      "gain": 0.65
+     }
     }
    ]
   },
@@ -5631,6 +5888,10 @@
       0.05,
       2.2
      ]
+    },
+    {
+     "type": "acoustics",
+     "footstepSurface": "metal"
     }
    ]
   },
@@ -7191,6 +7452,10 @@
      ],
      "tint": "#5f5f5f",
      "bombing": 1
+    },
+    {
+     "type": "acoustics",
+     "footstepSurface": "concrete"
     }
    ]
   },
@@ -7413,7 +7678,7 @@
     {
      "type": "light",
      "color": "#e8c07a",
-     "intensity": 1.0,
+     "intensity": 1,
      "radius": 5.5,
      "spot": 1
     }
@@ -7456,7 +7721,7 @@
     {
      "type": "light",
      "color": "#e8c07a",
-     "intensity": 1.0,
+     "intensity": 1,
      "radius": 5.5,
      "spot": 1
     }
@@ -7570,6 +7835,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -7795,6 +8064,15 @@
      "type": "water",
      "width": 40,
      "height": 20
+    },
+    {
+     "type": "acoustics",
+     "emitter": {
+      "cue": "world_water",
+      "minInterval": 20,
+      "maxInterval": 42,
+      "gain": 0.75
+     }
     }
    ]
   },
@@ -8334,6 +8612,10 @@
      ],
      "tint": "#565656",
      "bombing": 1
+    },
+    {
+     "type": "acoustics",
+     "footstepSurface": "concrete"
     }
    ]
   },
@@ -8391,6 +8673,10 @@
      ],
      "tint": "#565656",
      "bombing": 1
+    },
+    {
+     "type": "acoustics",
+     "footstepSurface": "concrete"
     }
    ]
   },
@@ -8570,6 +8856,15 @@
       6
      ],
      "tint": "#5a5d60"
+    },
+    {
+     "type": "acoustics",
+     "emitter": {
+      "cue": "world_chain",
+      "minInterval": 22,
+      "maxInterval": 48,
+      "gain": 0.7
+     }
     }
    ]
   },
@@ -9307,7 +9602,7 @@
      "type": "primitive",
      "shape": "box",
      "dims": [
-      5.0,
+      5,
       0.05,
       0.45
      ],
@@ -9465,7 +9760,7 @@
      1.4700000000000002,
      -11.72
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -9553,6 +9848,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -9561,7 +9860,7 @@
    "parent": "warehouse",
    "transform": {
     "pos": [
-     3.0,
+     3,
      1.4700000000000002,
      -11.72
     ],
@@ -10026,7 +10325,7 @@
      "body": "fixed",
      "collider": "cuboid",
      "size": [
-      1.0,
+      1,
       1.4,
       0.8
      ],
@@ -10050,7 +10349,7 @@
      "body": "fixed",
      "collider": "cuboid",
      "size": [
-      1.0,
+      1,
       1.4,
       0.8
      ],
@@ -10074,7 +10373,7 @@
      "body": "fixed",
      "collider": "cuboid",
      "size": [
-      1.0,
+      1,
       1.4,
       0.8
      ],
@@ -10122,7 +10421,7 @@
      "body": "fixed",
      "collider": "cuboid",
      "size": [
-      1.0,
+      1,
       1.4,
       0.8
      ],
@@ -10170,7 +10469,7 @@
      "body": "fixed",
      "collider": "cuboid",
      "size": [
-      1.0,
+      1,
       1.4,
       0.8
      ],
@@ -10395,7 +10694,7 @@
      0.16,
      -6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10407,6 +10706,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10415,7 +10718,7 @@
    "parent": "warehouse",
    "transform": {
     "pos": [
-     -8.0,
+     -8,
      0.16,
      -6.8
     ],
@@ -10431,6 +10734,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10443,7 +10750,7 @@
      1.04,
      -6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10455,6 +10762,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10463,11 +10774,11 @@
    "parent": "warehouse",
    "transform": {
     "pos": [
-     -5.0,
+     -5,
      0.16,
      -6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10479,6 +10790,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -10515,7 +10830,7 @@
      1.89,
      -6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10527,6 +10842,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10539,7 +10858,7 @@
      0.16,
      -6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10551,6 +10870,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10575,6 +10898,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10611,7 +10938,7 @@
      0.16,
      -6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10623,6 +10950,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10659,7 +10990,7 @@
      0.16,
      6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10671,6 +11002,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10695,6 +11030,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10731,7 +11070,7 @@
      0.16,
      6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10743,6 +11082,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10755,7 +11098,7 @@
      1.04,
      6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10767,6 +11110,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -10779,7 +11126,7 @@
      0.16,
      6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10791,6 +11138,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10815,6 +11166,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10827,7 +11182,7 @@
      1.04,
      6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10863,6 +11218,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "plastic"
     }
    ]
   },
@@ -10875,7 +11234,7 @@
      1.04,
      6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10887,6 +11246,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10899,7 +11262,7 @@
      1.89,
      6.8
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10911,6 +11274,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -10923,7 +11290,7 @@
      0,
      -1.2
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -10995,7 +11362,7 @@
      0,
      1.4
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -11031,7 +11398,7 @@
      0,
      -1.6
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -11103,7 +11470,7 @@
      0,
      1.6
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -11247,7 +11614,7 @@
      0,
      -1.6
     ],
-    "rot": 0.0
+    "rot": 0
    },
    "components": [
     {
@@ -11260,6 +11627,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -11284,6 +11655,10 @@
      "type": "physics",
      "body": "dynamic",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -11294,7 +11669,7 @@
     "pos": [
      -19.62,
      1.25,
-     1.0
+     1
     ]
    },
    "components": [
@@ -11332,7 +11707,7 @@
     "pos": [
      -19.62,
      1.95,
-     1.0
+     1
     ]
    },
    "components": [
@@ -11477,6 +11852,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },
@@ -11502,6 +11881,10 @@
      "body": "dynamic",
      "collider": "hull",
      "grabbable": true
+    },
+    {
+     "type": "acoustics",
+     "material": "wood"
     }
    ]
   },

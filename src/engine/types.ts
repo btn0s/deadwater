@@ -170,6 +170,21 @@ export interface EnvironmentComponent {
   fog: { color: string; near: number; far: number }
 }
 
+export type AcousticMaterial = 'metal' | 'wood' | 'plastic' | 'concrete' | 'wetConcrete' | 'cloth'
+export type FootstepSurface = 'concrete' | 'wetConcrete' | 'metal'
+
+export interface AcousticsComponent {
+  type: 'acoustics'
+  material?: AcousticMaterial
+  footstepSurface?: FootstepSurface
+  emitter?: {
+    cue: 'world_machinery' | 'world_chain' | 'world_drip' | 'world_water' | 'roomtone_fridge'
+    minInterval: number
+    maxInterval: number
+    gain?: number
+  }
+}
+
 export type Component =
   | ModelComponent
   | LightComponent
@@ -184,5 +199,6 @@ export type Component =
   | DoorComponent
   | SwitchComponent
   | PickupComponent
+  | AcousticsComponent
 
 export type ComponentType = Component['type']

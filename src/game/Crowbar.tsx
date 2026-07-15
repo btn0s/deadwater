@@ -7,7 +7,8 @@ import { allGrabbables } from './grabbables'
 import { carry } from './Carry'
 import { useInventory } from './inventory'
 import { player } from './playerState'
-import { play } from './audio'
+import { play, playAt } from './audio'
+import { impactCueFor } from './acoustics'
 
 /**
  * Equipped crowbar: rides at the right shoulder; LMB swings it in an arc
@@ -74,14 +75,18 @@ export function Crowbar() {
         a.rotation.x = -0.5 - arc
         if (!hitDone.current && t >= HIT_AT) {
           hitDone.current = true
-          play('thunk', 0.9)
           // shove every dynamic body in front of the face
           camera.getWorldDirection(FWD)
           HIT_POINT.copy(camera.position).addScaledVector(FWD, HIT_RANGE * 0.8)
+          let sounded = false
           for (const g of allGrabbables()) {
             const p = g.body.translation()
             TO_TARGET.set(p.x, p.y, p.z).sub(HIT_POINT)
             if (TO_TARGET.length() < HIT_RANGE) {
+              if (!sounded) {
+                playAt(impactCueFor(g.material), { x: p.x, y: p.y, z: p.z })
+                sounded = true
+              }
               const v = g.body.linvel()
               g.body.setLinvel(
                 { x: v.x + FWD.x * SHOVE, y: v.y + FWD.y * SHOVE + 1.2, z: v.z + FWD.z * SHOVE },

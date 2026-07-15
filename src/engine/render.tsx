@@ -26,7 +26,8 @@ import { SewerWater } from '../game/SewerWater'
 import { registerInteractable } from '../game/interactions'
 import { isGroupOn, toggleGroup } from '../game/lightGroups'
 import { inventory, ITEM_DEFS } from '../game/inventory'
-import { play } from '../game/audio'
+import { play, playAt, playOnce } from '../game/audio'
+import { handlingCueFor, impactCueFor, registerAcousticEmitter, registerAcousticFloor } from '../game/acoustics'
 import { player } from '../game/playerState'
 import { useWorldTexture } from './textures'
 import { MODEL_REGISTRY } from './models'
@@ -47,6 +48,8 @@ import type {
   DoorComponent,
   SwitchComponent,
   PickupComponent,
+  AcousticsComponent,
+  AcousticMaterial,
 } from './types'
 
 /** 'game' runs physics/behaviors; 'editor' renders visuals + lights only. */
@@ -137,7 +140,7 @@ function FbxVisual({ c }: { c: ModelComponent }) {
 }
 
 /** split models: each piece is its own dynamic body (game) or visual (editor) */
-function SplitModel({ c, physics }: { c: ModelComponent; physics?: PhysicsComponent }) {
+function SplitModel({ c, physics, material }: { c: ModelComponent; physics?: PhysicsComponent; material?: AcousticMaterial }) {
   const { scene } = useGLTF(c.url)
   const mode = useEngineMode()
   const pieces = useMemo(() => {
@@ -170,7 +173,7 @@ function SplitModel({ c, physics }: { c: ModelComponent; physics?: PhysicsCompon
     <>
       {pieces.map((p, i) =>
         mode === 'game' && physics?.grabbable ? (
-          <GrabbableBody key={i} position={[p.offset.x, 0, p.offset.z]}>
+          <GrabbableBody key={i} position={[p.offset.x, 0, p.offset.z]} material={material}>
             <primitive object={p.container} />
           </GrabbableBody>
         ) : (
@@ -364,7 +367,7 @@ function PickupEffect({ c }: { c: PickupComponent }) {
       action: () => {
         const def = ITEM_DEFS[c.item as keyof typeof ITEM_DEFS]
         if (def && inventory.add(def)) {
-          play('pickup', 0.8)
+          play(handlingCueFor(def.material))
           g.visible = false
           setTaken(true)
         }
@@ -392,8 +395,11 @@ function SwitchEffect({ c }: { c: SwitchComponent }) {
       label: c.label ?? 'LIGHTS',
       fade: false,
       action: () => {
-        play('clunk', 0.8)
         toggleGroup(c.group)
+        const position = new THREE.Vector3()
+        g.getWorldPosition(position)
+        playAt('switch', position)
+        if (c.group === 'warehouse' && !isGroupOn(c.group)) playOnce('stinger_power')
       },
     })
   }, [group, c.group, c.label])
@@ -413,7 +419,9 @@ function DoorEffect({ c }: { c: DoorComponent }) {
       action: c.locked
         ? undefined
         : () => {
-            play('door', 0.9)
+            const position = new THREE.Vector3()
+            g.getWorldPosition(position)
+            playAt('door', position)
             player.teleport(c.target[0], c.target[1], c.targetYaw)
           },
     })
@@ -473,20 +481,33 @@ function TrashMoundVisual({ seed, radius, height }: { seed: number; radius: numb
 
 // ------------------------------------------------------------------ physics
 
-function GrabbableBody({ children, position = [0, 0, 0] }: { children: React.ReactNode; position?: [number, number, number] }) {
+function GrabbableBody({ children, position = [0, 0, 0], material = 'metal' }: { children: React.ReactNode; position?: [number, number, number]; material?: AcousticMaterial }) {
   const body = useRef<RapierRigidBody>(null)
   const inner = useRef<THREE.Group>(null)
+  const lastImpact = useRef(0)
   useEffect(() => {
     if (!body.current || !inner.current) return
     const box = new THREE.Box3().setFromObject(inner.current)
     const radius = Math.max(box.max.x - box.min.x, box.max.z - box.min.z) / 2
     const size = Math.max(box.max.x - box.min.x, box.max.y - box.min.y, box.max.z - box.min.z)
-    return registerGrabbable({ root: inner.current, body: body.current, radius, size })
-  }, [])
+    return registerGrabbable({ root: inner.current, body: body.current, radius, size, material })
+  }, [material])
+  const onCollision = () => {
+    const rigidBody = body.current
+    if (!rigidBody) return
+    const now = performance.now()
+    if (now - lastImpact.current < 140) return
+    const velocity = rigidBody.linvel()
+    const speed = Math.hypot(velocity.x, velocity.y, velocity.z)
+    if (speed < 1.15) return
+    lastImpact.current = now
+    const point = rigidBody.translation()
+    playAt(impactCueFor(material), point, Math.min(1, 0.3 + speed / 6))
+  }
   return (
     // heavy: high density + damping so a kicked stack settles instead of
     // exploding — cargo should feel like cargo
-    <RigidBody ref={body} colliders="hull" position={position} density={5} linearDamping={1.1} angularDamping={2.5} ccd>
+    <RigidBody ref={body} colliders="hull" position={position} density={5} linearDamping={1.1} angularDamping={2.5} ccd onCollisionEnter={onCollision}>
       <group ref={inner}>{children}</group>
     </RigidBody>
   )
@@ -528,6 +549,41 @@ function EnvironmentEffect({ c }: { c: EnvironmentComponent }) {
     fogSettings.near.value = c.fog.near
     fogSettings.far.value = c.fog.far
   }, [c.ambient, c.fog.color, c.fog.near, c.fog.far])
+  return null
+}
+
+function AcousticsEffect({ c, nodeGroup }: { c: AcousticsComponent; nodeGroup: React.RefObject<THREE.Group | null> }) {
+  useEffect(() => {
+    const group = nodeGroup.current
+    if (!group) return
+    group.updateWorldMatrix(true, true)
+    const cleanups: (() => void)[] = []
+    if (c.footstepSurface) {
+      const box = new THREE.Box3().setFromObject(group)
+      if (!box.isEmpty()) {
+        cleanups.push(registerAcousticFloor({
+          minX: box.min.x,
+          maxX: box.max.x,
+          minZ: box.min.z,
+          maxZ: box.max.z,
+          y: box.max.y,
+          surface: c.footstepSurface,
+        }))
+      }
+    }
+    if (c.emitter) {
+      const position = new THREE.Vector3()
+      group.getWorldPosition(position)
+      cleanups.push(registerAcousticEmitter({
+        cue: c.emitter.cue,
+        position,
+        minInterval: Math.max(1, c.emitter.minInterval),
+        maxInterval: Math.max(c.emitter.minInterval, c.emitter.maxInterval),
+        gain: c.emitter.gain ?? 1,
+      }))
+    }
+    return () => cleanups.forEach((cleanup) => cleanup())
+  }, [c.emitter, c.footstepSurface, nodeGroup])
   return null
 }
 
@@ -659,6 +715,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
   const door = componentOf(node, 'door')
   const switchC = componentOf(node, 'switch')
   const pickup = componentOf(node, 'pickup')
+  const acoustics = componentOf(node, 'acoustics')
 
   const children = index.childrenOf.get(node.id) ?? []
 
@@ -677,7 +734,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
   let body: React.ReactNode = visuals
   if (mode === 'game' && physics && hasVisuals) {
     if (physics.body === 'dynamic' && physics.grabbable) {
-      body = <GrabbableBody>{visuals}</GrabbableBody>
+      body = <GrabbableBody material={acoustics?.material}>{visuals}</GrabbableBody>
     } else if (physics.body === 'fixed' && physics.collider !== 'cuboid' && physics.collider !== 'none') {
       body = (
         <RigidBody type="fixed" colliders={physics.collider}>
@@ -691,7 +748,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
     <NodeGroupContext.Provider value={group}>
       <group ref={group} name={instancePrefix + node.id} position={node.transform.pos} rotation={eulerOf(node)} scale={node.transform.scale ?? 1}>
         {body}
-        {model?.split && <SplitModel c={model} physics={physics} />}
+        {model?.split && <SplitModel c={model} physics={physics} material={acoustics?.material} />}
         {mode === 'game' && physics?.collider === 'cuboid' && physics.size && (
           <RigidBody type="fixed" colliders={false}>
             <CuboidCollider args={physics.size} />
@@ -703,6 +760,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
         {mode === 'game' && door && <DoorEffect c={door} />}
         {mode === 'game' && switchC && <SwitchEffect c={switchC} />}
         {mode === 'game' && pickup && <PickupEffect c={pickup} />}
+        {mode === 'game' && acoustics && <AcousticsEffect c={acoustics} nodeGroup={group} />}
         {instance && <InstanceView c={instance} index={index} prefix={`${instancePrefix}${node.id}::`} />}
         {children.map((child) => (
           <NodeView key={child.id} node={child} index={index} instancePrefix={instancePrefix} />
