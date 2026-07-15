@@ -7,6 +7,7 @@ import { PlayerBody } from './game/PlayerBody'
 import { CarrySystem } from './game/Carry'
 import { ZoneCulling } from './game/zoneCulling'
 import { AudioSystem } from './game/audio'
+import { Cctv } from './game/Cctv'
 import { DevViews } from './game/DevViews'
 import { InteractionSystem, usePrompt, useFade } from './game/interactions'
 import { InventoryKeys, useInventory, SLOT_COUNT } from './game/inventory'
@@ -69,6 +70,7 @@ export default function App() {
           <Suspense fallback={null}>
             <Physics gravity={[0, -12, 0]}>
               <SceneRoot nodes={sceneNodes} mode="game" />
+              <Cctv />
               <PlayerBody />
             </Physics>
           </Suspense>

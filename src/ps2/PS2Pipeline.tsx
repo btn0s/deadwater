@@ -1,8 +1,9 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { sceneDepthUniforms, waterMeshes } from './sceneDepth'
 import { torchShadowTarget, torchCamera, torchShadowUniforms, updateTorchShadowMatrix } from './torchShadow'
+import { cctvTarget, cctvCamera, CCTV_INTERVAL } from './cctv'
 
 // NTSC PS2 framebuffer: 512x448, stretched to 4:3 on the CRT
 export const INTERNAL_WIDTH = 512
@@ -79,8 +80,23 @@ export function PS2Pipeline() {
     return { target, depthTarget, depthOverride, postScene, postCamera }
   }, [])
 
-  useFrame(({ gl: renderer, scene, camera }) => {
+  const cctvClock = useRef(CCTV_INTERVAL)
+
+  useFrame(({ gl: renderer, scene, camera }, dt) => {
     const cam = camera as THREE.PerspectiveCamera
+
+    // 0) security feed, a few frames a second — the yard must render for
+    // its camera even while zone culling hides it from the player
+    cctvClock.current -= Math.min(dt, 0.1)
+    if (cctvClock.current <= 0) {
+      cctvClock.current = CCTV_INTERVAL
+      const yard = scene.getObjectByName('yard')
+      const wasVisible = yard?.visible ?? true
+      if (yard) yard.visible = true
+      renderer.setRenderTarget(cctvTarget)
+      renderer.render(scene, cctvCamera)
+      if (yard) yard.visible = wasVisible
+    }
 
     // 1) opaque depth pre-pass (water hidden, materials overridden)
     for (const w of waterMeshes) w.visible = false
