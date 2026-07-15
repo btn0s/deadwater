@@ -86,13 +86,13 @@ function MenuCamera() {
     fogSettings.near.value = 4
     fogSettings.far.value = 34
     const slots = [
-      { pos: [-3.5, 2.6, -7] as const, rgb: [8.0, 6.2, 3.4] as const, radius: 16 },
-      { pos: [5.5, 3.0, -14] as const, rgb: [3.6, 5.6, 4.2] as const, radius: 18 },
+      { pos: [-3.5, 2.6, -7], rgb: [8.0, 6.2, 3.4], radius: 16 },
+      { pos: [5.5, 3.0, -14], rgb: [3.6, 5.6, 4.2], radius: 18 },
     ].map((l) => {
       const i = acquireLightSlot()
       if (i >= 0) {
-        lightPositions[i].set(...l.pos)
-        lightColors[i].setRGB(...l.rgb)
+        lightPositions[i].set(l.pos[0], l.pos[1], l.pos[2])
+        lightColors[i].setRGB(l.rgb[0], l.rgb[1], l.rgb[2])
         lightRadii[i] = l.radius
       }
       return i

@@ -9,6 +9,7 @@ import {
   rawColor,
   rawColorFromString,
   sharedLightUniforms,
+  MAX_LIGHTS,
   ambientColor,
   fogSettings,
   lightPositions,
@@ -187,9 +188,14 @@ function SplitModel({ c, physics }: { c: ModelComponent; physics?: PhysicsCompon
 function createGlassMaterial(map: THREE.Texture, repeat: [number, number], tint?: string): THREE.ShaderMaterial {
   return new THREE.ShaderMaterial({
     vertexShader: /* glsl */ `
+      uniform vec3 uLightPos[${MAX_LIGHTS}];
+      uniform vec3 uLightColor[${MAX_LIGHTS}];
+      uniform float uLightRadius[${MAX_LIGHTS}];
+      uniform vec3 uAmbient;
       varying vec2 vUv;
       varying vec3 vN;
       varying vec3 vV;
+      varying vec3 vLight;
       varying float vFogDepth;
       void main() {
         vUv = uv;
@@ -197,6 +203,16 @@ function createGlassMaterial(map: THREE.Texture, repeat: [number, number], tint?
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
         vV = -mv.xyz;
         vFogDepth = -mv.z;
+        // scene-lit like everything else, so glass goes dark with the room
+        vec3 worldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+        vec3 light = uAmbient;
+        for (int i = 0; i < ${MAX_LIGHTS}; i++) {
+          vec3 toLight = uLightPos[i] - worldPos;
+          float dist = length(toLight);
+          float atten = clamp(1.0 - dist / uLightRadius[i], 0.0, 1.0);
+          light += uLightColor[i] * (atten * atten);
+        }
+        vLight = light;
         gl_Position = projectionMatrix * mv;
       }
     `,
@@ -204,20 +220,22 @@ function createGlassMaterial(map: THREE.Texture, repeat: [number, number], tint?
       uniform sampler2D map;
       uniform vec2 uRepeat;
       uniform vec3 uColor;
-      uniform vec3 uAmbient;
       uniform vec3 fogColor;
       uniform float fogNear;
       uniform float fogFar;
       varying vec2 vUv;
       varying vec3 vN;
       varying vec3 vV;
+      varying vec3 vLight;
       varying float vFogDepth;
       void main() {
         vec3 grime = texture2D(map, vUv * uRepeat).rgb;
         float dirt = dot(grime, vec3(0.333));
-        // glancing views catch a dull sheen — never a clean mirror
-        float sheen = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0) * 0.35;
-        vec3 color = grime * uColor * (uAmbient * 2.5 + 0.25) + vec3(sheen * 0.5);
+        // glancing views catch a dull sheen — never a clean mirror, and it
+        // only shows where there is light to catch
+        float glow = clamp(dot(vLight, vec3(0.333)), 0.0, 1.5);
+        float sheen = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0) * 0.35 * glow;
+        vec3 color = grime * uColor * vLight * 2.0 + vec3(sheen * 0.5);
         float alpha = 0.22 + dirt * 0.4 + sheen;
         float fogFactor = clamp((vFogDepth - fogNear) / (fogFar - fogNear), 0.0, 1.0);
         color = mix(color, fogColor, fogFactor);
