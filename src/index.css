@@ -331,6 +331,38 @@ body,
 .overlay.menu {
   background: rgba(0, 0, 0, 0.3);
 }
+
+/* pause menu */
+.overlay.pause {
+  background: rgba(0, 0, 0, 0.6);
+  gap: 12px;
+}
+.pause-head {
+  font-size: 18px;
+  letter-spacing: 8px;
+  margin-bottom: 8px;
+}
+.menu-button {
+  pointer-events: auto;
+  width: 220px;
+  padding: 10px 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: #d6e2d0;
+  background: rgba(14, 20, 16, 0.65);
+  border: 1px solid rgba(159, 184, 154, 0.6);
+  cursor: pointer;
+  text-shadow: 0 0 8px rgba(120, 180, 110, 0.5);
+}
+.menu-button:hover {
+  background: rgba(34, 46, 38, 0.75);
+  border-color: rgba(210, 232, 204, 0.9);
+}
+.menu-button.quit {
+  opacity: 0.75;
+  margin-bottom: 10px;
+}
 .menu-blurb {
   max-width: 420px;
   padding: 0 24px;

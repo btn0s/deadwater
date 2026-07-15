@@ -104,30 +104,41 @@ export default function App() {
   const [cover, setCover] = useState(false)
   const canvasHolder = useRef<HTMLDivElement>(null)
 
+  const resume = () => {
+    // Chrome enforces a short cooldown after an ESC exit — if the request
+    // rejects, the pause menu just stays up for the next try
+    try {
+      void (canvasHolder.current?.querySelector('canvas')?.requestPointerLock() as unknown as Promise<void>)?.catch?.(() => {})
+    } catch {
+      /* stay paused */
+    }
+  }
+
   const clockIn = () => {
     // fade covers the cut from the harbor to the warehouse spawn; the lock
     // request must happen inside this click gesture
     setCover(true)
     setPhase('game')
-    canvasHolder.current?.querySelector('canvas')?.requestPointerLock()
+    resume()
     setTimeout(() => setCover(false), 1100)
   }
 
   useEffect(() => {
-    // this entry is always game mode; the editor lives at /editor.html
     const onKey = (e: KeyboardEvent) => {
-      if (
-        e.code === 'KeyE' &&
-        !document.pointerLockElement &&
-        !player.locked && // dev-lock counts as playing too
-        (e.target as HTMLElement)?.tagName !== 'INPUT'
-      ) {
+      if ((e.target as HTMLElement)?.tagName === 'INPUT') return
+      // E from the main menu opens the editor; the editor lives at /editor.html
+      if (e.code === 'KeyE' && phase === 'menu' && !document.pointerLockElement && !player.locked) {
         window.location.href = '/editor.html'
+      }
+      // ESC while paused resumes (ESC while playing exits pointer lock —
+      // the browser owns that half of the toggle)
+      if (e.code === 'Escape' && phase === 'game' && !player.locked) {
+        resume()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [phase])
 
   return (
     <div className={`frame${isMobile ? ' mobile-menu' : ''}`}>
@@ -158,10 +169,15 @@ export default function App() {
 
         <Hud locked={locked} />
         {phase === 'game' && !locked && !cover && (
-          <div className="overlay">
-            <div className="title">DEADWATER</div>
-            <div className="hint">CLICK TO RESUME</div>
-            <div className="keys">WASD MOVE&ensp;·&ensp;SHIFT RUN&ensp;·&ensp;SPACE JUMP&ensp;·&ensp;ESC RELEASE</div>
+          <div className="overlay pause">
+            <div className="pause-head">PAUSED</div>
+            <button className="menu-button" onClick={resume}>
+              RESUME
+            </button>
+            <button className="menu-button quit" onClick={() => setPhase('menu')}>
+              QUIT TO TITLE
+            </button>
+            <div className="keys">WASD MOVE&ensp;·&ensp;SHIFT RUN&ensp;·&ensp;SPACE JUMP&ensp;·&ensp;ESC PAUSE</div>
             <div className="keys">E PICK UP / USE&ensp;·&ensp;CLICK PUT DOWN / SWING&ensp;·&ensp;HOLD RMB FLOAT&ensp;·&ensp;F STOW&ensp;·&ensp;1-4 ITEMS</div>
           </div>
         )}
