@@ -147,12 +147,16 @@ export default function App() {
   }
 
   const clockIn = () => {
-    // fade covers the cut from the harbor to the warehouse spawn; the lock
-    // request must happen inside this click gesture
+    // fade fully to black over the harbor first, cut to the spawn under
+    // black, then fade back in — switching before the cover lands flashes
+    // one raw frame of the warehouse. The delayed pointer-lock request is
+    // still inside the click's transient activation window.
     setCover(true)
-    setPhase('game')
-    resume()
-    setTimeout(() => setCover(false), 1100)
+    setTimeout(() => {
+      setPhase('game')
+      resume()
+    }, 400)
+    setTimeout(() => setCover(false), 1300)
   }
 
   useEffect(() => {
@@ -218,14 +222,11 @@ export default function App() {
           <div className="overlay menu">
             <div className="title">DEADWATER</div>
             <div className="menu-blurb">
-              Night shift at a freight depot on dead water. Warehouse, sewer works, dock.
-              Find the breakers. Find the torch. Carry what you can.
+              A freight depot on dead water. Everyone else went home hours ago.
             </div>
             <button className="clock-in" onClick={clockIn}>
               CLOCK IN
             </button>
-            <div className="keys">WASD MOVE&ensp;·&ensp;SHIFT RUN&ensp;·&ensp;SPACE JUMP&ensp;·&ensp;ESC RELEASE</div>
-            <div className="keys">E PICK UP / USE&ensp;·&ensp;CLICK PUT DOWN / SWING&ensp;·&ensp;HOLD RMB FLOAT&ensp;·&ensp;F STOW&ensp;·&ensp;1-4 ITEMS</div>
           </div>
         )}
         <div className={`fade${cover || boot ? ' on' : ''}`} />
