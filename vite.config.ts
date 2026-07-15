@@ -96,46 +96,9 @@ function sceneWriter(): Plugin {
   }
 }
 
-/** dev-only: accepts baked lightmap PNGs (and the manifest) from the
- * in-browser baker and writes them under public/lightmaps/ */
-function lightmapWriter(): Plugin {
-  return {
-    name: 'lightmap-writer',
-    configureServer(server) {
-      server.middlewares.use('/__lightmap', (req, res) => {
-        if (req.method !== 'POST') {
-          res.statusCode = 405
-          res.end('POST only')
-          return
-        }
-        const name = new URL(req.url ?? '/', 'http://x').searchParams.get('name') ?? ''
-        if (!/^[a-zA-Z0-9_-]{1,80}\.(png|json)$/.test(name)) {
-          res.statusCode = 400
-          res.end('bad name')
-          return
-        }
-        const dir = path.resolve(__dirname, 'public/lightmaps')
-        fs.mkdirSync(dir, { recursive: true })
-        const chunks: Buffer[] = []
-        req.on('data', (c) => chunks.push(c))
-        req.on('end', () => {
-          const body = Buffer.concat(chunks).toString('utf8')
-          if (name.endsWith('.json')) {
-            fs.writeFileSync(path.join(dir, name), body)
-          } else {
-            const base64 = body.replace(/^data:image\/png;base64,/, '')
-            fs.writeFileSync(path.join(dir, name), Buffer.from(base64, 'base64'))
-          }
-          res.end('ok')
-        })
-      })
-    },
-  }
-}
-
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), sheetWriter(), layoutWriter(), sceneWriter(), lightmapWriter()],
+  plugins: [react(), sheetWriter(), layoutWriter(), sceneWriter()],
   build: {
     rollupOptions: {
       input: {

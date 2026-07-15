@@ -33,9 +33,6 @@ export const lightSpots: number[] = new Array(MAX_LIGHTS).fill(0)
 export const lightDirs = Array.from({ length: MAX_LIGHTS }, () => new THREE.Vector3(0, -1, 0))
 /** cos of the cone half-angle; 0 disables the cone (default) */
 export const lightCones: number[] = new Array(MAX_LIGHTS).fill(0)
-/** 1 = this light is baked into lightmaps — lightmapped surfaces skip it at
- * runtime (props and un-mapped geometry still take it live) */
-export const lightBaked: number[] = new Array(MAX_LIGHTS).fill(0)
 export const ambientColor = rawColor(0x35383f)
 
 const fogColorUniform = { value: rawColor(0x07080a) }
@@ -52,7 +49,6 @@ export const sharedLightUniforms = {
   uLightSpot: { value: lightSpots },
   uLightDir: { value: lightDirs },
   uLightCone: { value: lightCones },
-  uLightBaked: { value: lightBaked },
   uAmbient: { value: ambientColor },
   fogColor: fogColorUniform,
   fogNear: fogNearUniform,
@@ -86,16 +82,13 @@ const vertexShader = /* glsl */ `
   uniform float uLightSpot[${MAX_LIGHTS}];
   uniform vec3 uLightDir[${MAX_LIGHTS}];
   uniform float uLightCone[${MAX_LIGHTS}];
-  uniform float uLightBaked[${MAX_LIGHTS}];
   uniform vec3 uAmbient;
   uniform vec2 uUvRepeat;
   uniform vec2 uUvOffset;
   uniform float uFullbright;
-  uniform float uHasLightmap;
   uniform float uShadowSlot;
 
   varying vec2 vUv;
-  varying vec2 vUvRaw;
   varying vec3 vLight;
   varying vec3 vTorch;
   varying vec3 vWorldPos;
@@ -103,16 +96,14 @@ const vertexShader = /* glsl */ `
 
   void main() {
     vUv = uv * uUvRepeat + uUvOffset;
-    vUvRaw = uv;
 
     vec4 worldPos = modelMatrix * vec4(position, 1.0);
     vWorldPos = worldPos.xyz;
     vec3 worldNormal = normalize(mat3(modelMatrix) * normal);
     vec3 torch = vec3(0.0);
 
-    // ambient with a faint hemisphere tilt so unlit side/down faces keep
-    // shape; lightmapped surfaces carry ambient in the map instead
-    vec3 light = uAmbient * (0.95 + 0.3 * worldNormal.y) * (1.0 - uHasLightmap);
+    // ambient with a faint hemisphere tilt so unlit side/down faces keep shape
+    vec3 light = uAmbient * (0.95 + 0.3 * worldNormal.y);
     for (int i = 0; i < ${MAX_LIGHTS}; i++) {
       vec3 toLight = uLightPos[i] - worldPos.xyz;
       float dist = length(toLight);
@@ -128,9 +119,7 @@ const vertexShader = /* glsl */ `
         float along = dot(normalize(-toLight), uLightDir[i]);
         spot *= smoothstep(uLightCone[i], uLightCone[i] + 0.12, along);
       }
-      // baked lights already live in the lightmap on mapped surfaces
-      float live = mix(1.0, 1.0 - uLightBaked[i], uHasLightmap);
-      vec3 contrib = uLightColor[i] * (ndl * atten * spot * live);
+      vec3 contrib = uLightColor[i] * (ndl * atten * spot);
       // the torch's share travels separately so the fragment can shadow it
       if (float(i) == uShadowSlot) torch += contrib;
       else light += contrib;
@@ -147,8 +136,6 @@ const vertexShader = /* glsl */ `
 const fragmentShader = /* glsl */ `
   uniform sampler2D map;
   uniform sampler2D emissiveMap;
-  uniform sampler2D uLightmap;
-  uniform float uHasLightmap;
   uniform sampler2D uShadowMap;
   uniform mat4 uShadowMatrix;
   uniform float uShadowOn;
@@ -159,7 +146,6 @@ const fragmentShader = /* glsl */ `
   uniform float uBomb; // 0 = plain tiling; >0 = stochastic lattice density (cells per tile)
 
   varying vec2 vUv;
-  varying vec2 vUvRaw;
   varying vec3 vLight;
   varying vec3 vTorch;
   varying vec3 vWorldPos;
@@ -213,9 +199,8 @@ const fragmentShader = /* glsl */ `
       }
     }
 
-    // baked light (Quake-style x2 overbright) + live per-vertex light +
-    // the shadow-tested torch beam
-    vec3 light = vLight + vTorch * shadow + texture2D(uLightmap, vUvRaw).rgb * 2.0 * uHasLightmap;
+    // per-vertex light + the shadow-tested torch beam
+    vec3 light = vLight + vTorch * shadow;
     vec3 color = texel.rgb * uColor * light + texture2D(emissiveMap, vUv).rgb;
 
     float fogFactor = clamp((vFogDepth - fogNear) / (fogFar - fogNear), 0.0, 1.0);
@@ -239,9 +224,6 @@ export interface PS2MaterialOptions {
   bombing?: number
   /** additive glow texture (bulbs, screens); the rest of the mesh stays lit normally */
   emissiveMap?: THREE.Texture | null
-  /** baked lighting (Quake school): replaces ambient + baked lights with a
-   * texture sampled by raw surface uv; dynamic lights still add on top */
-  lightmap?: THREE.Texture | null
 }
 
 function resolveColor(color: PS2MaterialOptions['color']): THREE.Color {
@@ -259,8 +241,6 @@ export function createPS2Material(opts: PS2MaterialOptions = {}): THREE.ShaderMa
       ...torchShadowUniforms,
       map: { value: opts.map ?? getWhiteTexture() },
       emissiveMap: { value: opts.emissiveMap ?? getBlackTexture() },
-      uLightmap: { value: opts.lightmap ?? getBlackTexture() },
-      uHasLightmap: { value: opts.lightmap ? 1 : 0 },
       uColor: { value: resolveColor(opts.color) },
       uUvRepeat: { value: new THREE.Vector2(...(opts.repeat ?? [1, 1])) },
       uUvOffset: { value: new THREE.Vector2(0, 0) },

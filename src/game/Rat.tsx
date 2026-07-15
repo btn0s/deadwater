@@ -32,7 +32,6 @@ interface RatProps {
 
 /** Low-poly scurrying rat: dark body, bead head, wire tail — pure set dressing. */
 export function Rat({ seed, spawn }: RatProps) {
-  // rats move — they must not bake shadows into lightmaps
   const group = useRef<THREE.Group>(null)
   const body = useRef<THREE.Group>(null)
   const rand = useMemo(() => mulberry32(seed), [seed])
@@ -147,7 +146,7 @@ export function Rat({ seed, spawn }: RatProps) {
   })
 
   return (
-    <group ref={group} position={[spawn[0], 0, spawn[1]]} userData={{ noBake: true }}>
+    <group ref={group} position={[spawn[0], 0, spawn[1]]}>
       <group ref={body}>
         {/* body */}
         <mesh material={material} position={[0, 0.07, 0]} scale={[1.7, 0.9, 1]}>
