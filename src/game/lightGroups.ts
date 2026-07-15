@@ -15,6 +15,11 @@ export function toggleGroup(group: string) {
   else off.add(group)
 }
 
+export function lightGroupsSnapshot(): string[] {
+  return [...off].sort()
+}
+
 if (import.meta.env.DEV && typeof window !== 'undefined') {
   ;(window as unknown as Record<string, unknown>).__toggleLights = toggleGroup
+  ;(window as unknown as Record<string, unknown>).__lightGroups = lightGroupsSnapshot
 }

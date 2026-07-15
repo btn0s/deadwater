@@ -4,16 +4,14 @@ import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
 import { applyPS2Materials } from '../engine/render'
 import { allGrabbables } from './grabbables'
-import { carry } from './Carry'
 import { useInventory } from './inventory'
-import { player } from './playerState'
 import { play, playAt } from './audio'
 import { impactCueFor } from './acoustics'
+import { registerPrimaryAction } from './equipmentActions'
 
 /**
- * Equipped crowbar: rides at the right shoulder; LMB swings it in an arc
- * and shoves whatever dynamic bodies sit in front. (E stays interact;
- * click is always use-what's-in-hand.)
+ * Equipped crowbar: rides at the right shoulder; the central LMB dispatcher
+ * swings it in an arc and shoves dynamic bodies in front.
  */
 
 const ANCHOR = new THREE.Vector3(0.34, -0.3, -0.45)
@@ -29,12 +27,15 @@ const HIT_POINT = new THREE.Vector3()
 
 export function Crowbar() {
   const camera = useThree((s) => s.camera)
-  const { slots, active, stowed } = useInventory()
-  const equipped = !stowed && slots[active]?.id === 'crowbar'
+  const { slots, active, stowed, carryLock } = useInventory()
+  const equipped = !stowed && !carryLock && slots[active]?.id === 'crowbar'
+  const equippedRef = useRef(equipped)
   const rig = useRef<THREE.Group>(null)
   const arm = useRef<THREE.Group>(null)
   const swing = useRef(-1) // -1 idle; else seconds into the swing
   const hitDone = useRef(false)
+
+  equippedRef.current = equipped
 
   const { scene } = useGLTF('/models/crowbar_01/crowbar_01_1k.gltf')
   const model = useMemo(() => {
@@ -43,18 +44,23 @@ export function Crowbar() {
     return g
   }, [scene])
 
+  useEffect(
+    () =>
+      registerPrimaryAction('crowbar', () => {
+        if (equippedRef.current && swing.current < 0) {
+          swing.current = 0
+          hitDone.current = false
+          play('swing', 0.8)
+        }
+      }),
+    [],
+  )
+
   useEffect(() => {
-    if (!equipped) return
-    const onPointerDown = (e: PointerEvent) => {
-      if (e.button !== 0 || !player.locked || carry.isHolding()) return
-      if (swing.current < 0) {
-        swing.current = 0
-        hitDone.current = false
-        play('swing', 0.8)
-      }
+    if (!equipped) {
+      swing.current = -1
+      hitDone.current = false
     }
-    window.addEventListener('pointerdown', onPointerDown)
-    return () => window.removeEventListener('pointerdown', onPointerDown)
   }, [equipped])
 
   useFrame((_, rawDt) => {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import {
@@ -15,6 +15,8 @@ import { acquireLightSlot, releaseLightSlot } from '../engine/lights'
 import { torchCamera, torchShadowUniforms } from '../ps2/torchShadow'
 import { waterMeshes } from '../ps2/sceneDepth'
 import { useInventory } from './inventory'
+import { registerPrimaryAction } from './equipmentActions'
+import { play } from './audio'
 
 const COLOR = '#e8e2c8'
 const INTENSITY = 4.5 // super bright — the hot center saturates to white
@@ -38,6 +40,7 @@ const DOWN = new THREE.Vector3(0, -1, 0)
 const CENTER = new THREE.Vector2(0, 0)
 const RIG_INV = new THREE.Quaternion()
 const BEAM_WORLD = new THREE.Quaternion()
+let flashlightPowered = false
 
 /** soft warm gradient along the shaft: bright at the hand, gone at the tip */
 function makeBeamTexture(): THREE.Texture {
@@ -64,14 +67,19 @@ function makeBeamTexture(): THREE.Texture {
 export function Flashlight() {
   const camera = useThree((s) => s.camera)
   const scene = useThree((s) => s.scene)
-  const { slots, active, stowed } = useInventory()
-  const equipped = !stowed && slots[active]?.id === 'flashlight'
+  const { slots, active, stowed, carryLock } = useInventory()
+  const equipped = !stowed && !carryLock && slots[active]?.id === 'flashlight'
+  const [powered, setPowered] = useState(false)
+  const equippedRef = useRef(equipped)
   const slot = useRef(-1)
   const rig = useRef<THREE.Group>(null)
   const beam = useRef<THREE.Mesh>(null)
   const aimCaster = useRef(new THREE.Raycaster())
 
-  const { beamGeometry, beamMaterial, bodyMaterial, lensMaterial } = useMemo(() => {
+  equippedRef.current = equipped
+  flashlightPowered = powered
+
+  const { beamGeometry, beamMaterial, bodyMaterial, lensOnMaterial, lensOffMaterial } = useMemo(() => {
     // apex at the origin, opening down -y; the rig JSX rotates it to -z
     const geo = new THREE.ConeGeometry(BEAM_RADIUS, BEAM_LEN, 18, 1, true)
     geo.translate(0, -BEAM_LEN / 2, 0)
@@ -111,9 +119,34 @@ export function Flashlight() {
       beamGeometry: geo,
       beamMaterial: mat,
       bodyMaterial: createPS2Material({ color: 0x2a2d30 }),
-      lensMaterial: createPS2Material({ fullbright: true, color: 0xfff3d0 }),
+      lensOnMaterial: createPS2Material({ fullbright: true, color: 0xfff3d0 }),
+      lensOffMaterial: createPS2Material({ color: 0x34362f }),
     }
   }, [])
+
+  useEffect(() => {
+    const unregister = registerPrimaryAction('flashlight', () => {
+      if (!equippedRef.current) return
+      setPowered((current) => {
+        const next = !current
+        flashlightPowered = next
+        play('switch', 0.65, next ? 1.08 : 0.92)
+        return next
+      })
+    })
+    return () => {
+      unregister()
+      flashlightPowered = false
+    }
+  }, [])
+
+  // Holstering, switching away, or carrying a prop always kills the lamp.
+  // Drawing the torch again leaves it off until the player deliberately clicks.
+  useEffect(() => {
+    if (equipped) return
+    flashlightPowered = false
+    setPowered(false)
+  }, [equipped])
 
   // keep the whole rig out of the depth pre-passes (foam + shadow map) —
   // it hugs the camera and must not cast or write depth
@@ -127,7 +160,7 @@ export function Flashlight() {
   }, [equipped])
 
   useEffect(() => {
-    if (!equipped) return
+    if (!equipped || !powered) return
     slot.current = acquireLightSlot()
     const i = slot.current
     if (i >= 0) {
@@ -147,16 +180,18 @@ export function Flashlight() {
       slot.current = -1
       torchShadowUniforms.uShadowSlot.value = -1
     }
-  }, [equipped])
+  }, [equipped, powered])
 
   useFrame(() => {
     const i = slot.current
     const r = rig.current
-    if (i < 0 || !r) return
+    if (!equipped || !r) return
     // rigid attachment: fixed camera-space anchor through the camera's pose
     r.quaternion.copy(camera.quaternion)
     WORLD_ANCHOR.copy(ANCHOR).applyQuaternion(camera.quaternion).add(camera.position)
     r.position.copy(WORLD_ANCHOR)
+
+    if (i < 0) return
 
     // converge on the crosshair: aim at whatever the camera ray hits, so
     // the offset hand-light lands exactly on the reticle
@@ -197,7 +232,7 @@ export function Flashlight() {
       <mesh material={bodyMaterial} position={[0, 0, 0.008]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.042, 0.036, 0.05, 10]} />
       </mesh>
-      <mesh material={lensMaterial} position={[0, 0, -0.018]} rotation={[Math.PI / 2, 0, 0]}>
+      <mesh material={powered ? lensOnMaterial : lensOffMaterial} position={[0, 0, -0.018]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.038, 0.038, 0.004, 10]} />
       </mesh>
       {/* beam shaft: authored down -y, re-aimed at the crosshair each frame */}
@@ -205,9 +240,18 @@ export function Flashlight() {
         ref={beam}
         geometry={beamGeometry}
         material={beamMaterial}
+        visible={powered}
         renderOrder={3}
         frustumCulled={false}
       />
     </group>
   )
+}
+
+export function flashlightSnapshot() {
+  return { powered: flashlightPowered }
+}
+
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  ;(window as unknown as Record<string, unknown>).__flashlightState = flashlightSnapshot
 }

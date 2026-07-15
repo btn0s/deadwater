@@ -15,6 +15,7 @@
     "test:audio-audition": "node scripts/test-audio-audition.mjs",
     "test:audio": "node scripts/test-audio-audition.mjs && node scripts/test-audio-catalog.mjs && node scripts/test-acoustics.mjs",
     "test:audio:browser": "node scripts/test-audio-browser.mjs",
+    "test:interaction:browser": "node scripts/test-interaction-browser.mjs",
     "test:audio:production": "npm run build && node scripts/test-audio-browser.mjs --production",
     "validate:skills": "node scripts/validate-deadwater-skills.mjs",
     "test:skills": "node scripts/test-deadwater-skills.mjs",

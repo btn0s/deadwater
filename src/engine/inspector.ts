@@ -36,6 +36,7 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
     { key: 'collider', kind: 'select', options: ['hull', 'trimesh', 'cuboid', 'none'] },
     { key: 'size', label: 'size (half)', kind: 'vec', dims: 3, step: 0.05 },
     { key: 'grabbable', kind: 'check' },
+    { key: 'carryStyle', label: 'carry style', kind: 'select', options: ['oneHand', 'twoHand'], allowEmpty: true },
     { key: 'blockPlayer', label: 'block player', kind: 'check' },
   ],
   surface: [
@@ -106,7 +107,7 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
 export const COMPONENT_DEFAULTS: Record<Exclude<ComponentType, 'environment'>, Component> = {
   model: { type: 'model', source: 'gltf', url: '' },
   light: { type: 'light', color: '#d8e6c8', intensity: 1.2, radius: 18, spot: 1 },
-  physics: { type: 'physics', body: 'fixed', collider: 'cuboid', blockPlayer: true },
+  physics: { type: 'physics', body: 'fixed', collider: 'cuboid', carryStyle: 'oneHand', blockPlayer: true },
   surface: { type: 'surface', width: 2, height: 2, texture: 'Concrete031', repeat: [1, 1] },
   primitive: { type: 'primitive', shape: 'box', dims: [1, 1, 1], texture: 'Concrete031' },
   generator: { type: 'generator', generator: 'paperWad', seed: 1 },

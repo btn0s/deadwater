@@ -4,6 +4,10 @@ import * as THREE from 'three'
 import { player } from './playerState'
 import { findGrabbable, type Grabbable } from './grabbables'
 import { carry } from './Carry'
+import { inventory } from './inventory'
+import { equipmentActionSnapshot, runPrimaryAction } from './equipmentActions'
+import { flashlightSnapshot } from './Flashlight'
+import { lightGroupsSnapshot } from './lightGroups'
 
 /**
  * Usable things in the world (doors, switches, pickups). Interaction is
@@ -18,6 +22,8 @@ export interface Interactable {
   label: string
   /** absent = inert (a locked door): the prompt shows but E does nothing */
   action?: () => void
+  /** semantic resolver category; ordinary doors and switches default to world */
+  kind?: 'world' | 'pickup'
   /** doors fade to black around their action; switches etc. fire instantly */
   fade?: boolean
   /** reach in meters (default 2.4) */
@@ -25,6 +31,11 @@ export interface Interactable {
 }
 
 const items = new Set<Interactable>()
+let aimDebug: {
+  interactable: string | null
+  kind: Interactable['kind'] | null
+  grabbableStyle: Grabbable['carryStyle'] | null
+} = { interactable: null, kind: null, grabbableStyle: null }
 
 export function registerInteractable(entry: Interactable): () => void {
   entry.object.userData.interactable = entry
@@ -45,14 +56,24 @@ function findInteractable(hit: THREE.Object3D): Interactable | null {
 }
 
 // ---- HUD prompt (subscribed by the App overlay) ----
-let prompt: string | null = null
+export interface InteractionPrompt {
+  input: 'E'
+  label: string
+  kind: 'action' | 'manipulate' | 'holding'
+}
+
+let prompt: InteractionPrompt | null = null
 const subs = new Set<() => void>()
-function setPrompt(next: string | null) {
-  if (next === prompt) return
+function setPrompt(next: InteractionPrompt | null) {
+  if (
+    next?.input === prompt?.input &&
+    next?.label === prompt?.label &&
+    next?.kind === prompt?.kind
+  ) return
   prompt = next
   subs.forEach((fn) => fn())
 }
-export function usePrompt(): string | null {
+export function usePrompt(): InteractionPrompt | null {
   return useSyncExternalStore(
     (fn) => {
       subs.add(fn)
@@ -98,6 +119,7 @@ const CENTER = new THREE.Vector2(0, 0)
 export function InteractionSystem() {
   const camera = useThree((s) => s.camera)
   const scene = useThree((s) => s.scene)
+  const gl = useThree((s) => s.gl)
   const raycaster = useRef(new THREE.Raycaster())
   const aimed = useRef<Interactable | null>(null)
   const aimedGrab = useRef<Grabbable | null>(null)
@@ -114,15 +136,19 @@ export function InteractionSystem() {
         // first solid thing the reticle touches — occluders naturally block
         const hits = rc.intersectObject(level, true)
         for (const h of hits) {
+          const g = findGrabbable(h.object)
+          // A centered carried prop sits directly on the reticle. Ignore all
+          // of its mesh hits so a switch or door behind it can still win E.
+          if (g && carry.isHolding(g)) continue
+
           const it = findInteractable(h.object)
           if (it) {
             if (h.distance <= (it.maxDist ?? MAX_REACH)) target = it
             break
           }
           // no interactable: maybe it's a prop you can pick up with E
-          const g = findGrabbable(h.object)
           if (g) {
-            if (!carry.isHolding()) grab = g
+            grab = g
             break
           }
           break // solid occluder
@@ -131,30 +157,85 @@ export function InteractionSystem() {
     }
     aimed.current = target
     aimedGrab.current = grab
-    setPrompt(target?.label ?? (grab ? 'PICK UP' : null))
+    aimDebug = {
+      interactable: target?.label ?? null,
+      kind: target?.kind ?? null,
+      grabbableStyle: grab?.carryStyle ?? null,
+    }
+    if (target && target.kind !== 'pickup') {
+      setPrompt({ input: 'E', label: target.label, kind: 'action' })
+    } else if (carry.isHolding()) {
+      setPrompt({ input: 'E', label: 'PUT DOWN', kind: 'holding' })
+    } else if (target?.kind === 'pickup') {
+      setPrompt({ input: 'E', label: target.label, kind: 'manipulate' })
+    } else if (grab) {
+      setPrompt({ input: 'E', label: 'PICK UP', kind: 'manipulate' })
+    } else {
+      setPrompt(null)
+    }
   })
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.code !== 'KeyE' || !player.locked || transitioning) return
-      const it = aimed.current
-      if (it) {
+    const canvas = gl.domElement
+    const onContextMenu = (e: Event) => e.preventDefault()
+    const runWorldAction = (it: Interactable) => {
+      if (!it.action) return
+      if (it.fade === false) it.action()
+      else fadeThrough(it.action)
+    }
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.button !== 0 || !player.locked || transitioning || carry.isHolding()) return
+      runPrimaryAction(inventory.equipped()?.id)
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'KeyE' || e.repeat || !player.locked || transitioning) return
+
+      const target = aimed.current
+      // Classic resolver priority: focused world action, current carry,
+      // focused inventory pickup, then focused loose prop.
+      if (target && target.kind !== 'pickup') {
         e.stopImmediatePropagation()
-        if (!it.action) return
-        if (it.fade === false) it.action()
-        else fadeThrough(it.action)
+        runWorldAction(target)
         return
       }
-      const g = aimedGrab.current
-      if (g) {
+      if (carry.isHolding()) {
         e.stopImmediatePropagation()
-        carry.pickUp(g)
+        carry.putDown(camera, scene)
+        return
+      }
+      if (target?.kind === 'pickup') {
+        e.stopImmediatePropagation()
+        runWorldAction(target)
+        return
+      }
+      const grab = aimedGrab.current
+      if (grab) {
+        e.stopImmediatePropagation()
+        carry.pickUp(grab, camera)
       }
     }
-    // capture phase so the door wins over the E-opens-editor shortcut
-    window.addEventListener('keydown', onKey, true)
-    return () => window.removeEventListener('keydown', onKey, true)
-  }, [])
+
+    canvas.addEventListener('contextmenu', onContextMenu)
+    canvas.addEventListener('pointerdown', onPointerDown)
+    window.addEventListener('keydown', onKeyDown, true)
+    return () => {
+      canvas.removeEventListener('contextmenu', onContextMenu)
+      canvas.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('keydown', onKeyDown, true)
+      setPrompt(null)
+    }
+  }, [camera, gl, scene])
 
   return null
+}
+
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  ;(window as unknown as Record<string, unknown>).__interactionState = () => ({
+    inventory: inventory.get(),
+    carry: carry.snapshot(),
+    flashlight: flashlightSnapshot(),
+    actions: equipmentActionSnapshot(),
+    disabledLightGroups: lightGroupsSnapshot(),
+    aim: aimDebug,
+  })
 }

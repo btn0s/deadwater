@@ -12,8 +12,10 @@ npm run dev          # game:   http://localhost:5173
                      # editor: http://localhost:5173/editor.html
 ```
 
-In game: **WASD** move · **Shift** run · **Space** jump · **click** grab/toss
-(telekinesis) · **E** open editor · **Esc** release mouse.
+In game: **WASD** move · **Shift** run · **Space** jump · **E** interact,
+pick up, or put down · **LMB** use the selected item · **H** holster / draw ·
+**1–4** select items · **Esc** release mouse. **RMB** is reserved and **F** is
+unbound. On the title screen, **E** opens the editor.
 
 ## The loop
 
@@ -51,8 +53,8 @@ reparenting, undo, prefabs, save).
 
 **Game systems** (`src/game/`) — pointer-lock FPS controller with AABB
 sliding collision; Rapier physics (grabbable hulls with ccd, trimesh
-containers, kinematic player capsule that shoves debris); telekinesis
-grab/carry/toss; `Rat` AI that hugs walls and avoids the player; GLTF/FBX
+containers, kinematic player capsule that shoves debris); camera-relative
+one- and two-hand carrying; `Rat` AI that hugs walls and avoids the player; GLTF/FBX
 loading with PS2 material swap, cm-scale normalization, and per-piece grab
 splitting (all driven by components).
 

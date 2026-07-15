@@ -5,13 +5,13 @@ import * as THREE from 'three'
 import { PS2Pipeline } from './ps2/PS2Pipeline'
 import { PlayerController } from './game/PlayerController'
 import { PlayerBody } from './game/PlayerBody'
-import { CarrySystem } from './game/Carry'
+import { carry, CarrySystem } from './game/Carry'
 import { ZoneCulling } from './game/zoneCulling'
 import { AudioSystem, playOnce, prepareAudio } from './game/audio'
 import { Cctv } from './game/Cctv'
 import { DevViews } from './game/DevViews'
 import { InteractionSystem, usePrompt, useFade } from './game/interactions'
-import { InventoryKeys, useInventory, SLOT_COUNT } from './game/inventory'
+import { inventory, InventoryKeys, useInventory, SLOT_COUNT } from './game/inventory'
 import { Flashlight } from './game/Flashlight'
 import { Crowbar } from './game/Crowbar'
 import { player } from './game/playerState'
@@ -23,7 +23,10 @@ function Hotbar() {
   return (
     <div className={`hotbar${carryLock ? ' locked' : ''}`}>
       {Array.from({ length: SLOT_COUNT }, (_, i) => (
-        <div key={i} className={`hotbar-slot${i === active ? (stowed ? ' on stowed' : ' on') : ''}`}>
+        <div
+          key={i}
+          className={`hotbar-slot${i === active ? ' on' : ''}${i === active && stowed ? ' stowed' : ''}`}
+        >
           <span className="hotbar-key">{i + 1}</span>
           {slots[i] && <span className="hotbar-item">{slots[i].label}</span>}
         </div>
@@ -35,10 +38,22 @@ function Hotbar() {
 function Hud({ locked }: { locked: boolean }) {
   const prompt = usePrompt()
   const faded = useFade()
+  const crosshairClass =
+    prompt?.kind === 'action'
+      ? ' on-interactable'
+      : prompt?.kind === 'manipulate'
+        ? ' on-grabbable'
+        : prompt?.kind === 'holding'
+          ? ' holding'
+          : ''
   return (
     <>
-      {locked && <div className="crosshair" />}
-      {locked && prompt && <div className="use-prompt">E&ensp;{prompt}</div>}
+      {locked && <div className={`crosshair${crosshairClass}`} />}
+      {locked && prompt && (
+        <div className="use-prompt">
+          {prompt.input}&ensp;{prompt.label}
+        </div>
+      )}
       {locked && <Hotbar />}
       <div className={`fade${faded ? ' on' : ''}`} />
     </>
@@ -160,6 +175,13 @@ export default function App() {
     setTimeout(() => setCover(false), 1300)
   }
 
+  const quitToTitle = () => {
+    carry.reset()
+    inventory.resetForMenu()
+    setLocked(false)
+    setPhase('menu')
+  }
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement)?.tagName === 'INPUT') return
@@ -212,11 +234,12 @@ export default function App() {
             <button className="menu-button" onClick={resume}>
               RESUME
             </button>
-            <button className="menu-button quit" onClick={() => setPhase('menu')}>
+            <button className="menu-button quit" onClick={quitToTitle}>
               QUIT TO TITLE
             </button>
             <div className="keys">WASD MOVE&ensp;·&ensp;SHIFT RUN&ensp;·&ensp;SPACE JUMP&ensp;·&ensp;ESC PAUSE</div>
-            <div className="keys">E PICK UP / USE&ensp;·&ensp;CLICK PUT DOWN / SWING&ensp;·&ensp;HOLD RMB FLOAT&ensp;·&ensp;F STOW&ensp;·&ensp;1-4 ITEMS</div>
+            <div className="keys">E INTERACT / PICK UP / PUT DOWN&ensp;·&ensp;LMB ITEM ACTION&ensp;·&ensp;H HOLSTER / DRAW</div>
+            <div className="keys">1-4 ITEMS&ensp;·&ensp;RMB RESERVED&ensp;·&ensp;F UNBOUND</div>
           </div>
         )}
         {phase === 'menu' && !isMobile && (

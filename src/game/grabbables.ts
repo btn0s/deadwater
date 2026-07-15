@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import type { RapierRigidBody } from '@react-three/rapier'
-import type { AcousticMaterial } from '../engine/types'
+import type { AcousticMaterial, CarryStyle } from '../engine/types'
 
 export interface Grabbable {
   /** visual root, used for raycasting */
@@ -11,6 +11,8 @@ export interface Grabbable {
   radius: number
   /** largest AABB dimension — how bulky the thing is to carry */
   size: number
+  /** authored hand pose; legacy scene data defaults to one-handed at registration */
+  carryStyle: CarryStyle
   material: AcousticMaterial
 }
 

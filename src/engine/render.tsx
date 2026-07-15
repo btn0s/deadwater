@@ -50,6 +50,7 @@ import type {
   PickupComponent,
   AcousticsComponent,
   AcousticMaterial,
+  CarryStyle,
 } from './types'
 
 /** 'game' runs physics/behaviors; 'editor' renders visuals + lights only. */
@@ -173,7 +174,7 @@ function SplitModel({ c, physics, material }: { c: ModelComponent; physics?: Phy
     <>
       {pieces.map((p, i) =>
         mode === 'game' && physics?.grabbable ? (
-          <GrabbableBody key={i} position={[p.offset.x, 0, p.offset.z]} material={material}>
+          <GrabbableBody key={i} position={[p.offset.x, 0, p.offset.z]} material={material} carryStyle={physics.carryStyle}>
             <primitive object={p.container} />
           </GrabbableBody>
         ) : (
@@ -363,6 +364,7 @@ function PickupEffect({ c }: { c: PickupComponent }) {
     return registerInteractable({
       object: g,
       label: c.label ?? 'TAKE',
+      kind: 'pickup',
       fade: false,
       action: () => {
         const def = ITEM_DEFS[c.item as keyof typeof ITEM_DEFS]
@@ -384,7 +386,7 @@ function PickupEffect({ c }: { c: PickupComponent }) {
   )
 }
 
-/** wall switch: E toggles a light group's circuit — instant, no fade */
+/** wall switch: E toggles its circuit — instant, no fade */
 function SwitchEffect({ c }: { c: SwitchComponent }) {
   const group = useContext(NodeGroupContext)
   useEffect(() => {
@@ -406,7 +408,7 @@ function SwitchEffect({ c }: { c: SwitchComponent }) {
   return null
 }
 
-/** door = area transition: E near the node fades the player to the target */
+/** door = area transition: E near the node fades to the target */
 function DoorEffect({ c }: { c: DoorComponent }) {
   const group = useContext(NodeGroupContext)
   useEffect(() => {
@@ -481,7 +483,17 @@ function TrashMoundVisual({ seed, radius, height }: { seed: number; radius: numb
 
 // ------------------------------------------------------------------ physics
 
-function GrabbableBody({ children, position = [0, 0, 0], material = 'metal' }: { children: React.ReactNode; position?: [number, number, number]; material?: AcousticMaterial }) {
+function GrabbableBody({
+  children,
+  position = [0, 0, 0],
+  material = 'metal',
+  carryStyle = 'oneHand',
+}: {
+  children: React.ReactNode
+  position?: [number, number, number]
+  material?: AcousticMaterial
+  carryStyle?: CarryStyle
+}) {
   const body = useRef<RapierRigidBody>(null)
   const inner = useRef<THREE.Group>(null)
   const lastImpact = useRef(0)
@@ -490,8 +502,8 @@ function GrabbableBody({ children, position = [0, 0, 0], material = 'metal' }: {
     const box = new THREE.Box3().setFromObject(inner.current)
     const radius = Math.max(box.max.x - box.min.x, box.max.z - box.min.z) / 2
     const size = Math.max(box.max.x - box.min.x, box.max.y - box.min.y, box.max.z - box.min.z)
-    return registerGrabbable({ root: inner.current, body: body.current, radius, size, material })
-  }, [material])
+    return registerGrabbable({ root: inner.current, body: body.current, radius, size, carryStyle, material })
+  }, [carryStyle, material])
   const onCollision = () => {
     const rigidBody = body.current
     if (!rigidBody) return
@@ -734,7 +746,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
   let body: React.ReactNode = visuals
   if (mode === 'game' && physics && hasVisuals) {
     if (physics.body === 'dynamic' && physics.grabbable) {
-      body = <GrabbableBody material={acoustics?.material}>{visuals}</GrabbableBody>
+      body = <GrabbableBody material={acoustics?.material} carryStyle={physics.carryStyle}>{visuals}</GrabbableBody>
     } else if (physics.body === 'fixed' && physics.collider !== 'cuboid' && physics.collider !== 'none') {
       body = (
         <RigidBody type="fixed" colliders={physics.collider}>

@@ -73,7 +73,9 @@ export interface PickupComponent {
   label?: string
 }
 
-/** Rapier body. Dynamic bodies can be telekinesis-grabbable. On fixed bodies
+export type CarryStyle = 'oneHand' | 'twoHand'
+
+/** Rapier body. Dynamic bodies can be picked up when grabbable. On fixed bodies
  * blockPlayer adds a player-movement AABB (from size when given, else the
  * rendered bounds). collider 'none' = no rapier body — player blocking only. */
 export interface PhysicsComponent {
@@ -83,6 +85,8 @@ export interface PhysicsComponent {
   /** explicit half-extents for cuboid colliders (else derived from bounds) */
   size?: [number, number, number]
   grabbable?: boolean
+  /** authored carry pose; omitted values default to one-handed */
+  carryStyle?: CarryStyle
   blockPlayer?: boolean
 }
 

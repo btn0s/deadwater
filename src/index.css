@@ -172,7 +172,15 @@ body,
     box-shadow 0.1s;
 }
 
-/* aiming at something grabbable */
+/* aiming at a world action used with E */
+.crosshair.on-interactable {
+  width: 7px;
+  height: 7px;
+  background: rgba(220, 228, 214, 0.9);
+  box-shadow: 0 0 0 1px rgba(220, 228, 214, 0.28);
+}
+
+/* aiming at a prop or item picked up with E */
 .crosshair.on-grabbable {
   width: 7px;
   height: 7px;
@@ -228,18 +236,21 @@ body,
   background: rgba(22, 26, 24, 0.6);
 }
 
-/* both hands full — switching disabled */
-.hotbar.locked {
-  opacity: 0.35;
-}
-
-/* active but put away (F) */
+/* H keeps the slot selected but visually puts its item away */
 .hotbar-slot.on.stowed {
   border-color: rgba(150, 160, 150, 0.55);
   box-shadow: none;
 }
 .hotbar-slot.on.stowed .hotbar-item {
   color: rgba(170, 178, 166, 0.55);
+}
+
+/* a carried prop temporarily locks item switching */
+.hotbar.locked .hotbar-slot {
+  opacity: 0.3;
+}
+.hotbar.locked .hotbar-slot.on {
+  opacity: 0.58;
 }
 .hotbar-key {
   position: absolute;

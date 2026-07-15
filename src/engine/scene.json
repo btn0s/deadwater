@@ -978,7 +978,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -1007,7 +1008,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -1036,7 +1038,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -1106,7 +1109,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -1135,7 +1139,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -1205,7 +1210,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -1234,7 +1240,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -1845,7 +1852,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -1874,7 +1882,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -1903,7 +1912,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -2009,7 +2019,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -2038,7 +2049,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -2067,7 +2079,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -2403,7 +2416,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -2432,7 +2446,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -2461,7 +2476,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -2590,7 +2606,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -2619,7 +2636,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -2674,7 +2692,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -2753,7 +2772,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -2782,7 +2802,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -3069,7 +3090,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -3098,7 +3120,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -3127,7 +3150,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -3514,7 +3538,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -3890,7 +3915,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -10705,7 +10731,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -10733,7 +10760,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -10761,7 +10789,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -10789,7 +10818,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -10841,7 +10871,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -10869,7 +10900,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -10897,7 +10929,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -10949,7 +10982,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -11001,7 +11035,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -11029,7 +11064,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -11081,7 +11117,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -11109,7 +11146,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -11137,7 +11175,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -11165,7 +11204,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -11217,7 +11257,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -11245,7 +11286,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -11273,7 +11315,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -11654,7 +11697,8 @@
     {
      "type": "physics",
      "body": "dynamic",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",
@@ -11880,7 +11924,8 @@
      "type": "physics",
      "body": "dynamic",
      "collider": "hull",
-     "grabbable": true
+     "grabbable": true,
+     "carryStyle": "twoHand"
     },
     {
      "type": "acoustics",

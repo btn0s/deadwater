@@ -5,9 +5,9 @@ import { play } from './audio'
 import { handlingCueFor, type AcousticMaterial } from './acoustics'
 
 /**
- * Player inventory: a 4-slot hotbar, Minecraft-style. Digit keys 1-4 pick
- * the active slot (drawing whatever is in it); F stows the item in hand.
- * Starts empty — items come from world pickups.
+ * Player inventory: four ordinary tool slots. Digits 1-4 select and draw a
+ * slot; H holsters or redraws the selected tool. A carried world prop hides
+ * equipment without changing the slot or holster state that will return.
  */
 
 export type ItemId = 'flashlight' | 'crowbar'
@@ -25,12 +25,12 @@ export const ITEM_DEFS: Record<ItemId, InvItem> = {
 
 export const SLOT_COUNT = 4
 
-interface InventoryState {
+export interface InventoryState {
   slots: (InvItem | null)[]
   active: number
-  /** active item put away with F — slot stays selected, hands are empty */
+  /** selected tool is hidden while the slot remains active */
   stowed: boolean
-  /** both hands full (big carried object): switching and drawing disabled */
+  /** a carried world prop owns the hands, so equipment input is disabled */
   carryLock: boolean
 }
 
@@ -40,8 +40,6 @@ let state: InventoryState = {
   stowed: false,
   carryLock: false,
 }
-
-let stowedBeforeLock = false
 
 const subs = new Set<() => void>()
 function emit(next: Partial<InventoryState>) {
@@ -55,46 +53,53 @@ export const inventory = {
     subs.add(fn)
     return () => subs.delete(fn)
   },
-  /** selecting a slot always draws it */
-  setActive(i: number) {
-    if (state.carryLock) return
-    if (i < 0 || i >= SLOT_COUNT) return
-    if (i !== state.active || state.stowed) {
-      const item = state.slots[i]
-      if (item) play(handlingCueFor(item.material), 0.7)
-      emit({ active: i, stowed: false })
-    }
+  /** Digit selection always draws the chosen slot, including an empty slot. */
+  setActive(i: number): boolean {
+    if (state.carryLock || i < 0 || i >= SLOT_COUNT) return false
+    if (i === state.active && !state.stowed) return true
+
+    const item = state.slots[i]
+    if (item) play(handlingCueFor(item.material), 0.7)
+    emit({ active: i, stowed: false })
+    return true
   },
-  /** F: put the item in hand away / take it back out */
-  toggleStowed() {
-    if (state.carryLock) return
-    if (state.slots[state.active]) {
-      play(handlingCueFor(state.slots[state.active]!.material), 0.8)
-      emit({ stowed: !state.stowed })
-    }
+  /** H holsters or redraws the selected tool. */
+  toggleStowed(): boolean {
+    if (state.carryLock) return false
+    const item = state.slots[state.active]
+    if (!item) return false
+    play(handlingCueFor(item.material), 0.8)
+    emit({ stowed: !state.stowed })
+    return true
   },
-  /** a two-handed carry holsters the active item until the object drops */
-  setCarryLock(on: boolean) {
-    if (on === state.carryLock) return
-    if (on) {
-      stowedBeforeLock = state.stowed
-      emit({ carryLock: true, stowed: true })
-    } else {
-      emit({ carryLock: false, stowed: stowedBeforeLock })
-    }
+  /** Carry suppresses equipment while preserving active slot and stow state. */
+  beginCarry(): boolean {
+    if (state.carryLock) return false
+    emit({ carryLock: true })
+    return true
   },
-  /** world pickups land in the first empty slot and are drawn immediately */
+  /** Releasing restores the exact drawn/holstered state hidden by carry. */
+  endCarry() {
+    if (!state.carryLock) return
+    emit({ carryLock: false })
+  },
+  /** World pickups fill the first empty slot and draw it immediately. */
   add(item: InvItem): boolean {
-    const i = state.slots.findIndex((s) => s === null)
+    if (state.carryLock) return false
+    const i = state.slots.findIndex((slot) => slot === null)
     if (i === -1) return false
     const slots = [...state.slots]
     slots[i] = item
     emit({ slots, active: i, stowed: false })
     return true
   },
-  /** the item currently in hand (null while stowed) */
+  /** The selected tool only when it is both drawn and available. */
   equipped(): InvItem | null {
-    return state.stowed ? null : state.slots[state.active]
+    return state.stowed || state.carryLock ? null : state.slots[state.active]
+  },
+  /** Hide equipment safely for the title without clearing inventory choice. */
+  resetForMenu() {
+    emit({ stowed: true, carryLock: false })
   },
 }
 
@@ -102,13 +107,13 @@ export function useInventory(): InventoryState {
   return useSyncExternalStore(inventory.subscribe, inventory.get)
 }
 
-/** mount once: digit keys switch slots, F stows, while playing */
+/** Mount once: digits select/draw slots and H toggles the selected tool. */
 export function InventoryKeys() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!player.locked) return
-      if (e.code === 'KeyF') {
-        inventory.toggleStowed()
+      if (e.code === 'KeyH') {
+        if (!e.repeat) inventory.toggleStowed()
         return
       }
       const n = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3 }[e.code]
