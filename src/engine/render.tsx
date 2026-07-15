@@ -22,6 +22,7 @@ import { Rat } from '../game/Rat'
 import { Rack } from '../game/Rack'
 import { SewerWater } from '../game/SewerWater'
 import { registerInteractable } from '../game/interactions'
+import { isGroupOn, toggleGroup } from '../game/lightGroups'
 import { player } from '../game/playerState'
 import { useWorldTexture } from './textures'
 import { MODEL_REGISTRY } from './models'
@@ -39,6 +40,7 @@ import type {
   EnvironmentComponent,
   WaterComponent,
   DoorComponent,
+  SwitchComponent,
 } from './types'
 
 /** 'game' runs physics/behaviors; 'editor' renders visuals + lights only. */
@@ -194,7 +196,13 @@ function SurfaceVisual({ c }: { c: SurfaceComponent }) {
 function PrimitiveVisual({ c }: { c: PrimitiveComponent }) {
   const map = useWorldTexture(c.texture ?? 'Concrete031')
   const material = useMemo(
-    () => createPS2Material({ map: c.texture ? map : null, repeat: c.repeat ?? [1, 1], color: c.tint, fullbright: c.fullbright }),
+    () => {
+      const m = createPS2Material({ map: c.texture ? map : null, repeat: c.repeat ?? [1, 1], color: c.tint, fullbright: c.fullbright })
+      // a fullbright primitive is a fixture's lit face (tube glass, lamp
+      // plate) — tag it so a light on the same fixture can drive its glow
+      if (c.fullbright) m.userData.lampGlass = true
+      return m
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [map, c.texture, c.repeat?.[0], c.repeat?.[1], c.tint, c.fullbright],
   )
@@ -245,6 +253,27 @@ function RailingVisual({ length, spacing }: { length: number; spacing: number })
 
 function WaterVisual({ c }: { c: WaterComponent }) {
   return <SewerWater position={[0, 0, 0]} size={[c.width, c.height]} />
+}
+
+/** wall switch: E toggles a light group's circuit — instant, no fade */
+function SwitchEffect({ c }: { c: SwitchComponent }) {
+  const group = useContext(NodeGroupContext)
+  useEffect(() => {
+    const g = group?.current
+    if (!g) return
+    g.updateWorldMatrix(true, false)
+    const p = new THREE.Vector3()
+    g.getWorldPosition(p)
+    return registerInteractable({
+      x: p.x,
+      z: p.z,
+      radius: 1.1,
+      label: c.label ?? 'LIGHTS',
+      fade: false,
+      action: () => toggleGroup(c.group),
+    })
+  }, [group, c.group, c.label])
+  return null
 }
 
 /** door = area transition: E near the node fades the player to the target */
@@ -433,10 +462,12 @@ function LightEffect({ c, nodeGroup, transform }: { c: LightComponent; nodeGroup
       }
       level = f.on ? 1 : 0.07
     }
+    // circuit dead? the fixture goes fully dark, glass included
+    if (!isGroupOn(s.group)) level = 0
     if (level !== lastLevel.current) {
       lastLevel.current = level
       lightColors[i].copy(rawColorFromString(s.color)).multiplyScalar(s.intensity * level)
-      const glow = Math.max(level, GLASS_FLOOR)
+      const glow = level <= 0 ? 0.02 : Math.max(level, GLASS_FLOOR)
       for (const col of glass.current) col.copy(GLASS_WARM).multiplyScalar(glow)
     }
   })
@@ -481,6 +512,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
   const environment = componentOf(node, 'environment')
   const water = componentOf(node, 'water')
   const door = componentOf(node, 'door')
+  const switchC = componentOf(node, 'switch')
 
   const children = index.childrenOf.get(node.id) ?? []
 
@@ -523,6 +555,7 @@ export function NodeView({ node, index, instancePrefix = '' }: { node: SceneNode
         {light && <LightEffect c={light} nodeGroup={group} transform={node.transform} />}
         {environment && <EnvironmentEffect c={environment} />}
         {mode === 'game' && door && <DoorEffect c={door} />}
+        {mode === 'game' && switchC && <SwitchEffect c={switchC} />}
         {instance && <InstanceView c={instance} index={index} prefix={`${instancePrefix}${node.id}::`} />}
         {children.map((child) => (
           <NodeView key={child.id} node={child} index={index} instancePrefix={instancePrefix} />

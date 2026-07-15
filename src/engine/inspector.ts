@@ -29,6 +29,7 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
     { key: 'radius', kind: 'number', step: 0.5 },
     { key: 'spot', kind: 'number', step: 0.25 },
     { key: 'flicker', kind: 'check' },
+    { key: 'group', kind: 'text' },
   ],
   physics: [
     { key: 'body', kind: 'select', options: ['fixed', 'dynamic'] },
@@ -80,6 +81,10 @@ export const COMPONENT_FIELDS: Record<ComponentType, FieldDef[]> = {
     { key: 'radius', kind: 'number', step: 0.1 },
     { key: 'locked', kind: 'check' },
   ],
+  switch: [
+    { key: 'group', kind: 'text' },
+    { key: 'label', kind: 'text' },
+  ],
 }
 
 /** defaults used by the inspector's "add component" menu */
@@ -94,6 +99,7 @@ export const COMPONENT_DEFAULTS: Record<Exclude<ComponentType, 'environment'>, C
   instance: { type: 'instance', of: '' },
   water: { type: 'water', width: 4, height: 2 },
   door: { type: 'door', target: [0, 0], label: 'USE' },
+  switch: { type: 'switch', group: 'warehouse' },
 }
 
 // dot-path helpers for nested fields (environment.fog.near)

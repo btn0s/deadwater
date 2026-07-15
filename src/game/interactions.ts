@@ -16,6 +16,8 @@ export interface Interactable {
   label: string
   /** absent = inert (a locked door): the prompt shows but E does nothing */
   action?: () => void
+  /** doors fade to black around their action; switches etc. fire instantly */
+  fade?: boolean
 }
 
 const items = new Set<Interactable>()
@@ -99,7 +101,9 @@ export function InteractionSystem() {
       const it = nearest()
       if (it) {
         e.stopImmediatePropagation()
-        if (it.action) fadeThrough(it.action)
+        if (!it.action) return
+        if (it.fade === false) it.action()
+        else fadeThrough(it.action)
       }
     }
     // capture phase so the door wins over the E-opens-editor shortcut

@@ -1261,15 +1261,15 @@
    "transform": {
     "pos": [
      -13,
-     6,
+     5.92,
      -5.5
-    ]
+    ],
+    "rot": 1.5707963267948966
    },
    "components": [
     {
-     "type": "model",
-     "source": "gltf",
-     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+     "type": "instance",
+     "of": "tube-light"
     }
    ]
   },
@@ -1279,17 +1279,18 @@
    "transform": {
     "pos": [
      0,
-     -1.4,
+     -0.3,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#d8e6c8",
+     "color": "#dae6d4",
      "intensity": 1.2,
      "radius": 18,
-     "spot": 1
+     "spot": 1,
+     "group": "warehouse"
     }
    ]
   },
@@ -1299,15 +1300,15 @@
    "transform": {
     "pos": [
      0,
-     6,
+     5.92,
      -5.5
-    ]
+    ],
+    "rot": 1.5707963267948966
    },
    "components": [
     {
-     "type": "model",
-     "source": "gltf",
-     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+     "type": "instance",
+     "of": "tube-light"
     }
    ]
   },
@@ -1317,17 +1318,18 @@
    "transform": {
     "pos": [
      0,
-     -1.4,
+     -0.3,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#d8e6c8",
+     "color": "#dae6d4",
      "intensity": 1.2,
      "radius": 18,
-     "spot": 1
+     "spot": 1,
+     "group": "warehouse"
     }
    ]
   },
@@ -1337,15 +1339,15 @@
    "transform": {
     "pos": [
      13,
-     6,
+     5.92,
      -5.5
-    ]
+    ],
+    "rot": 1.5707963267948966
    },
    "components": [
     {
-     "type": "model",
-     "source": "gltf",
-     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+     "type": "instance",
+     "of": "tube-light"
     }
    ]
   },
@@ -1355,17 +1357,18 @@
    "transform": {
     "pos": [
      0,
-     -1.4,
+     -0.3,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#d8e6c8",
+     "color": "#dae6d4",
      "intensity": 1.2,
      "radius": 18,
-     "spot": 1
+     "spot": 1,
+     "group": "warehouse"
     }
    ]
   },
@@ -1375,15 +1378,15 @@
    "transform": {
     "pos": [
      -13,
-     6,
+     5.92,
      5.5
-    ]
+    ],
+    "rot": 1.5707963267948966
    },
    "components": [
     {
-     "type": "model",
-     "source": "gltf",
-     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+     "type": "instance",
+     "of": "tube-light"
     }
    ]
   },
@@ -1393,17 +1396,18 @@
    "transform": {
     "pos": [
      0,
-     -1.4,
+     -0.3,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#d8e6c8",
+     "color": "#dae6d4",
      "intensity": 1.2,
      "radius": 18,
-     "spot": 1
+     "spot": 1,
+     "group": "warehouse"
     }
    ]
   },
@@ -1413,15 +1417,15 @@
    "transform": {
     "pos": [
      0,
-     6,
+     5.92,
      5.5
-    ]
+    ],
+    "rot": 1.5707963267948966
    },
    "components": [
     {
-     "type": "model",
-     "source": "gltf",
-     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+     "type": "instance",
+     "of": "tube-light"
     }
    ]
   },
@@ -1431,18 +1435,19 @@
    "transform": {
     "pos": [
      0,
-     -1.4,
+     -0.3,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#d8e6c8",
+     "color": "#dae6d4",
      "intensity": 1.2,
      "radius": 18,
      "spot": 1,
-     "flicker": true
+     "flicker": true,
+     "group": "warehouse"
     }
    ]
   },
@@ -1452,15 +1457,15 @@
    "transform": {
     "pos": [
      13,
-     6,
+     5.92,
      5.5
-    ]
+    ],
+    "rot": 1.5707963267948966
    },
    "components": [
     {
-     "type": "model",
-     "source": "gltf",
-     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+     "type": "instance",
+     "of": "tube-light"
     }
    ]
   },
@@ -1470,17 +1475,18 @@
    "transform": {
     "pos": [
      0,
-     -1.4,
+     -0.3,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#d8e6c8",
+     "color": "#dae6d4",
      "intensity": 1.2,
      "radius": 18,
-     "spot": 1
+     "spot": 1,
+     "group": "warehouse"
     }
    ]
   },
@@ -1490,15 +1496,15 @@
    "transform": {
     "pos": [
      -10,
-     3,
+     2.93,
      -16
-    ]
+    ],
+    "rot": 1.5707963267948966
    },
    "components": [
     {
-     "type": "model",
-     "source": "gltf",
-     "url": "/models/hanging_industrial_lamp/hanging_industrial_lamp_1k.gltf"
+     "type": "instance",
+     "of": "tube-light"
     }
    ]
   },
@@ -1508,17 +1514,18 @@
    "transform": {
     "pos": [
      0,
-     -0.6,
+     -0.25,
      0
     ]
    },
    "components": [
     {
      "type": "light",
-     "color": "#d8e6c8",
+     "color": "#dae6d4",
      "intensity": 0.9,
      "radius": 9,
-     "spot": 1
+     "spot": 1,
+     "group": "warehouse"
     }
    ]
   },
@@ -7038,26 +7045,6 @@
    ]
   },
   {
-   "id": "office-structure/light",
-   "parent": "office-structure",
-   "transform": {
-    "pos": [
-     -17.9,
-     2.55,
-     0
-    ]
-   },
-   "components": [
-    {
-     "type": "light",
-     "color": "#e8dcc0",
-     "intensity": 0.9,
-     "radius": 7.5,
-     "spot": 1
-    }
-   ]
-  },
-  {
    "id": "dock-bay",
    "parent": "library",
    "library": true,
@@ -7837,7 +7824,7 @@
     "pos": [
      19.75,
      0,
-     -13.0
+     -13
     ],
     "rot": 0.9
    },
@@ -9131,6 +9118,279 @@
       0.5
      ],
      "blockPlayer": true
+    }
+   ]
+  },
+  {
+   "id": "tube-light",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "tube-light/housing",
+   "parent": "tube-light",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      1.34,
+      0.07,
+      0.18
+     ],
+     "tint": "#383c40"
+    }
+   ]
+  },
+  {
+   "id": "tube-light/cap-1",
+   "parent": "tube-light",
+   "transform": {
+    "pos": [
+     -0.64,
+     -0.02,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.06,
+      0.08,
+      0.16
+     ],
+     "tint": "#2c2f33"
+    }
+   ]
+  },
+  {
+   "id": "tube-light/cap-2",
+   "parent": "tube-light",
+   "transform": {
+    "pos": [
+     0.64,
+     -0.02,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.06,
+      0.08,
+      0.16
+     ],
+     "tint": "#2c2f33"
+    }
+   ]
+  },
+  {
+   "id": "tube-light/tube",
+   "parent": "tube-light",
+   "transform": {
+    "pos": [
+     0,
+     -0.055,
+     0
+    ],
+    "rot": [
+     0,
+     0,
+     1.5707963267948966
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "cylinder",
+     "dims": [
+      0.024,
+      0.024,
+      1.22,
+      8
+     ],
+     "tint": "#eef2e0",
+     "fullbright": true
+    }
+   ]
+  },
+  {
+   "id": "office-structure/tube",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -17.9,
+     2.9,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "tube-light"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/tube/light",
+   "parent": "office-structure/tube",
+   "transform": {
+    "pos": [
+     0,
+     -0.25,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "light",
+     "color": "#e8e4cc",
+     "intensity": 0.9,
+     "radius": 7.5,
+     "spot": 1,
+     "group": "office"
+    }
+   ]
+  },
+  {
+   "id": "light-switch",
+   "parent": "library",
+   "library": true,
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "light-switch/plate",
+   "parent": "light-switch",
+   "transform": {
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.022,
+      0.13,
+      0.085
+     ],
+     "tint": "#c9c4b6"
+    }
+   ]
+  },
+  {
+   "id": "light-switch/nub",
+   "parent": "light-switch",
+   "transform": {
+    "pos": [
+     -0.02,
+     0,
+     0
+    ]
+   },
+   "components": [
+    {
+     "type": "primitive",
+     "shape": "box",
+     "dims": [
+      0.02,
+      0.035,
+      0.022
+     ],
+     "tint": "#8a867c"
+    }
+   ]
+  },
+  {
+   "id": "switch-dock",
+   "parent": "warehouse",
+   "transform": {
+    "pos": [
+     19.86,
+     1.25,
+     9.05
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "light-switch"
+    },
+    {
+     "type": "switch",
+     "group": "warehouse",
+     "label": "MAIN LIGHTS"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/switch-main",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.89,
+     1.25,
+     -0.95
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "light-switch"
+    },
+    {
+     "type": "switch",
+     "group": "warehouse",
+     "label": "MAIN LIGHTS"
+    }
+   ]
+  },
+  {
+   "id": "office-structure/switch-office",
+   "parent": "office-structure",
+   "transform": {
+    "pos": [
+     -15.89,
+     1.25,
+     0.05
+    ]
+   },
+   "components": [
+    {
+     "type": "instance",
+     "of": "light-switch"
+    },
+    {
+     "type": "switch",
+     "group": "office",
+     "label": "OFFICE LIGHT"
     }
    ]
   }

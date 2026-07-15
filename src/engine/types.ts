@@ -52,6 +52,16 @@ export interface LightComponent {
   flicker?: boolean
   /** 0 = omni, 1 = shaded downward cone */
   spot?: number
+  /** named circuit a wall switch can kill (e.g. 'warehouse', 'office') */
+  group?: string
+}
+
+/** Wall switch: E toggles a light group's circuit. */
+export interface SwitchComponent {
+  type: 'switch'
+  group: string
+  /** HUD prompt (default 'LIGHTS') */
+  label?: string
 }
 
 /** Rapier body. Dynamic bodies can be telekinesis-grabbable. On fixed bodies
@@ -158,5 +168,6 @@ export type Component =
   | EnvironmentComponent
   | WaterComponent
   | DoorComponent
+  | SwitchComponent
 
 export type ComponentType = Component['type']
