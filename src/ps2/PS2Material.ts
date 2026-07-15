@@ -117,7 +117,7 @@ const vertexShader = /* glsl */ `
       // aimed cone (flashlight): fade by angle off the beam axis
       if (uLightCone[i] > 0.0) {
         float along = dot(normalize(-toLight), uLightDir[i]);
-        spot *= smoothstep(uLightCone[i], uLightCone[i] + 0.12, along);
+        spot *= smoothstep(uLightCone[i], uLightCone[i] + 0.06, along);
       }
       vec3 contrib = uLightColor[i] * (ndl * atten * spot);
       // the torch's share travels separately so the fragment can shadow it

@@ -127,7 +127,7 @@ const vertexShader = /* glsl */ `
       float spot = mix(1.0, mix(0.06, 1.0, smoothstep(-0.12, 0.45, cosDown)), uLightSpot[i]);
       if (uLightCone[i] > 0.0) {
         float along = dot(normalize(-toLight), uLightDir[i]);
-        spot *= smoothstep(uLightCone[i], uLightCone[i] + 0.12, along);
+        spot *= smoothstep(uLightCone[i], uLightCone[i] + 0.06, along);
       }
       light += uLightColor[i] * (ndl * atten * spot);
     }

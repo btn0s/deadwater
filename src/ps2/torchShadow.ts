@@ -19,8 +19,9 @@ export const torchShadowTarget = new THREE.WebGLRenderTarget(SHADOW_SIZE, SHADOW
   depthBuffer: true,
 })
 
-/** aimed down the beam by the Flashlight component every frame */
-export const torchCamera = new THREE.PerspectiveCamera(56, 1, 0.15, 30)
+/** aimed down the beam by the Flashlight component every frame; fov covers
+ * the hot cone + halo (~19° half-angle) with margin */
+export const torchCamera = new THREE.PerspectiveCamera(44, 1, 0.15, 30)
 
 // world → light NDC → [0,1] uv/depth
 const biasMatrix = new THREE.Matrix4().set(
